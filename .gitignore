@@ -117,8 +117,8 @@ clustering/datasets/movies-lg.csv
 clustering/datasets/ratings-lg.csv
 
 # docker
-# docker/
-# docker-compose.yml
+docker/
+docker-compose.yml
 
 # big datasets
 clustering/datasets/genome-scores.csv
