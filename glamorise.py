@@ -2,7 +2,6 @@ from spacy import displacy
 import spacy
 from spacy.matcher import Matcher
 
-
 class GLAMORISE:
 
     # instance attribute
