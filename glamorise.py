@@ -3,10 +3,10 @@ import spacy
 from spacy.matcher import Matcher
 
 
-class Glamorise:
+class GLAMORISE:
 
     # instance attribute
-    def __init__(self, txt, lang="en"):
+    def __init__(self, txt, lang="en_core_web_sm"):
         self.__nlp = spacy.load(lang)
         self.__doc = self.__nlp(txt)
         self.__customize_stop_words
@@ -63,17 +63,23 @@ class Glamorise:
         return False
 
     def build_field(self, token, type):
-        print("token.ancestors", str(token.ancestors))
         for ancestor in token.ancestors:
             # set the field
             field = ancestor.lemma_
-            accum = ''
+            accum_pre = accum_pos = ''
             # look for compund terms
-            for ancestor_children in ancestor.subtree:
+            for ancestor_children in ancestor.children:
                 # get compound terms that are not proper noun
-                if ancestor_children.dep_ == 'compound' and ancestor_children.tag_ != 'NNP':
-                    accum = accum + ancestor_children.lemma_ + ' '
-            field = accum + field
+                if ancestor_children.dep_ == 'compound' and ancestor_children.tag_ != 'NNP' \
+                        and ancestor_children.head == ancestor:
+                    accum_pre = accum_pre + ancestor_children.lemma_ + ' '
+                if ancestor_children.dep_ == 'prep' and ancestor_children.tag_ == 'IN' \
+                        and ancestor_children.lemma_ == 'of' and ancestor_children.head == ancestor:
+                    accum_pos = accum_pos + ancestor_children.lemma_ + ' '
+                    for ancestor_grandchildren in ancestor_children.children:
+                        if ancestor_grandchildren.dep_ == 'pobj' and ancestor_grandchildren.tag_ == 'NN':
+                            accum_pos = accum_pos + ancestor_grandchildren.lemma_ + ' '
+            field = accum_pre + field if accum_pre != '' else field + ' ' + accum_pos
             if type == 'aggregate':
                 self.__aggregate_field = field
             if type == 'group by':
