@@ -10,13 +10,13 @@ class GLAMORISE:
         self.__nlp = spacy.load(lang)
         self.__doc = self.__nlp(txt)
         self.__customize_stop_words
-        self.__aggregate_function = ''
-        self.__aggregate_field = ''
-        self.__group_by_field = ''
-        self.__having_field = ''
+        self.__aggregate_function = []
+        self.__aggregate_field = []
+        self.__group_by_field = []
+        self.__having_field = []
         self.__cut_text = []
         self.__group_by = False
-        self.__having = ''
+        self.__having = []
         self.__matcher = Matcher(self.__nlp.vocab)
 
     @property
@@ -61,32 +61,42 @@ class GLAMORISE:
             if matches != []:
                 return True
         return False
+    def iterator_has_next(self, iterator):
+        try:
+            next(iterator)
+            return True
+        except:
+            return False
 
     def build_field(self, token, type):
-        for ancestor in token.ancestors:
-            # set the field
-            field = ancestor.lemma_
-            accum_pre = accum_pos = ''
-            # look for compund terms
-            for ancestor_children in ancestor.children:
-                # get compound terms that are not proper noun
-                if ancestor_children.dep_ == 'compound' and ancestor_children.tag_ != 'NNP' \
-                        and ancestor_children.head == ancestor:
-                    accum_pre = accum_pre + ancestor_children.lemma_ + ' '
-                if ancestor_children.dep_ == 'prep' and ancestor_children.tag_ == 'IN' \
-                        and ancestor_children.lemma_ == 'of' and ancestor_children.head == ancestor:
-                    accum_pos = accum_pos + ancestor_children.lemma_ + ' '
-                    for ancestor_grandchildren in ancestor_children.children:
-                        if ancestor_grandchildren.dep_ == 'pobj' and ancestor_grandchildren.tag_ == 'NN':
-                            accum_pos = accum_pos + ancestor_grandchildren.lemma_ + ' '
-            field = accum_pre + field if accum_pre != '' else field + ' ' + accum_pos
-            if type == 'aggregate':
-                self.__aggregate_field = field
-            if type == 'group by':
-                self.__group_by_field = field
-            if type == 'having':
-                self.__having_field = field
-            break
+        next_token_tree = token.children if type == 'group by'  or not self.iterator_has_next(token.ancestors) else \
+            token.ancestors
+        for next_token in next_token_tree:
+            if next_token.tag_ in ['NN', 'NNS']:
+                # set the field
+                field = next_token.lemma_
+                accum_pre = accum_pos = ''
+                # look for compund terms
+                for next_token_children in next_token.children:
+                    # get compound terms that are not proper noun
+                    if next_token_children.dep_ == 'compound' and next_token_children.tag_ != 'NNP' \
+                            and next_token_children.head == next_token:
+                        accum_pre = accum_pre + next_token_children.lemma_ + ' '
+                    if next_token_children.dep_ == 'prep' and next_token_children.tag_ == 'IN' \
+                            and next_token_children.lemma_ == 'of' and next_token_children.head == next_token:
+                        accum_pos = accum_pos + next_token_children.lemma_ + ' '
+                        for next_token_grandchildren in next_token_children.children:
+                            if next_token_grandchildren.dep_ == 'pobj' and next_token_grandchildren.tag_ == 'NN':
+                                accum_pos = accum_pos + next_token_grandchildren.lemma_ + ' '
+                field = str(accum_pre + field if accum_pre != '' else field + ' ' + accum_pos).strip()
+                if type == 'aggregate':
+                    self.__aggregate_field.append(field)
+                if type == 'group by':
+                    self.__group_by_field.append(field)
+                if type == 'having':
+                    self.__having_field.append(field)
+                break
+
 
     '''
     def pattern_match(self, token, reserved_words, children_reserved_words = None, ancestors_reserved_words = None): 
@@ -110,18 +120,25 @@ class GLAMORISE:
       return False
     '''
 
+    def check_nnp_in_children(self, token):
+        for child in token.children:
+            if child.tag_ == 'NNP':
+                return True
+        return False
+
     def pattern_match(self, token, reserved_words, children_reserved_words=None,
                       group_by=False, having=''):
         if token.lemma_ in reserved_words:
             if reserved_words[token.lemma_] is not None:
-                self.__aggregate_function = reserved_words[token.lemma_]
+                self.__aggregate_function.append(reserved_words[token.lemma_])
             self.__group_by = group_by
-            self.__having = having
-            if not group_by and having == '':
+            if having != '':
+                self.__having.append(having)
+            if not group_by and  self.__having == []:
                 self.build_field(token, type='aggregate')
             elif group_by:
                 self.build_field(token, type='group by')
-            elif having != '':
+            elif  self.__having != []:
                 self.build_field(token, type='having')
             if children_reserved_words is None:
                 self.__cut_text.append(token.lemma_)
@@ -133,6 +150,8 @@ class GLAMORISE:
 
     def pattern_scan(self):
         for token in self.__doc:
+            if self.check_nnp_in_children(token):
+                continue
             '''
             # get the how many, how much pattern
             if token.lemma_ in ['many', 'much']:      
