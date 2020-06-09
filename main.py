@@ -7,6 +7,7 @@ with open('./datasets/teste.csv') as csv_file:
   line_count = 0
   for row in csv_reader:
     nl_query = row[0]
+#    nl_query = 'How many tracks does Erotica have?'
     print("\n\nNatural Language Query: ",nl_query )
     glamorise = GLAMORISE.GLAMORISE(nl_query)
     glamorise.pattern_scan()
