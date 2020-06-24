@@ -18,14 +18,24 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         self.__query = query
         self.__doc = self.__nlp(query)
         self.__customize_stop_words
-        self.__aggregate_function = []
-        self.__aggregate_field = []
-        self.__group_by_field = []
-        self.__having_field = []
+
+        self.__aggregate_functions = []
+        self.__aggregate_fields = []
+        self.__group_by_fields = []
+
+        self.__candidate_aggregate_functions = []
+        self.__candidate_aggregate_fields = []
+        self.__candidate_group_by_fields = []
+
+        self.__having_fields = []
+        self.__having_conditions = []
+        self.__having_values = []
+        self.__having_units = []
+
+
         self.__cut_text = []
         self.__substitute_text = {}
         self.__group_by = False
-        self.__having = []
         self.__prepared_query = ''
         self.__matcher = Matcher(self.__nlp.vocab)
 
@@ -46,20 +56,46 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         return self.__prepared_query
 
     @property
-    def aggregate_function(self):
-        return self.__aggregate_function
+    def aggregate_functions(self):
+        return self.__aggregate_functions
 
     @property
-    def aggregate_field(self):
-        return self.__aggregate_field
+    def aggregate_fields(self):
+        return self.__aggregate_fields
 
     @property
-    def group_by_field(self):
-        return self.__group_by_field
+    def group_by_fields(self):
+        return self.__group_by_fields
 
     @property
-    def having_field(self):
-        return self.__having_field
+    def candidate_aggregate_functions(self):
+        return self.__candidate_aggregate_functions
+
+    @property
+    def candidate_aggregate_fields(self):
+        return self.__candidate_aggregate_fields
+
+    @property
+    def candidate_group_by_fields(self):
+        return self.__candidate_group_by_fields
+
+
+    @property
+    def having_fields(self):
+        return self.__having_fields
+
+    @property
+    def having_conditions(self):
+        return self.__having_conditions
+
+    @property
+    def having_values(self):
+        return self.__having_values
+
+    @property
+    def having_units(self):
+        return self.__having_units
+
 
     @property
     def cut_text(self):
@@ -72,10 +108,6 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     @property
     def group_by(self):
         return self.__group_by
-
-    @property
-    def having(self):
-        return self.__having
 
     def __customize_stop_words(self):
         token_exception_list = ['by', 'per', 'how', 'many', 'much', 'and', 'more',
@@ -128,11 +160,11 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                                 accum_pos = accum_pos + next_token_grandchildren.lemma_ + ' '
                 field = str(accum_pre + field if accum_pre != '' else field + ' ' + accum_pos).strip()
                 if type == 'aggregate':
-                    self.__aggregate_field.append(field)
+                    self.__aggregate_fields.append(field)
                 if type == 'group by':
-                    self.__group_by_field.append(field)
+                    self.__group_by_fields.append(field)
                 if type == 'having':
-                    self.__having_field.append(field)
+                    self.__having_fields.append(field)
                 break
 
 
@@ -168,15 +200,15 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                                     group_by=False, having=''):
         if token.lemma_ in reserved_words:
             if reserved_words[token.lemma_] is not None:
-                self.__aggregate_function.append(reserved_words[token.lemma_])
+                self.__aggregate_functions.append(reserved_words[token.lemma_])
             self.__group_by = group_by
             if having != '':
-                self.__having.append(having)
-            if not group_by and  self.__having == []:
+                self.__having_conditions.append(having)
+            if not group_by and  self.__having_conditions == []:
                 self.build_field(token, type='aggregate')
             elif group_by:
                 self.build_field(token, type='group by')
-            elif  self.__having != []:
+            elif  self.__having_conditions != []:
                 self.build_field(token, type='having')
             if children_reserved_words is None:
                 self.__cut_text.append(token.text)
@@ -193,9 +225,9 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             # the aggregation processor is going to verify after if it is necessary, just if it is not the
             # "default_time_scale" a keyword in the metadata table NLIDB_FIELD_UNITS returned by the NLIDB with the
             # result set
-            self.__group_by_field.append(noun)
+            self.__group_by_fields.append(noun)
             #if the above field is used in the group by, the aggregation function is sum
-            self.aggregate_function.append(aggregate_function)
+            self.aggregate_functions.append(aggregate_function)
 
     def pattern_scan(self):
         for token in self.__doc:
@@ -209,9 +241,9 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                 if child.lemma_ == 'how':       
                   #set aggregate_function
                   if token.lemma_ == 'many':
-                    self.__aggregate_function = 'count'  
+                    self.__aggregate_functions = 'count'  
                   elif  token.lemma_ == 'much':
-                    self.__aggregate_function = 'sum'           
+                    self.__aggregate_functions = 'sum'           
                   #set the text that will be removed from the query before passing to the NLIDB
                   self.__cut_text = child.lemma_ + ' ' + token.lemma_          
                   self.build_aggregate_field(token)
