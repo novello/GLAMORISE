@@ -4,13 +4,12 @@ from spacy.matcher import Matcher
 import abc
 import sqlite3
 import nltk
-#nltk.download('wordnet')
+# nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
 import re
 
+
 class GLAMORISE(metaclass=abc.ABCMeta):
-
-
 
     # instance attribute
     def __init__(self, query, lang="en_core_web_sm"):
@@ -32,11 +31,18 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         self.__having_values = []
         self.__having_units = []
 
-
         self.__cut_text = []
         self.__substitute_text = {}
         self.__group_by = False
         self.__prepared_query = ''
+
+        self.__select_clause = ''
+        self.__group_by_clause = ''
+        self.__having_clause = ''
+        self.__order_by_clause = ''
+        self.__sql= ''
+
+
         self.__matcher = Matcher(self.__nlp.vocab)
 
         # Just to make it a bit more readable
@@ -50,7 +56,7 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def query(self):
         return self.__query
 
-    #remove later
+    # remove later
     @property
     def prepared_query(self):
         return self.__prepared_query
@@ -79,7 +85,6 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def candidate_group_by_fields(self):
         return self.__candidate_group_by_fields
 
-
     @property
     def having_fields(self):
         return self.__having_fields
@@ -96,7 +101,6 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def having_units(self):
         return self.__having_units
 
-
     @property
     def cut_text(self):
         return self.__cut_text
@@ -108,6 +112,26 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     @property
     def group_by(self):
         return self.__group_by
+
+    @property
+    def select_clause(self):
+        return self.__select_clause
+
+    @property
+    def group_by_clause(self):
+        return self.__group_by_clause
+
+    @property
+    def having_clause(self):
+        return self.__having_clause
+
+    @property
+    def order_by_clause(self):
+        return self.__order_by_clause
+
+    @property
+    def sql(self):
+        return self.__sql
 
     def __customize_stop_words(self):
         token_exception_list = ['by', 'per', 'how', 'many', 'much', 'and', 'more',
@@ -123,6 +147,7 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             if matches != []:
                 return True
         return False
+
     def iterator_has_next(self, iterator):
         try:
             next(iterator)
@@ -130,20 +155,38 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         except:
             return False
 
+    def new_build_field(self, token, field_property):
+        accum_pre = accum_pos = ''
+        field = token.lemma_
+        for child in token.children:
+            # get compound terms that are not proper noun
+            if child.dep_ == 'compound' and child.pos_ == 'NOUN' \
+                    and child.head == token:  # direct child
+                accum_pre = accum_pre + child.lemma_ + ' '
+            # get compound names with "of"
+            if child.dep_ == 'prep' and child.pos_ == 'ADP' \
+                    and child.head == token:  # direct child
+                accum_pos = accum_pos + child.lemma_ + ' '
+                for grandchild in child.children:
+                    if grandchild.dep_ == 'pobj' and grandchild.pos_ == 'NOUN':
+                        accum_pos = accum_pos + grandchild.lemma_ + ' '
+        field = str(accum_pre + field if accum_pre != '' else field + ' ' + accum_pos).strip()
+        field_property.append(field)
+
     def build_field(self, token, type):
-        if (type == 'group by' and token.text != 'and') or not self.iterator_has_next(token.ancestors):
+        if (type == 'group_by' and token.text != 'and') or not self.iterator_has_next(token.ancestors):
             next_token_tree = token.children
         else:
             next_token_tree = token.ancestors
         for next_token in next_token_tree:
             # dealing with "and" acting as "per" - exception
-            if type == 'group by' and token.text == 'and':
+            if type == 'group_by' and token.text == 'and':
                 next_token = token.nbor()
             if next_token.tag_ in ['NN', 'NNS']:
                 # set the field
                 field = next_token.lemma_
                 accum_pre = accum_pos = ''
-                # look for compund terms
+                # look for compound terms
                 for next_token_children in next_token.children:
                     # preparing "and" acting as "per" - exception
                     if next_token_children.dep_ == 'cc' and next_token_children.lemma_ == 'and':
@@ -161,34 +204,13 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                 field = str(accum_pre + field if accum_pre != '' else field + ' ' + accum_pos).strip()
                 if type == 'aggregate':
                     self.__aggregate_fields.append(field)
-                if type == 'group by':
+                if type == 'group_by':
                     self.__group_by_fields.append(field)
+                if type == 'candidate_group_by':
+                    self.__candidate_group_by_fields.append(field)
                 if type == 'having':
                     self.__having_fields.append(field)
                 break
-
-
-    '''
-    def pattern_match(self, token, reserved_words, children_reserved_words = None, ancestors_reserved_words = None): 
-      if token.lemma_ in reserved_words:              
-          if children_reserved_words is None and ancestors_reserved_words is None:
-            print("reserved_words")
-            return True
-          children = list(token.children)
-          print("children")
-          for child in children:                
-            if child.lemma_ in children_reserved_words:       
-              if ancestors_reserved_words is None:
-                return True
-              else:
-                break  
-          ancestors = list(token.ancestors)
-          print("parent")
-          for ancestor in ancestors:                
-            if ancestor.lemma_ in ancestor_reserved_words:                   
-              return True
-      return False
-    '''
 
     def check_nnp_in_children(self, token):
         for child in token.children:
@@ -204,11 +226,11 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             self.__group_by = group_by
             if having != '':
                 self.__having_conditions.append(having)
-            if not group_by and  self.__having_conditions == []:
+            if not group_by and self.__having_conditions == []:
                 self.build_field(token, type='aggregate')
             elif group_by:
-                self.build_field(token, type='group by')
-            elif  self.__having_conditions != []:
+                self.build_field(token, type='group_by')
+            elif self.__having_conditions != []:
                 self.build_field(token, type='having')
             if children_reserved_words is None:
                 self.__cut_text.append(token.text)
@@ -225,9 +247,30 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             # the aggregation processor is going to verify after if it is necessary, just if it is not the
             # "default_time_scale" a keyword in the metadata table NLIDB_FIELD_UNITS returned by the NLIDB with the
             # result set
-            self.__group_by_fields.append(noun)
-            #if the above field is used in the group by, the aggregation function is sum
-            self.aggregate_functions.append(aggregate_function)
+            self.__candidate_group_by_fields.append(noun)
+            # if the above field is used in the group by, the aggregation function is sum
+            self.candidate_aggregate_functions.append(aggregate_function)
+
+    def superlative_pattern_match(self, token):
+        min = ['least', 'smallest', 'tiniest', 'shortest', 'cheapest', 'nearest', 'lowest', 'worst', 'newest']
+        max = ['most', 'biggest', 'longest', 'furthest', 'highest', 'tallest', 'greatest', 'best', 'oldest']
+
+        if token.text in max + min:
+            self.new_build_field(token.head, self.aggregate_fields)  # set the aggregate field
+            self.__cut_text.append(token.text)  # set the text that should be cut
+            if token.text in max:  # set the aggregation function
+                self.aggregate_functions.append('max')
+            else:
+                self.aggregate_functions.append('min')
+            # look for the group by field
+            for verb_token in self.__doc:
+                # the group by fild is child of a verb, first find the auxiliary verb
+                if verb_token.pos_ == 'AUX':  #  ['AUX', 'VERB'] if main verbs occur
+                    # after this look for the child that is a noun and is nominal subject
+                    for child in verb_token.children:
+                        if child.pos_ == 'NOUN' and child.dep_ == 'nsubj':
+                            # set the group by field
+                            self.new_build_field(child, self.group_by_fields)
 
     def pattern_scan(self):
         for token in self.__doc:
@@ -281,12 +324,8 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             self.adjective_to_noun_pattern_match(token, ['daily', 'monthly', 'yearly'], 'sum')
 
             # superlative min:  least, smallest, tiniest, shortest, cheapest, nearest, lowest, worst, newest
-            self.adjective_to_noun_pattern_match(token, ['least', 'smallest', 'tiniest', 'shortest', 'cheapest',
-                                                          'nearest', 'lowest', 'worst', 'newest'], 'min')
-
             # superlative max: most, biggest, longest, furthest, highest, tallest, greatest, best, oldest
-            self.adjective_to_noun_pattern_match(token, ['most', 'biggest', 'longest', 'furthest', 'highest',
-                                                  'tallest', 'greatest', 'best', 'oldest'], 'max')
+            self.superlative_pattern_match(token)
 
             # get greater than, more than pattern
 
@@ -294,13 +333,10 @@ class GLAMORISE(metaclass=abc.ABCMeta):
 
             # get less than pattern
 
-
     def customized_displacy(self):
         displacy.render(self.__doc, style='dep', jupyter=True,
                         options={'distance': 90, 'fine_grained': True,
                                  'add_lemma': True, 'collapse_phrases': False})
-
-
 
     def convert_word(self, word, from_pos, to_pos):
         """ Transform words given from/to POS tags """
@@ -348,10 +384,48 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             self.__prepared_query = re.sub(regex, str, self.__prepared_query)
         return self.__prepared_query
 
-
     @abc.abstractmethod
     def send_question_receive_answer(self):
         return
+
+    def prepare_aggregate_SQL(self):
+        #initialize clauses
+        if self.__aggregate_fields:
+            self.__select_clause = 'SELECT '
+        if self.__group_by_fields:
+            self.__group_by_clause = 'GROUP BY '
+            self.__order_by_clause = 'ORDER BY '
+        if self.__having_fields:
+            self.__having_clause = 'HAVING '
+
+        # the group by fields impact the clauses SELECT, GROUP BY and ORDER BY
+        for group_by_field in self.__group_by_fields:
+            self.__select_clause += group_by_field.replace(" ", "_") + ', '
+            self.__group_by_clause += group_by_field.replace(" ", "_") + ', '
+            self.__order_by_clause += group_by_field.replace(" ", "_") + ', '
+
+        # building the syntax of the aggregate functions and aggregate fields e.g. min(production)
+        for i in range(len(self.__aggregate_functions)):
+            self.__select_clause += self.__aggregate_functions[i] + '(' + self.__aggregate_fields[i].replace(" ", "_") + ') as ' + \
+                                    self.__aggregate_functions[i] + '_' + self.__aggregate_fields[i].replace(" ", "_") + ', '
+
+        # building the HAVING clause having field, followed by operator, followed by value
+        for i in range(len(self.__having_fields)):
+            self.having_clause += self.__having_fields[i].replace(" ", "_") + ' ' + self.__having_conditions[i] + ' ' \
+                                  + self.__having_values[i] + ', '
+
+        # cut the ", " at the end of each string
+        self.__select_clause = self.__select_clause[0:-2]
+        self.__group_by_clause = self.__group_by_clause[0:-2]
+        self.__having_clause = self.__having_clause[0:-2]
+        self.__order_by_clause = self.__order_by_clause[0:-2]
+
+        #GLAMORISE has nothing to do, not an aggregation query
+        if self.__select_clause == '':
+            self.__select_clause = 'SELECT * '
+
+        self.__sql = (self.__select_clause + ' FROM NLIDB_result_set ' + self.__group_by_clause + ' ' + \
+                     self.__having_clause + ' ' + self.__order_by_clause).replace("  ", " ").strip()
 
 
 
@@ -359,6 +433,7 @@ class GLAMORISEMockNLIDB(GLAMORISE):
 
     def send_question_receive_answer(self):
         return
+
 
 class SimpleSQLLite:
 
@@ -378,12 +453,11 @@ class SimpleSQLLite:
                 conn.close()
                 print("sqlite connection is closed")
 
+
 class MockNLIDB:
 
     def __init__(self):
         self.__SimpleSQLLite('./datasets/NLIDB.db')
-
-
 
     def create_table(self):
         sql = '''CREATE TABLE NLIDB_RESULT_SET (
@@ -413,8 +487,5 @@ class MockNLIDB:
     def process_query(self):
         pass
 
-    def receive_question_send_asnwer(self):
+    def receive_question_send_answer(self):
         pass
-
-
-
