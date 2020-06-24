@@ -6,7 +6,7 @@ def dump(obj):
     if attr in ['aggregate_functions', 'aggregate_fields', 'group_by_fields',
                 'candidate_aggregate_functions', 'candidate_aggregate_fields', 'candidate_group_by_fields',
                 'having_fields', 'having_conditions', 'having_value',
-                'group_by', 'having', 'cut_text', 'substitute_text', 'prepared_query'
+                'group_by', 'having', 'cut_text', 'substitute_text', 'prepared_query', 'sql'
                 ] and getattr(obj, attr):
         print("%s = %r" % (attr, getattr(obj, attr)))
 
@@ -22,13 +22,16 @@ def is_jupyter_notebook():
     except NameError:
         return False      # Probably standard Python interpreter
 
+def printmd(string):
+    display(Markdown(string))
+
 with open('./datasets/test.csv') as csv_file:
 #with open('/content/sample_data/test.csv') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',', quotechar="'")
-    line_count = 0
-    for row in csv_reader:
-        nl_query = row[0]
-        #nl_query = 'How many EPs did Muse release?'
+    #csv_reader = csv.reader(csv_file, delimiter=',', quotechar="'")
+    #line_count = 0
+    #for row in csv_reader:
+        #nl_query = row[0]
+        nl_query = 'Which field produces the most oil per month?'
         jupyter = is_jupyter_notebook()
         if jupyter:
             print("\n\n")
@@ -50,4 +53,5 @@ with open('./datasets/test.csv') as csv_file:
         else:
             print("GLAMORISE Preprocessor")
         glamorise.prepare_query_to_NLIDB()
+        glamorise.prepare_aggregate_SQL()
         dump(glamorise)
