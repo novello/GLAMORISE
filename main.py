@@ -5,7 +5,7 @@ def dump(obj):
   for attr in dir(obj):
     if attr in ['aggregate_functions', 'aggregate_fields', 'group_by_fields',
                 'candidate_aggregate_functions', 'candidate_aggregate_fields', 'candidate_group_by_fields',
-                'having_fields', 'having_conditions', 'having_value',
+                'having_fields', 'having_conditions', 'having_values', 'having_units',
                 'group_by', 'having', 'cut_text', 'substitute_text', 'prepared_query', 'sql'
                 ] and getattr(obj, attr):
         print("%s = %r" % (attr, getattr(obj, attr)))
@@ -26,12 +26,12 @@ def printmd(string):
     display(Markdown(string))
 
 with open('./datasets/test.csv') as csv_file:
-#with open('/content/sample_data/test.csv') as csv_file:
-    #csv_reader = csv.reader(csv_file, delimiter=',', quotechar="'")
-    #line_count = 0
-    #for row in csv_reader:
-        #nl_query = row[0]
-        nl_query = 'Which field produces the most oil per month?'
+    csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
+    next(csv_reader)
+    line_count = 0
+    for row in csv_reader:
+        nl_query = row[0]
+        #nl_query = 'What was the mean gas production per field with production greater than 1,000 cubic meters?'
         jupyter = is_jupyter_notebook()
         if jupyter:
             print("\n\n")
@@ -42,12 +42,9 @@ with open('./datasets/test.csv') as csv_file:
             glamorise = GLAMORISEMockNLIDB(nl_query)
         else:
             glamorise = GLAMORISE.GLAMORISEMockNLIDB(nl_query)
-        glamorise.pattern_scan()
         if jupyter:
             printmd("**spaCy Parse Tree**")
-        else:
-            print("spaCy Parse Tree")
-        glamorise.customized_displacy()
+            glamorise.customized_displacy()
         if jupyter:
             printmd("**GLAMORISE Preprocessor**")
         else:
@@ -55,3 +52,4 @@ with open('./datasets/test.csv') as csv_file:
         glamorise.prepare_query_to_NLIDB()
         glamorise.prepare_aggregate_SQL()
         dump(glamorise)
+
