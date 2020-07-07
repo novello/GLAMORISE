@@ -1,4 +1,4 @@
-import GLAMORISE
+from GLAMORISE import GLAMORISEMockNLIDB
 import csv
 
 def dump(obj):
@@ -6,7 +6,8 @@ def dump(obj):
     if attr in ['aggregate_functions', 'aggregate_fields', 'group_by_fields',
                 'candidate_aggregate_functions', 'candidate_aggregate_fields', 'candidate_group_by_fields',
                 'having_fields', 'having_conditions', 'having_values', 'having_units',
-                'group_by', 'having', 'cut_text', 'substitute_text', 'prepared_query', 'sql'
+                'group_by', 'having', 'cut_text', 'substitute_text', 'prepared_query',
+                'post_processing_group_by_fields', 'sql'
                 ] and getattr(obj, attr):
         print("%s = %r" % (attr, getattr(obj, attr)))
 
@@ -25,31 +26,35 @@ def is_jupyter_notebook():
 def printmd(string):
     display(Markdown(string))
 
-with open('./datasets/test.csv') as csv_file:
+with open('./datasets/pfp.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
     next(csv_reader)
     line_count = 0
     for row in csv_reader:
         nl_query = row[0]
-        #nl_query = 'What was the mean gas production per field with production greater than 1,000 cubic meters?'
+        #nl_query = 'What was the average monthly production of oil in state of Rio de Janeiro?'
         jupyter = is_jupyter_notebook()
         if jupyter:
             print("\n\n")
             printmd("**Natural Language Query**: " + nl_query)
         else:
             print("\n\nNatural Language Query: ",nl_query)
-        if jupyter:
-            glamorise = GLAMORISEMockNLIDB(nl_query)
-        else:
-            glamorise = GLAMORISE.GLAMORISEMockNLIDB(nl_query)
+
+        glamorise = GLAMORISEMockNLIDB(nl_query)
+
         if jupyter:
             printmd("**spaCy Parse Tree**")
             glamorise.customized_displacy()
         if jupyter:
-            printmd("**GLAMORISE Preprocessor**")
+            printmd("**GLAMORISE Internal Variables**")
         else:
-            print("GLAMORISE Preprocessor")
-        glamorise.prepare_query_to_NLIDB()
-        glamorise.prepare_aggregate_SQL()
+            print("GLAMORISE Internal Variables")
         dump(glamorise)
+        if jupyter:
+            printmd("**GLAMORISE Result**")
+            display(glamorise.pd)
+        else:
+            print("GLAMORISE Result")
+            print(glamorise.pd)
+
 
