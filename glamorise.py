@@ -3,10 +3,9 @@ from spacy import displacy
 from spacy.matcher import Matcher
 import abc
 import sqlite3
-import nltk
-# nltk.download('wordnet')
-from nltk.corpus import wordnet as wn
 import re
+import json
+import pandas as pd
 
 
 class GLAMORISE(metaclass=abc.ABCMeta):
@@ -43,6 +42,8 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         self.__order_by_clause = ''
         self.__sql= ''
 
+        self.__post_processing_group_by_fields = []
+
 
         self.__matcher = Matcher(self.__nlp.vocab)
 
@@ -52,6 +53,10 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         self.__WN_ADJECTIVE = 'a'
         self.__WN_ADJECTIVE_SATELLITE = 's'
         self.__WN_ADVERB = 'r'
+
+        self.__SimpleSQLLite = SimpleSQLLite('./datasets/GLAMORISE.db')
+
+        self.__pd = None
 
     @property
     def query(self):
@@ -142,20 +147,20 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def sql(self):
         return self.__sql
 
+    @property
+    def pd(self):
+        return self.__pd.copy()
+
+    @property
+    def post_processing_group_by_fields(self):
+        return self.__post_processing_group_by_fields
+
     def __customize_stop_words(self):
         token_exception_list = ['by', 'per', 'how', 'many', 'much', 'and', 'more',
                                 'greater', 'than', 'hundred', 'of']
         for token in token_exception_list:
             if self.__nlp.vocab[token].is_stop:
                 self.__nlp.vocab[token].is_stop = False
-
-    def matcher(self, patterns):
-        for pattern in patterns:
-            self.__matcher.add(str(patterns), None, pattern)
-            matches = self.__matcher(self.__doc)
-            if matches != []:
-                return True
-        return False
 
     def iterator_has_next(self, iterator):
         try:
@@ -237,8 +242,10 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             #    self.__having_conditions.append(having)
             if not group_by:# and self.__having_conditions == []:
                 self.build_field(token, type='aggregate')
+                #self.new_build_field(token, self._aggregate_fields)
             elif group_by:
                 self.build_field(token, type='group_by')
+                #self.new_build_field(token, self._group_by_fields)
             #elif self.__having_conditions != []:
             #    self.build_field(token, type='having')
             if children_reserved_words is None:
@@ -249,9 +256,11 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                     if child.lemma_ in children_reserved_words:
                         self.__cut_text.append(child.text + ' ' + token.text)
 
+
     def adjective_to_noun_pattern_match(self, token, reserved_words, aggregate_function):
+        adj_noun = {'daily': 'day', 'monthly': 'month', 'yearly': 'year'}
         if token.lemma_ in reserved_words:
-            noun = self.convert_word(token.lemma_, self.__WN_ADJECTIVE, self.__WN_NOUN)
+            noun = adj_noun[token.lemma_]
             self.__substitute_text[token.lemma_] = noun
             # the aggregation processor is going to verify after if it is necessary, just if it is not the
             # "default_time_scale" a keyword in the metadata table NLIDB_FIELD_UNITS returned by the NLIDB with the
@@ -260,7 +269,6 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             # if the above field is used in the group by, the aggregation function is sum
             self.__candidate_aggregate_functions.append(aggregate_function)
             self.new_build_field(token.head, self._candidate_aggregate_fields)
-
 
     def superlative_pattern_match(self, token):
         min = ['least', 'smallest', 'tiniest', 'shortest', 'cheapest', 'nearest', 'lowest', 'worst', 'newest', 'min',
@@ -375,44 +383,8 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                         options={'distance': 90, 'fine_grained': True,
                                  'add_lemma': True, 'collapse_phrases': False})
 
-    def convert_word(self, word, from_pos, to_pos):
-        """ Transform words given from/to POS tags """
-
-        synsets = wn.synsets(word, pos=from_pos)
-        # Word not found
-        if not synsets:
-            return []
-
-        # Get all lemmas of the word (consider 'a'and 's' equivalent)
-        lemmas = [l for s in synsets
-                  for l in s.lemmas()
-                  if s.name().split('.')[1] == from_pos
-                  or from_pos in (self.__WN_ADJECTIVE, self.__WN_ADJECTIVE_SATELLITE)
-                  and s.name().split('.')[1] in (self.__WN_ADJECTIVE, self.__WN_ADJECTIVE_SATELLITE)]
-        # Get related forms
-        derivationally_related_forms = [(l, l.derivationally_related_forms()) for l in lemmas]
-        # return derivationally_related_forms
-        # filter only the desired pos (consider 'a' and 's' equivalent)
-        related_noun_lemmas = [l for drf in derivationally_related_forms
-                               for l in drf[1]
-                               if l.synset().name().split('.')[1] == to_pos
-                               or to_pos in (self.__WN_ADJECTIVE, self.__WN_ADJECTIVE_SATELLITE)
-                               and l.synset().name().split('.')[1] in (self.__WN_ADJECTIVE, WN_ADJECTIVE_SATELLITE)]
-
-        # Extract the words from the lemmas
-        words = [l.name() for l in related_noun_lemmas]
-        len_words = len(words)
-
-        # Build the result in the form of a list containing tuples (word, probability)
-        result = [(w, float(words.count(w)) / len_words) for w in set(words)]
-        result.sort(key=lambda w: -w[1])
-
-        # return the best possibility [0][0]
-        return result[0][0] if result else ''
 
     def prepare_query_to_NLIDB(self):
-        self.token_scan()
-        self.entity_scan()
         self.__prepared_query = self.__query
         for cut_text in self.__cut_text:
             regex = r"(^|(.*?[\s.,;!?]+))(" + cut_text + r"([\s.,;!?]|$))(([\s., ;!?]*.*)|$)"
@@ -423,14 +395,55 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             self.__prepared_query = re.sub(regex, str, self.__prepared_query)
         return self.__prepared_query
 
+    def preprocessor(self):
+        self.token_scan()
+        self.entity_scan()
+        self.prepare_query_to_NLIDB()
+
+    def create_table_and_insert_data(self, columns, result_set):
+        sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET; CREATE TABLE NLIDB_RESULT_SET (' + ', '.join([column[
+                                                                                                        0] + ' ' +
+                                                                                                    column[1] for column
+                                                                                                    in
+                                                                                                    columns]) + \
+              ');'
+        self.__SimpleSQLLite.execute_sql(sql)
+        sql = 'INSERT INTO NLIDB_RESULT_SET VALUES(' + ''.join(['?, ' for field in result_set[0]])[:-2] + ')'
+        self.__SimpleSQLLite.executemany_sql(sql, result_set)
+
+    def processor(self, columns, result_set):
+        self.translate_all_fields()
+        self.__post_processing_group_by_fields = [column[0].lower() for column in columns \
+                                                  if column[0].lower() not in self._group_by_fields +
+                                                  self._aggregate_fields + self._candidate_aggregate_fields +
+                                                  self._candidate_group_by_fields]
+        self.prepare_aggregate_SQL()
+        self.create_table_and_insert_data(columns, result_set)
+        self.__pd = self.__SimpleSQLLite.pandas_dataframe(self.__sql)
+
+
+
+    def execute(self):
+        self.preprocessor()
+        columns, result_set = self.send_question_receive_answer()
+        columns = json.loads(columns)
+        result_set = json.loads(result_set)
+        self.processor(columns, result_set)
+
+
     @abc.abstractmethod
     def send_question_receive_answer(self):
-        return
+       pass
+
+    @abc.abstractmethod
+    def translate_fields(self):
+        pass
 
     def prepare_aggregate_SQL(self):
         #initialize clauses
         if self._aggregate_fields:
             self.__select_clause = 'SELECT '
+        # is exists a group by field
         if self._group_by_fields:
             self.__group_by_clause = 'GROUP BY '
             self.__order_by_clause = 'ORDER BY '
@@ -444,6 +457,20 @@ class GLAMORISE(metaclass=abc.ABCMeta):
             nested_group_by_field += group_by_field + ', '
             self.__group_by_clause += group_by_field + ', '
             self.__order_by_clause += group_by_field + ', '
+
+        #if it is an aggregation query:
+        if self._aggregate_fields:
+            # the same for the post processing group by fields (field identified just by the NLIDB)
+            for post_processing_group_by_field in self.__post_processing_group_by_fields:
+                # just if the field was not recognized by GLAMORISE
+                    if not self.__group_by_clause:
+                        self.__group_by_clause = 'GROUP BY '
+                    if not self.__order_by_clause:
+                        self.__order_by_clause = 'ORDER BY '
+                    self.__select_clause += post_processing_group_by_field + ', '
+                    nested_group_by_field += post_processing_group_by_field + ', '
+                    self.__group_by_clause += post_processing_group_by_field + ', '
+                    self.__order_by_clause += post_processing_group_by_field + ', '
 
         # building the syntax of the aggregate functions, aggregate fields e.g. min(production),
         # and candidate aggregate field and function if they exist
@@ -462,16 +489,9 @@ class GLAMORISE(metaclass=abc.ABCMeta):
                 self.__from_clause = ' FROM (SELECT ' + nested_group_by_field + self.__candidate_aggregate_functions[j] + '(' + \
                                      self._aggregate_fields[i] + ') as ' + \
                                      self._aggregate_fields[i] + ' FROM NLIDB_result_set'
-                self.__from_clause += ' GROUP BY ' + nested_group_by_field + self._candidate_group_by_fields[j] + ') '
-                # the system at the moment is just prepared for monthly and year basis
-                # it should be improved to retrieve metadata from the NLIDB
+                self.__from_clause += ' GROUP BY ' + nested_group_by_field + \
+                                      ', '.join(self._candidate_group_by_fields) + ') '
 
-                '''
-                if self._candidate_group_by_fields[j] == 'month':
-                    self.__from_clause += ' GROUP BY '+ nested_group_by_field + 'year, month) '
-                else:
-                    self.__from_clause += ' GROUP BY ' + nested_group_by_field + 'year) '
-                '''
             # if there is no candidate fields and function, it is a common FROM without subquery
             else:
                 self.__from_clause = ' FROM NLIDB_result_set '
@@ -497,36 +517,53 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         self.__sql = (self.__select_clause + self.__from_clause + self.__group_by_clause + ' ' + \
                      self.__having_clause + ' ' + self.__order_by_clause).replace("  ", " ").strip()
 
-
+    def __del__(self):
+        sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
+        self.__SimpleSQLLite.execute_sql(sql)
 
 class GLAMORISEMockNLIDB(GLAMORISE):
 
     def __init__(self, query, lang="en_core_web_sm"):
         super(GLAMORISEMockNLIDB, self).__init__(query, lang)
         self.__nlidb = MockNLIDB()
+        self.execute()
 
     def send_question_receive_answer(self):
-        return
+        columns, result_set = self.__nlidb.execute_query(self.prepared_query)
+        return columns, result_set
 
     def translate_fields(self, fields):
         for i in range(len(fields)):
             fields[i] = self.__nlidb.field_synonym(fields[i].replace(' ', '_'))
+        if fields:
+            fields_str = ','.join(fields)
+            fields = fields_str.split(',')
+            fields = [field.strip() for field in fields]
+        return fields
 
 
-    def prepare_aggregate_SQL(self):
-        self.translate_fields(self._aggregate_fields)
-        self.translate_fields(self._group_by_fields)
-        self.translate_fields(self._candidate_aggregate_fields)
-        self.translate_fields(self._candidate_group_by_fields)
-        self.translate_fields(self._having_fields)
-
-        super(GLAMORISEMockNLIDB, self).prepare_aggregate_SQL()
-
+    def translate_all_fields(self):
+        self._aggregate_fields = self.translate_fields(self._aggregate_fields)
+        self._group_by_fields = self.translate_fields(self._group_by_fields)
+        self._candidate_aggregate_fields = self.translate_fields(self._candidate_aggregate_fields)
+        self._candidate_group_by_fields = self.translate_fields(self._candidate_group_by_fields)
+        self._having_fields = self.translate_fields(self._having_fields)
 
 class SimpleSQLLite:
 
     def __init__(self, database):
         self.__database = database
+
+    def executemany_sql(self, sql, params):
+        try:
+            conn = sqlite3.connect(self.__database)
+            conn.executemany(sql, params)
+            conn.commit()
+        except sqlite3.Error as error:
+            print("Error while executing execute many", error)
+        finally:
+            if (conn):
+                conn.close()
 
     def execute_sql(self, sql, msg=''):
         try:
@@ -534,14 +571,25 @@ class SimpleSQLLite:
             if ';' in sql:
                 conn.executescript(sql)
             else:
-                rows = conn.execute(sql).fetchall()
-                return rows
+                cursor = conn.execute(sql)
+                columns = cursor.description
+                rows = cursor.fetchall()
+                return rows, columns
             print(msg)
         except sqlite3.Error as error:
             print("Error while executing sql", error)
         finally:
             if (conn):
                 conn.close()
+
+    def pandas_dataframe(self, sql):
+        try:
+            conn = sqlite3.connect(self.__database)
+            return pd.read_sql_query(sql, conn)
+        finally:
+            if (conn):
+                conn.close()
+
 
 class MockNLIDB:
 
@@ -582,8 +630,28 @@ class MockNLIDB:
     def field_synonym(self, synonym):
         try:
             sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym + "'"
-            field = list(self.__SimpleSQLLite.execute_sql(sql, 'Field translated'))
-            return field[0][0]
+            field, cursor_description = (self.__SimpleSQLLite.execute_sql(sql, 'Field translated'))
+            return list(field)[0][0]
         except:
             return synonym
+
+    def execute_query(self, nlq):
+
+        sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
+        sql = self.__SimpleSQLLite.execute_sql(sql, 'SQL generated')[0]
+        sql_result = list(sql)[0][0]
+        result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
+        result_set = json.dumps(result_set)
+        #column_names = json.dumps(list(map(lambda x: x[0], cursor_description)))
+        column_names = (list(map(lambda x: x[0], cursor_description)))
+
+        sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
+        column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]
+        #column_types = json.dumps(column_types)
+
+        columns = json.dumps([(column_name, column_type[1])
+                              for column_name in column_names
+                                for column_type in column_types
+                                    if column_type[0] == column_name])
+        return columns, result_set
 

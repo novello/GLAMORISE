@@ -1,6 +1,6 @@
 from unittest import TestCase
 import csv
-import GLAMORISE
+from GLAMORISE import GLAMORISEMockNLIDB
 
 
 
@@ -11,9 +11,14 @@ class TestGLAMORISE(TestCase):
             next(csv_reader)
             for row in csv_reader:
                 nl_query = row[0]
-                glamorise = GLAMORISE.GLAMORISEMockNLIDB(nl_query)
-                glamorise.prepare_query_to_NLIDB()
-                assert glamorise.prepared_query.lower() == row[1].lower()
-                glamorise.prepare_aggregate_SQL()
-                print(glamorise.query)
-                assert glamorise.sql.lower() == row[3].lower()
+                glamorise = GLAMORISEMockNLIDB(nl_query)
+                try:
+                    assert glamorise.prepared_query.lower() == row[1].lower()
+                finally:
+                    print('\nPrepared NLQ to NLIDB\nExpected: ', row[1].lower())
+                    print('Actual:   ', glamorise.prepared_query.lower())
+                try:
+                    assert glamorise.sql.lower() == row[3].lower()
+                finally:
+                    print('\nGLAMORISE SQL\nExpected: ', row[3].lower())
+                    print('Actual:   ', glamorise.sql.lower())
