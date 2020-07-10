@@ -1,3 +1,7 @@
+#
+# Developed by Alexandre Novello (PUC-Rio)
+#
+
 import os
 import pandas as pd
 import sqlite3
@@ -26,8 +30,8 @@ columnNames = 'year,month_year,state,basin,field,well,environment,installation,o
 
 
 cur = con.cursor()
-cur.execute("DROP TABLE IF EXISTS NLIDB_result_set")
-cur.execute("CREATE TABLE NLIDB_result_set (" + columnNames + ")")
+#cur.execute("DROP TABLE IF EXISTS NLIDB_result_set")
+#cur.execute("CREATE TABLE NLIDB_result_set (" + columnNames + ")")
 
 
 for ind in range(0, len(file_names)):
@@ -40,3 +44,4 @@ for ind in range(0, len(file_names)):
         insert_register = tuple(full_dataset[ind].iloc[i])
         cur.execute(query, insert_register)
     con.commit()
+    print(file_names[ind])
