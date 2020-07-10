@@ -1,3 +1,7 @@
+#
+# Developed by Alexandre Novello (PUC-Rio)
+#
+
 import spacy
 from spacy import displacy
 import abc
@@ -550,24 +554,27 @@ class MockNLIDB:
             return synonym
 
     def execute_query(self, nlq):
-        # mock NLQ processing, return the SQL for the NLQ query
-        sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
-        sql = self.__SimpleSQLLite.execute_sql(sql, 'SQL generated')[0]
-        sql_result = list(sql)[0][0]
-        result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
-        # prepare the result set as JSON
-        result_set = json.dumps(result_set)
-        column_names = (list(map(lambda x: x[0], cursor_description)))
+        try:
+            # mock NLQ processing, return the SQL for the NLQ query
+            sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
+            sql = self.__SimpleSQLLite.execute_sql(sql, 'SQL generated')[0]
+            sql_result = list(sql)[0][0]
+            result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
+            # prepare the result set as JSON
+            result_set = json.dumps(result_set)
+            column_names = (list(map(lambda x: x[0], cursor_description)))
 
-        # internal data dictionary table of SQLite
-        sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
-        column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]
-        # prepare the column names and types as JSON
-        columns = json.dumps([(column_name, column_type[1])
-                              for column_name in column_names
-                                for column_type in column_types
-                                    if column_type[0] == column_name])
-        return columns, result_set
+            # internal data dictionary table of SQLite
+            sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
+            column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]
+            # prepare the column names and types as JSON
+            columns = json.dumps([(column_name, column_type[1])
+                                  for column_name in column_names
+                                    for column_type in column_types
+                                        if column_type[0] == column_name])
+            return columns, result_set
+        except:
+            print("Query not found: ", nlq)
 
 # Simple SQLite class
 class SimpleSQLLite:

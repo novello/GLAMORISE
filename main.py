@@ -1,3 +1,7 @@
+#
+# Developed by Alexandre Novello (PUC-Rio)
+#
+
 from GLAMORISE import GLAMORISEMockNLIDB
 import csv
 
@@ -27,7 +31,7 @@ def is_jupyter_notebook():
 def printmd(string):
     display(Markdown(string))
 
-with open('./datasets/pfp.csv') as csv_file:
+with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
     # read the file with the NLQ questions
     csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
     # jump title line

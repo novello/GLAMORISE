@@ -1,13 +1,16 @@
+#
+# Developed by Alexandre Novello (PUC-Rio)
+#
+
 from unittest import TestCase
 import csv
 from GLAMORISE import GLAMORISEMockNLIDB
 
 
-
 class TestGLAMORISE(TestCase):
     def test_GLAMORISE_methods(self):
         # set of questions to test
-        with open('./datasets/pfp.csv') as csv_file:
+        with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
             #jump the title line
             next(csv_reader)
@@ -31,3 +34,5 @@ class TestGLAMORISE(TestCase):
                     # print anyway, just for convenience (pytest cuts the string)
                     print('\nGLAMORISE SQL\nExpected: ', row[3].lower())
                     print('Actual:   ', glamorise.sql.lower())
+            csv_file.seek(1)
+            print('{} NLQ questions tested'.format(sum(1 for line in csv_reader)))
