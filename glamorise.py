@@ -110,7 +110,7 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         return self.__cut_text
 
     @property
-    def substitute_text(self):
+    def replaced_text(self):
         return self.__replaced_text
 
     @property
