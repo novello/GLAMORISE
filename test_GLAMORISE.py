@@ -4,7 +4,7 @@
 
 from unittest import TestCase
 import csv
-from GLAMORISE import GLAMORISEMockNLIDB
+from glamorise import GLAMORISEMockNLIDB
 
 
 class TestGLAMORISE(TestCase):

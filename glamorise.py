@@ -1,6 +1,8 @@
 #
 # Developed by Alexandre Novello (PUC-Rio)
 #
+#!pip install spacy==2.2.4
+#!pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
 
 import spacy
 from spacy import displacy
@@ -9,6 +11,45 @@ import sqlite3
 import re
 import json
 import pandas as pd
+from spacy.matcher import Matcher
+from spacy.tokens import Token
+
+# We're using a class because the component needs to be initialised with
+# the shared vocab via the nlp object
+class CompoundMerger(object):    
+
+    def __init__(self, nlp):      
+        pattern_compound = [{'POS': 'NOUN', 'DEP': 'compound'},
+            {'POS': 'NOUN'}]
+
+        pattern_of = [{'POS': 'NOUN'},
+            {'LOWER': 'of', 'POS': 'ADP'},
+            {'POS': 'NOUN'}]     
+        # Register a new token extension to flag bad HTML
+        Token.set_extension("compound_noun", default=False, force=True)
+        self.matcher = Matcher(nlp.vocab)
+        self.matcher.add(
+            "CompoundMerger",
+            None,
+            [{'POS': 'NOUN', 'DEP': 'compound'},
+            {'POS': 'NOUN'}],[{'POS': 'NOUN'},
+            {'LOWER': 'of', 'POS': 'ADP'},
+            {'POS': 'NOUN'}]     
+        )
+
+
+    def __call__(self, doc):
+        # This method is invoked when the component is called on a Doc
+        matches = self.matcher(doc)
+        spans = []  # Collect the matched spans here
+        for match_id, start, end in matches:
+            spans.append(doc[start:end])
+        with doc.retokenize() as retokenizer:
+            for span in spans:
+                retokenizer.merge(span)
+                for token in span:
+                    token._.compound_noun = True  # Mark token as bad HTML                
+        return doc
 
 #main class
 class GLAMORISE(metaclass=abc.ABCMeta):
@@ -16,7 +57,10 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def __init__(self, query, lang="en_core_web_sm"):
         # internal properties
         self.__nlp = spacy.load(lang)
-        self.__query = query
+        self.__query = query       
+
+        self.__compound_merger = CompoundMerger(self.__nlp)
+        self.__nlp.add_pipe(self.__compound_merger, last=True)  # Add component to the pipeline      
         self.__doc = self.__nlp(query)
 
         self.__aggregation_functions = []
@@ -153,23 +197,12 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def __build_field(self, token, field_property):
         accum_pre = accum_pos = ''
         field = token.lemma_
+        # check how to remove this for
         for child in token.children:
-            # preparing reserved word "and" acting as reserved word "per" - exception
+            # preparing reserved word "and" acting as reserved word "per" - exception            
             if child.dep_ == 'cc' and child.lemma_ == 'and':
                 child.lemma_ = 'per'
-            # get compound terms that are not proper noun
-            if child.dep_ == 'compound' and child.pos_ == 'NOUN' \
-                    and child.head == token:  # direct child
-                accum_pre = accum_pre + child.lemma_ + ' '
-            # get compound names with reserved word "of"
-            if child.dep_ == 'prep' and child.pos_ == 'ADP' \
-                    and child.text == 'of' and child.head == token:  # direct child
-                accum_pos = accum_pos + child.lemma_ + ' '
-                for grandchild in child.children:
-                    if grandchild.dep_ == 'pobj' and grandchild.pos_ == 'NOUN':
-                        accum_pos = accum_pos + grandchild.lemma_ + ' '
-        # generate field name
-        field = str(accum_pre + field if accum_pre != '' else field + ' ' + accum_pos).strip()
+            
         # append field in the appropriate list
         field_property.append(field)
 
@@ -377,9 +410,9 @@ class GLAMORISE(metaclass=abc.ABCMeta):
     def _execute(self):
         self.__preprocessor()
         columns, result_set = self._send_question_receive_answer()
-        # JSON columns names and types received by the NLIDB converted to list
+        # JSON columns names and types received by the NLIDB converted to list        
         columns = json.loads(columns)
-        # JSON result set  received by the NLIDB converted to list
+        # JSON result set  received by the NLIDB converted to list        
         result_set = json.loads(result_set)
         self._processor(columns, result_set)
 
