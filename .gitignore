@@ -96,6 +96,9 @@ venv.bak/
 # Pycharm
 .idea/
 
+# VS Code
+.vscode/
+
 # Data files
 *.dat
 
