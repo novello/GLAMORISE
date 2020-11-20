@@ -2,7 +2,7 @@
 # Developed by Alexandre Novello (PUC-Rio)
 #
 
-from GLAMORISE import GLAMORISEMockNLIDB
+from glamorise import GLAMORISEMockNLIDB
 import csv
 
 def dump(obj):
