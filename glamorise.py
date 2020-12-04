@@ -7,12 +7,13 @@
 import spacy
 from spacy import displacy
 import abc
-import sqlite3
 import re
 import json
 import pandas as pd
 from spacy.matcher import Matcher
 from spacy.tokens import Token
+from simple_sqllite import SimpleSQLLite
+
 
 # We're using a class because the component needs to be initialised with
 # the shared vocab via the nlp object
@@ -507,150 +508,3 @@ class GLAMORISE(metaclass=abc.ABCMeta):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
         self.__SimpleSQLLite.execute_sql(sql)
-
-
-# this child class is aware of the NLIDB
-# the implementation has to be changed depending on the NLIDB
-class GLAMORISEMockNLIDB(GLAMORISE):
-
-    def __init__(self, query, lang="en_core_web_sm"):
-        super(GLAMORISEMockNLIDB, self).__init__(query, lang)
-        # NLIDB instance
-        self.__nlidb = MockNLIDB()
-        # call execute that is responsible for the whole process
-        self._execute()
-
-    def _send_question_receive_answer(self):
-        # send the NLQ question and receive the JSON with the columns and result set
-        columns, result_set = self.__nlidb.execute_query(self.prepared_query)
-        return columns, result_set
-
-    def _translate_fields(self, fields):
-        # translate the field to the appropriate column name
-        for i in range(len(fields)):
-            # ask the NLIDB for the appropriate column name
-            fields[i] = self.__nlidb.field_synonym(fields[i].replace(' ', '_'))
-        # the trick to convert fields that were converted to more than one column
-        # E.g.: month -> year, month
-        if fields:
-            fields_str = ','.join(fields)
-            fields = fields_str.split(',')
-            fields = [field.strip() for field in fields]
-        return fields
-
-    def _translate_all_fields(self):
-        # translate all fields that GLAMORISE is aware of
-        self._aggregation_fields = self._translate_fields(self._aggregation_fields)
-        self._group_by_fields = self._translate_fields(self._group_by_fields)
-        self._time_scale_aggregation_fields = self._translate_fields(self._time_scale_aggregation_fields)
-        self._time_scale_group_by_fields = self._translate_fields(self._time_scale_group_by_fields)
-        self._having_fields = self._translate_fields(self._having_fields)
-
-# Simple class to act as a NLIDB
-class MockNLIDB:
-
-    def __init__(self):
-        # open the database
-        self.__SimpleSQLLite = SimpleSQLLite('./datasets/NLIDB.db')
-
-    def create_table(self):
-        # used to create table, just in a task to import is needed
-        sql = '''CREATE TABLE NLIDB_RESULT_SET (
-                                FIELD TEXT,            
-                                BASIN TEXT,
-                                STATE TEXT,            
-                                OPERATOR TEXT,
-                                CONTRACT_NUMBER TEXT,
-                                OIL_PRODUCTION REAL,
-                                GAS_PRODUCTION REAL,
-                                MONTH INTEGER,
-                                YEAR INTEGER);'''
-        self.__SimpleSQLLite.execute_sql(sql, 'Table created')
-
-    def drop_table(self):
-        sql = '''DROP TABLE NLIDB_RESULT_SET;'''
-        self.__SimpleSQLLite.execute_sql(sql, 'Table dropped')
-
-    def insert_data(self):
-        # used to insert data, just in a task to import is needed
-        with open('./datasets/anp_insert.txt', 'r', encoding='utf8') as file:
-            sql = file.read()
-            self.__SimpleSQLLite.execute_sql(sql, '')
-
-    def field_synonym(self, synonym):
-        # responsible for the translation of the field to the appropriated column
-        try:
-            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym + "'"
-            field, cursor_description = (self.__SimpleSQLLite.execute_sql(sql, 'Field translated'))
-            return list(field)[0][0]
-        except:
-            return synonym
-
-    def execute_query(self, nlq):
-        try:
-            # mock NLQ processing, return the SQL for the NLQ query
-            sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
-            sql = self.__SimpleSQLLite.execute_sql(sql, 'SQL generated')[0]
-            sql_result = list(sql)[0][0]
-            result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
-            # prepare the result set as JSON
-            result_set = json.dumps(result_set)
-            column_names = (list(map(lambda x: x[0], cursor_description)))
-
-            # internal data dictionary table of SQLite
-            sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
-            column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]
-            # prepare the column names and types as JSON
-            columns = json.dumps([(column_name, column_type[1])
-                                  for column_name in column_names
-                                    for column_type in column_types
-                                        if column_type[0] == column_name])
-            return columns, result_set
-        except:
-            print("Query not found: ", nlq)
-
-# Simple SQLite class
-class SimpleSQLLite:
-
-    def __init__(self, database):
-        # the database property
-        self.__database = database
-
-    def executemany_sql(self, sql, params):
-        # executemany interface with try/except/finally
-        try:
-            conn = sqlite3.connect(self.__database)
-            conn.executemany(sql, params)
-            conn.commit()
-        except sqlite3.Error as error:
-            print("Error while executing execute many", error)
-        finally:
-            if (conn):
-                conn.close()
-
-    def execute_sql(self, sql, msg=''):
-        # execute / executescript interface with try/except/finally
-        try:
-            conn = sqlite3.connect(self.__database)
-            if ';' in sql:
-                conn.executescript(sql)
-            else:
-                cursor = conn.execute(sql)
-                columns = cursor.description
-                rows = cursor.fetchall()
-                return rows, columns
-            print(msg)
-        except sqlite3.Error as error:
-            print("Error while executing sql", error)
-        finally:
-            if (conn):
-                conn.close()
-
-    def pandas_dataframe(self, sql):
-        # prepare the panda dataframe retrieving data from the database
-        try:
-            conn = sqlite3.connect(self.__database)
-            return pd.read_sql_query(sql, conn)
-        finally:
-            if (conn):
-                conn.close()
