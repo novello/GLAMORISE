@@ -2,7 +2,7 @@
 # Developed by Alexandre Novello (PUC-Rio)
 #
 
-from glamorise import GLAMORISEMockNLIDB
+from glamorise_mock_nlidb import GLAMORISEMockNLIDB
 import csv
 
 def dump(obj):
@@ -31,6 +31,7 @@ def is_jupyter_notebook():
 def printmd(string):
     display(Markdown(string))
 
+jupyter = is_jupyter_notebook()
 with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
     # read the file with the NLQ questions
     csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
@@ -39,8 +40,7 @@ with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
     line_count = 0
     for row in csv_reader:
         # the NLQ is the first column of the CSV
-        nl_query = row[0]
-        jupyter = is_jupyter_notebook()
+        nl_query = row[0]        
         if jupyter:
             print("\n\n")
             printmd("**Natural Language Query**: " + nl_query)
