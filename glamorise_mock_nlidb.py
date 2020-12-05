@@ -8,12 +8,12 @@ from glamorise import GLAMORISE
 # the implementation has to be changed depending on the NLIDB
 class GLAMORISEMockNLIDB(GLAMORISE):
 
-    def __init__(self, query, lang="en_core_web_sm"):
-        super(GLAMORISEMockNLIDB, self).__init__(query, lang)
+    def __init__(self, lang="en_core_web_sm"):
+        super(GLAMORISEMockNLIDB, self).__init__(lang)
         # NLIDB instance
         self.__nlidb = MockNLIDB()
-        # call execute that is responsible for the whole process
-        self._execute()
+        
+        
 
     def _send_question_receive_answer(self):
         # send the NLQ question and receive the JSON with the columns and result set

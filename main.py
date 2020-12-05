@@ -38,6 +38,8 @@ with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
     # jump title line
     next(csv_reader)
     line_count = 0
+    # create GLAMORISE object (the child class is instantiated)
+    glamorise = GLAMORISEMockNLIDB()
     for row in csv_reader:
         # the NLQ is the first column of the CSV
         nl_query = row[0]        
@@ -47,8 +49,7 @@ with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
         else:
             print("\n\nNatural Language Query: ",nl_query)
 
-        # create GLAMORISE object (the child class is instantiated)
-        glamorise = GLAMORISEMockNLIDB(nl_query)
+        glamorise.execute(nl_query)
 
         if jupyter:
             printmd("**spaCy Parse Tree**")
