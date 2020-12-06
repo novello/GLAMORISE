@@ -18,12 +18,12 @@ from simple_sqllite import SimpleSQLLite
 
 patterns_json_txt = """{
   "units_of_measurement" : ["cubic meters"],
-    "default_pattern" : [{"POS": "ADV", "OP": "*"},{"POS": "ADJ", "OP": "*"},{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
+    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
     "patterns" : {
         "than options" : {
             "reserved_words" : ["more than", "greater than", "less than", "equal to", "greater than or equal to", "less than or equal to"],
             "having_conditions" : [">", ">", "<", "=", ">=", "<="],
-            "specific_pattern" : [{"LIKE_NUM": true},{"POS": "ADV", "OP": "*"},{"POS": "ADJ", "OP": "*"},{"POS": "NOUN", "OP": "*"},{"POS": "NOUN"}],
+            "specific_pattern" : [{"LIKE_NUM": true}, {"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "NOUN"}],
             "cut_text" : false
         },
         "how options" : {
@@ -38,8 +38,14 @@ patterns_json_txt = """{
         },
         "group by" : {
             "reserved_words" : ["by", "per", "for each", "of each"],
+            "group_by" : true,            
+            "cut_text" : true            
+        },
+        "group by and" : {
+            "reserved_words" : ["by", "per", "for each", "of each"],
             "group_by" : true,
-            "cut_text" : true
+            "specific_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER" : "and"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
+            "cut_text" : false            
         },
         "average options" : {
             "reserved_words" : ["average", "avg", "mean"],
