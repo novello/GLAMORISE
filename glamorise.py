@@ -26,20 +26,10 @@ patterns_json_txt = """{
             "specific_pattern" : [{"LIKE_NUM": true}, {"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "NOUN"}],
             "cut_text" : false
         },
-        "how options" : {
-            "reserved_words" : ["how many", "how much"],
-            "aggregation_functions" : ["count", "sum"],
-            "cut_text" : true
-        },
-        "other count" : {
-            "reserved_words" : ["number of", "number of the", "return me the total", "give me all"],
-            "aggregation_functions" : "count",
-            "cut_text" : true
-        },
         "group by" : {
             "reserved_words" : ["by", "per", "for each", "of each"],
             "group_by" : true,            
-            "cut_text" : true            
+            "cut_text" : false
         },
         "group by and" : {
             "reserved_words" : ["by", "per", "for each", "of each"],
@@ -47,6 +37,21 @@ patterns_json_txt = """{
             "specific_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER" : "and"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
             "cut_text" : false            
         },
+        "how options" : {
+            "reserved_words" : ["how many", "how much"],
+            "aggregation_functions" : ["count", "sum"],
+            "cut_text" : true
+        },
+        "other count" : {
+            "reserved_words" : ["number of", "number of the"],
+            "aggregation_functions" : "count",
+            "cut_text" : true
+        },
+        "other sum" : {
+            "reserved_words" : ["total"],
+            "aggregation_functions" : "sum",
+            "cut_text" : true
+        },      
         "average options" : {
             "reserved_words" : ["average", "avg", "mean"],
             "aggregation_functions" : "avg",
@@ -130,7 +135,7 @@ class UnitsOfMeasurementMerger(Merger):
             )
 
 #main class
-class GLAMORISE(metaclass=abc.ABCMeta):    
+class Glamorise(metaclass=abc.ABCMeta):    
 
     def __init__(self, lang="en_core_web_sm"):
         # internal properties

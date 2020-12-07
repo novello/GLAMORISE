@@ -2,7 +2,7 @@ from simple_sqllite import SimpleSQLLite
 import json
 
 # Simple class to act as a NLIDB
-class MockNLIDB:
+class MockNlidb:
 
     def __init__(self):
         # open the database
@@ -60,6 +60,7 @@ class MockNLIDB:
                                   for column_name in column_names
                                     for column_type in column_types
                                         if column_type[0] == column_name])
+            print(columns)                                        
             return columns, result_set
         except:
             print("Query not found: ", nlq)
