@@ -72,6 +72,7 @@ class NalirNlidb:
             
             #result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
             result_set = rdbms.conduct_sql(sql_result)
+            
             # prepare the result set as JSON
             result_set = json.dumps(result_set)
             
