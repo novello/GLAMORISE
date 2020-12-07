@@ -2,7 +2,7 @@
 # Developed by Alexandre Novello (PUC-Rio)
 #
 
-from glamorise_mock_nlidb import GLAMORISEMockNLIDB
+from glamorise_nlidb import GlamoriseNlidb
 import csv
 
 def dump(obj):
@@ -39,7 +39,7 @@ with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
     next(csv_reader)
     line_count = 0
     # create GLAMORISE object (the child class is instantiated)
-    glamorise = GLAMORISEMockNLIDB()
+    glamorise = GlamoriseNlidb()
     for row in csv_reader:
         # the NLQ is the first column of the CSV
         nl_query = row[0]        

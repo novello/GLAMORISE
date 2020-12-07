@@ -4,7 +4,7 @@
 
 from unittest import TestCase
 import csv
-from glamorise_mock_nlidb import GLAMORISEMockNLIDB
+from glamorise_nlidb import GlamoriseNlidb
 
 
 class TestGLAMORISE(TestCase):
@@ -14,7 +14,7 @@ class TestGLAMORISE(TestCase):
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
             #jump the title line
             next(csv_reader)
-            glamorise = GLAMORISEMockNLIDB()
+            glamorise = GlamoriseNlidb()
             for row in csv_reader:
                 #the NLQ is the first column of the CSV
                 nl_query = row[0]
