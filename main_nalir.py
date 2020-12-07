@@ -106,7 +106,7 @@ jupyter = is_jupyter_notebook()
 # the NLQ is the first column of the CSV
 #nl_query = row[0]        
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt)
-nl_query = 'return me the number of authors for each conference?'
+nl_query = 'return me the number of authors for each conference where author name contains Alex'
 if jupyter:
     print("\n\n")
     printmd("**Natural Language Query**: " + nl_query)
