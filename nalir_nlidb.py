@@ -41,6 +41,34 @@ class NalirNlidb:
             return synonym
 
     def execute_query(self, nlq):
+        field_type = {
+                    0: 'DECIMAL',
+                    1: 'TINY',
+                    2: 'SHORT',
+                    3: 'LONG',
+                    4: 'FLOAT',
+                    5: 'DOUBLE',
+                    6: 'NULL',
+                    7: 'TIMESTAMP',
+                    8: 'LONGLONG',
+                    9: 'INT24',
+                    10: 'DATE',
+                    11: 'TIME',
+                    12: 'DATETIME',
+                    13: 'YEAR',
+                    14: 'NEWDATE',
+                    15: 'VARCHAR',
+                    16: 'BIT',
+                    246: 'NEWDECIMAL',
+                    247: 'INTERVAL',
+                    248: 'SET',
+                    249: 'TINY_BLOB',
+                    250: 'MEDIUM_BLOB',
+                    251: 'LONG_BLOB',
+                    252: 'BLOB',
+                    253: 'VAR_STRING',
+                    254: 'STRING',
+                    255: 'GEOMETRY' }
         try:
             config = ConfigHandler(reset=True,config_json_text=NalirNlidb.config_json_text)
             rdbms = RDBMS(config)
@@ -71,22 +99,23 @@ class NalirNlidb:
 
             
             #result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
-            result_set = rdbms.conduct_sql(sql_result)
+            result_set, cursor_description = rdbms.conduct_sql(sql_result)
             
+            column_names = (list(map(lambda x: x[0], cursor_description)))
+
+            column_types = (list(map(lambda x: field_type[x[1]], cursor_description)))
+
+            #column_types =  (list(map(lambda x: type(x), result_set[0])))
+            # prepare the column names and types as JSON
+            columns_list = []
+            for i, column_name in enumerate(column_names):
+                columns_list.append([column_name, column_types[i]])
+
+            columns = json.dumps(columns_list)
             # prepare the result set as JSON
             result_set = json.dumps(result_set)
-            
-            #column_names = (list(map(lambda x: x[0], cursor_description)))
 
-            # internal data dictionary table of SQLite
-            # sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
-            # column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]
-            # # prepare the column names and types as JSON
-            # columns = json.dumps([(column_name, column_type[1])
-            #                       for column_name in column_names
-            #                         for column_type in column_types
-            #                             if column_type[0] == column_name])
-            # return columns, result_set
-            return '[["AUTHOR", "TEXT"], ["CONFERENCE", "TEXT"]]', result_set
+            return columns, result_set
         except:
             print("Error processing NLQ: ", nlq)
+            raise
