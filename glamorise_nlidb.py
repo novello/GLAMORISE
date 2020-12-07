@@ -9,8 +9,8 @@ from glamorise import Glamorise
 # the implementation has to be changed depending on the NLIDB
 class GlamoriseNlidb(Glamorise):
 
-    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock'):
-        super(GlamoriseNlidb, self).__init__(lang)
+    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = ''):
+        super(GlamoriseNlidb, self).__init__(lang, patterns)
         # NLIDB instance
         if NLIDB == 'Mock':
             self.__nlidb = MockNlidb()
@@ -44,3 +44,5 @@ class GlamoriseNlidb(Glamorise):
         self._time_scale_aggregation_fields = self._translate_fields(self._time_scale_aggregation_fields)
         self._time_scale_group_by_fields = self._translate_fields(self._time_scale_group_by_fields)
         self._having_fields = self._translate_fields(self._having_fields)
+
+    

@@ -5,6 +5,66 @@
 from glamorise_nlidb import GlamoriseNlidb
 import csv
 
+patterns_json_txt = """{
+  "units_of_measurement" : ["cubic meters"],
+    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
+    "patterns" : {
+        "than options" : {
+            "reserved_words" : ["more than", "greater than", "less than", "equal to", "greater than or equal to", "less than or equal to"],
+            "having_conditions" : [">", ">", "<", "=", ">=", "<="],
+            "specific_pattern" : [{"LIKE_NUM": true}, {"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "NOUN"}],
+            "cut_text" : false
+        },
+        "group by" : {
+            "reserved_words" : ["by", "per", "for each", "of each"],
+            "group_by" : true,            
+            "cut_text" : false
+        },
+        "group by and" : {
+            "reserved_words" : ["by", "per", "for each", "of each"],
+            "group_by" : true,
+            "specific_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER" : "and"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
+            "cut_text" : false            
+        },
+        "how options" : {
+            "reserved_words" : ["how many", "how much"],
+            "aggregation_functions" : ["count", "sum"],
+            "cut_text" : true
+        },
+        "other count" : {
+            "reserved_words" : ["number of", "number of the"],
+            "aggregation_functions" : "count",
+            "cut_text" : true
+        },
+        "other sum" : {
+            "reserved_words" : ["total"],
+            "aggregation_functions" : "sum",
+            "cut_text" : true
+        },      
+        "average options" : {
+            "reserved_words" : ["average", "avg", "mean"],
+            "aggregation_functions" : "avg",
+            "cut_text" : true
+        },
+        "superlative min" : {
+            "reserved_words" : ["least", "smallest", "tiniest", "shortest", "cheapest", "nearest", "lowest", "worst", "newest", "min", "minimum"],
+            "aggregation_functions" : "min",
+            "cut_text" : true
+        },
+        "superlative max" : {
+            "reserved_words" : ["most", "most number of", "biggest", "longest", "furthest", "highest", "tallest", "greatest", "best", "oldest", "max", "maximum"],
+            "aggregation_functions" : "max",
+            "cut_text" : true
+        },
+        "time scale options" : {
+            "reserved_words" : ["daily", "monthly", "yearly"],
+            "time_scale_replace_text" : {"daily" : "day", "monthly" : "month", "yearly" : "year"},
+            "time_scale_aggregation_functions" : "sum",
+            "cut_text" : false
+        }
+    }
+}"""
+
 def dump(obj):
   for attr in dir(obj):
     # only the properties that are important to print
@@ -45,7 +105,7 @@ jupyter = is_jupyter_notebook()
         
 # the NLQ is the first column of the CSV
 #nl_query = row[0]        
-glamorise = GlamoriseNlidb(NLIDB = 'NaLIR')
+glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt)
 nl_query = 'return me the number of authors for each conference?'
 if jupyter:
     print("\n\n")
@@ -74,5 +134,5 @@ else:
     # print the result as a pandas dataframe
     print(glamorise.pd)
 
-
+del glamorise
 

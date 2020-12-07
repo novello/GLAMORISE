@@ -14,69 +14,10 @@ from spacy.matcher import Matcher
 from spacy.tokens import Token
 from collections import defaultdict
 from word2number import w2n
+import os
 from simple_sqllite import SimpleSQLLite
 
-patterns_json_txt = """{
-  "units_of_measurement" : ["cubic meters"],
-    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
-    "patterns" : {
-        "than options" : {
-            "reserved_words" : ["more than", "greater than", "less than", "equal to", "greater than or equal to", "less than or equal to"],
-            "having_conditions" : [">", ">", "<", "=", ">=", "<="],
-            "specific_pattern" : [{"LIKE_NUM": true}, {"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "OP": "*"}, {"POS": "NOUN"}],
-            "cut_text" : false
-        },
-        "group by" : {
-            "reserved_words" : ["by", "per", "for each", "of each"],
-            "group_by" : true,            
-            "cut_text" : false
-        },
-        "group by and" : {
-            "reserved_words" : ["by", "per", "for each", "of each"],
-            "group_by" : true,
-            "specific_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER" : "and"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
-            "cut_text" : false            
-        },
-        "how options" : {
-            "reserved_words" : ["how many", "how much"],
-            "aggregation_functions" : ["count", "sum"],
-            "cut_text" : true
-        },
-        "other count" : {
-            "reserved_words" : ["number of", "number of the"],
-            "aggregation_functions" : "count",
-            "cut_text" : true
-        },
-        "other sum" : {
-            "reserved_words" : ["total"],
-            "aggregation_functions" : "sum",
-            "cut_text" : true
-        },      
-        "average options" : {
-            "reserved_words" : ["average", "avg", "mean"],
-            "aggregation_functions" : "avg",
-            "cut_text" : true
-        },
-        "superlative min" : {
-            "reserved_words" : ["least", "smallest", "tiniest", "shortest", "cheapest", "nearest", "lowest", "worst", "newest", "min", "minimum"],
-            "aggregation_functions" : "min",
-            "cut_text" : true
-        },
-        "superlative max" : {
-            "reserved_words" : ["most", "most number of", "biggest", "longest", "furthest", "highest", "tallest", "greatest", "best", "oldest", "max", "maximum"],
-            "aggregation_functions" : "max",
-            "cut_text" : true
-        },
-        "time scale options" : {
-            "reserved_words" : ["daily", "monthly", "yearly"],
-            "time_scale_replace_text" : {"daily" : "day", "monthly" : "month", "yearly" : "year"},
-            "time_scale_aggregation_functions" : "sum",
-            "cut_text" : false
-        }
-    }
-}"""
 
-patterns_json = json.loads(patterns_json_txt)
 
 
 # We're using classes for pipeline  because the component needs to be initialised with
@@ -119,7 +60,7 @@ class CompoundMerger(Merger):
  
 class UnitsOfMeasurementMerger(Merger):    
     def __init__(self, nlp):    
-        self._type = 'units_of_measurement'
+        self._type = 'units_of_measurement'        
         # Register a new token extension to flag units of measurement
         Token.set_extension("units_of_measurement", default=False, force=True)
         self.matcher = Matcher(nlp.vocab)
@@ -137,9 +78,12 @@ class UnitsOfMeasurementMerger(Merger):
 #main class
 class Glamorise(metaclass=abc.ABCMeta):    
 
-    def __init__(self, lang="en_core_web_sm"):
+    def __init__(self, lang="en_core_web_sm", patterns = ""):
+        global patterns_json 
+        patterns_json = json.loads(patterns)    
+
         # internal properties
-        self.__nlp = spacy.load(lang)        
+        self.__nlp = spacy.load(lang)            
 
         # add pipelines and Matcher
         self.__compound_merger = CompoundMerger(self.__nlp)
@@ -711,3 +655,4 @@ class Glamorise(metaclass=abc.ABCMeta):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
         self.__SimpleSQLLite.execute_sql(sql)
+        os.remove('./datasets/GLAMORISE.db')
