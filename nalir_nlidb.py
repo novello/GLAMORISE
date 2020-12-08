@@ -3,13 +3,16 @@ import json
 from os import path
 import sys
 sys.path.append(path.abspath('../nalir-glamorise'))
-
-from nalir import *
-
+from mysql.connector import FieldType
+import re
 import nltk
 #nltk.download('averaged_perceptron_tagger')
 #nltk.download('wordnet')
 #nltk.download('punkt')
+
+
+from nalir import *
+
 
 # Simple class to act as a NLIDB
 class NalirNlidb:
@@ -30,6 +33,52 @@ class NalirNlidb:
     def __init__(self):
         # open the database
         self.__SimpleSQLLite = SimpleSQLLite('./datasets/NaLIR.db')
+
+    def __change_select(self):
+        sql_list = self.__sql.split('\n')        
+        result = re.search('(SELECT )(DISTINCT )?(.*)$', sql_list[0], re.IGNORECASE|re.MULTILINE)        
+        select = ''
+        fields = result.group(3).split(',')
+        transformed_fields = []
+        for field in fields:
+            field = field.strip()
+            transformed_fields.append(field + ' as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
+        self.__sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
+        for i in range(1, len(sql_list)):
+            self.__sql += sql_list[i] + '\n'
+
+    def __translate_mysql_datatype_to_sqlite(self, type):
+        field_type = {
+                    'DECIMAL' : 'REAL',
+                    'TINY' : 'REAL',
+                    'SHORT' : 'REAL',
+                    'LONG' : 'REAL',
+                    'FLOAT' : 'REAL',
+                    'DOUBLE' : 'REAL',
+                    'NULL' : 'NULL',
+                    'TIMESTAMP' : 'TEXT',
+                    'LONGLONG': 'INTEGER',
+                    'INT24': 'INTEGER',
+                    'DATE' : 'TEXT',
+                    'TIME' : 'TEXT',
+                    'DATETIME' : 'TEXT',
+                    'YEAR': 'INTEGER',
+                    'NEWDATE' : 'TEXT',
+                    'VARCHAR' : 'TEXT',
+                    'BIT': 'INTEGER',
+                    'JSON' : 'TEXT',
+                    'NEWDECIMAL': 'REAL',
+                    'ENUM' : 'TEXT',
+                    'SET' : 'TEXT',
+                    'TINY_BLOB' : 'BLOB',
+                    'MEDIUM_BLOB' : 'BLOB',
+                    'LONG_BLOB' : 'BLOB',
+                    'BLOB' : 'BLOB',
+                    'VAR_STRING' : 'TEXT',
+                    'STRING' : 'TEXT',
+                    'GEOMETRY' : 'TEXT'}
+        return field_type[type]
+
    
     def field_synonym(self, synonym):
         # responsible for the translation of the field to the appropriated column
@@ -40,35 +89,7 @@ class NalirNlidb:
         except:
             return synonym
 
-    def execute_query(self, nlq):
-        field_type = {
-                    0: 'DECIMAL',
-                    1: 'TINY',
-                    2: 'SHORT',
-                    3: 'LONG',
-                    4: 'FLOAT',
-                    5: 'DOUBLE',
-                    6: 'NULL',
-                    7: 'TIMESTAMP',
-                    8: 'LONGLONG',
-                    9: 'INT24',
-                    10: 'DATE',
-                    11: 'TIME',
-                    12: 'DATETIME',
-                    13: 'YEAR',
-                    14: 'NEWDATE',
-                    15: 'VARCHAR',
-                    16: 'BIT',
-                    246: 'NEWDECIMAL',
-                    247: 'INTERVAL',
-                    248: 'SET',
-                    249: 'TINY_BLOB',
-                    250: 'MEDIUM_BLOB',
-                    251: 'LONG_BLOB',
-                    252: 'BLOB',
-                    253: 'VAR_STRING',
-                    254: 'STRING',
-                    255: 'GEOMETRY' }
+    def execute_query(self, nlq):        
         try:
             config = ConfigHandler(reset=True,config_json_text=NalirNlidb.config_json_text)
             rdbms = RDBMS(config)
@@ -93,25 +114,20 @@ class NalirNlidb:
             # SQL Translator
             # **Important Node**: The error message is resultant of line 191 of file data_structure/block.py
             translate(query, rdbms)
-            sql_result = query.translated_sql
+            self.__sql = query.translated_sql
 
-            print('SQL Result NaLIR: ', sql_result)
+            self.__change_select()
+
+            print('SQL Result NaLIR: ', self.__sql)
 
             
             #result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
-            result_set, cursor_description = rdbms.conduct_sql(sql_result)
+            result_set, cursor_description = rdbms.conduct_sql(self.__sql)
             
-            column_names = (list(map(lambda x: x[0], cursor_description)))
+            columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))
 
-            column_types = (list(map(lambda x: field_type[x[1]], cursor_description)))
-
-            #column_types =  (list(map(lambda x: type(x), result_set[0])))
-            # prepare the column names and types as JSON
-            columns_list = []
-            for i, column_name in enumerate(column_names):
-                columns_list.append([column_name, column_types[i]])
-
-            columns = json.dumps(columns_list)
+            
+            columns = json.dumps(columns)
             # prepare the result set as JSON
             result_set = json.dumps(result_set)
 
