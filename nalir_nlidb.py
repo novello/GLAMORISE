@@ -116,22 +116,19 @@ class NalirNlidb:
             translate(query, rdbms)
             self.__sql = query.translated_sql
 
-            self.__change_select()
-
-            print('SQL Result NaLIR: ', self.__sql)
+            self.__change_select()            
 
             
             #result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
             result_set, cursor_description = rdbms.conduct_sql(self.__sql)
             
             columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))
-
             
             columns = json.dumps(columns)
             # prepare the result set as JSON
             result_set = json.dumps(result_set)
 
-            return columns, result_set
+            return columns, result_set, self.__sql
         except:
             print("Error processing NLQ: ", nlq)
             raise

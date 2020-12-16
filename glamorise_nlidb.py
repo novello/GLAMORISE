@@ -17,11 +17,13 @@ class GlamoriseNlidb(Glamorise):
         elif NLIDB == 'NaLIR':
             self.__nlidb = NalirNlidb()
         
-        
+    @property
+    def pos_nlidb_sql(self):
+        return self._pos_nlidb_sql    
 
     def _send_question_receive_answer(self):
         # send the NLQ question and receive the JSON with the columns and result set
-        columns, result_set = self.__nlidb.execute_query(self.prepared_query)
+        columns, result_set, self._pos_nlidb_sql = self.__nlidb.execute_query(self.pre_prepared_query)         
         return columns, result_set
 
     def _translate_fields(self, fields):
@@ -39,10 +41,10 @@ class GlamoriseNlidb(Glamorise):
 
     def _translate_all_fields(self):
         # translate all fields that GLAMORISE is aware of
-        self._aggregation_fields = self._translate_fields(self._aggregation_fields)
-        self._group_by_fields = self._translate_fields(self._group_by_fields)
-        self._time_scale_aggregation_fields = self._translate_fields(self._time_scale_aggregation_fields)
-        self._time_scale_group_by_fields = self._translate_fields(self._time_scale_group_by_fields)
-        self._having_fields = self._translate_fields(self._having_fields)
+        self._pre_aggregation_fields = self._translate_fields(self._pre_aggregation_fields)
+        self._pre_group_by_fields = self._translate_fields(self._pre_group_by_fields)
+        self._pre_time_scale_aggregation_fields = self._translate_fields(self._pre_time_scale_aggregation_fields)
+        self._pre_time_scale_group_by_fields = self._translate_fields(self._pre_time_scale_group_by_fields)
+        self._pre_having_fields = self._translate_fields(self._pre_having_fields)
 
     

@@ -60,7 +60,7 @@ class MockNlidb:
                                   for column_name in column_names
                                     for column_type in column_types
                                         if column_type[0] == column_name])
-            print(columns)                                        
-            return columns, result_set
+            print(sql_result)                                                                       
+            return columns, result_set, sql_result
         except:
             print("Query not found: ", nlq)
