@@ -3,6 +3,7 @@
 #
 #!pip install spacy==2.2.4
 #!pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
+#!pip install codetiming
 
 import spacy
 from spacy import displacy
@@ -17,6 +18,7 @@ from word2number import w2n
 import os
 from copy import deepcopy
 from simple_sqllite import SimpleSQLLite
+from codetiming import Timer
 
 
 
@@ -99,6 +101,14 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__SimpleSQLLite = SimpleSQLLite('./datasets/GLAMORISE.db')
 
     def initialize_and_reset_attr(self):
+        self._timer_total = Timer(name="timer_total", logger=None)
+        self._timer_total.start()
+        self._timer_pre = Timer(name="timer_pre", logger=None)
+        self._timer_nlidb_execution = Timer(name="timer_nlidb_execution", logger=None)
+        self._timer_nlidb_json_result_set = Timer(name="timer_nlidb_json_result_set", logger=None)
+        self._timer_pos = Timer(name="timer_pos", logger=None)
+        self._timer_exibition = Timer(name="timer_exibition", logger=None)
+
         self._pre_aggregation_functions = []
         self._pre_aggregation_fields = []
         self._pre_group_by_fields = []
@@ -131,7 +141,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_group_by_fields = []
         
         # create the pandas dataframe just if it called before being fed
-        self.__pd = None
+        self.__pd = None       
 
     @property
     def query(self):
@@ -218,7 +228,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         return self.__pos_glamorise_sql
 
     @property
-    def pd(self):                         
+    def pd(self):                                 
         return deepcopy(self.__pd)
 
     @property
@@ -346,6 +356,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         return self.__pre_prepared_query
 
     def __preprocessor(self, query):
+        self._timer_pre.start()
         self.__query = query
         self.__doc = self.__nlp(query)        
         self.__matches = self.__matcher(self.__doc)                   
@@ -356,6 +367,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__matched_sents = [{"ents":y, "text":x} for x, y in temp.items()]  
 
         self.__prepare_query_to_NLIDB()
+        self._timer_pre.stop()
 
     def __create_table_and_insert_data(self, columns, result_set):
         # create the table to store the NLIDB result set
@@ -368,6 +380,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__SimpleSQLLite.executemany_sql(sql, result_set)
 
     def _processor(self, columns, result_set):
+        self._timer_pos.start()
         # processor steps
 
         # the field translation is done by the child class that is aware of the NLIDB column names
@@ -379,18 +392,28 @@ class Glamorise(metaclass=abc.ABCMeta):
                                                   self._pre_aggregation_fields + self._pre_time_scale_aggregation_fields +
                                                   self._pre_time_scale_group_by_fields]
         self.__prepare_aggregate_SQL()
-        self.__create_table_and_insert_data(columns, result_set)
+        if columns and result_set:
+            self.__create_table_and_insert_data(columns, result_set)
         # prepare a pandas dataframe with the result
-        self.__pd = self.__SimpleSQLLite.pandas_dataframe(self.__pos_glamorise_sql)
+        self._timer_pos.stop()
+        self._timer_exibition.start()
+        if columns and result_set:
+            self.__pd = self.__SimpleSQLLite.pandas_dataframe(self.__pos_glamorise_sql)
+        self._timer_exibition.stop()
+        self._timer_total.stop()
 
     def execute(self, query):
         self.initialize_and_reset_attr()        
         self.__preprocessor(query)
         columns, result_set = self._send_question_receive_answer()
         # JSON columns names and types received by the NLIDB converted to list        
-        columns = json.loads(columns)
+        if columns:
+            columns = json.loads(columns)
         # JSON result set  received by the NLIDB converted to list        
-        result_set = json.loads(result_set)
+        if result_set:
+            result_set = json.loads(result_set)
+        if self._timer_nlidb_json_result_set._start_time:    
+            self._timer_nlidb_json_result_set.stop()
         if result_set != []:
             self._processor(columns, result_set)
 

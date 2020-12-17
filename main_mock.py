@@ -5,6 +5,7 @@
 from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
 import csv
+from codetiming import Timer
 
 patterns_json_txt = """{
   "units_of_measurement" : ["cubic meters"],
@@ -107,5 +108,14 @@ with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
             # print the result as a pandas dataframe
             print(glamorise.pd)
 
+        
+        print("timer_pre : {:.2f} sec".format(glamorise._timer_pre.last))
+        print("timer_nlidb_execution : {:.2f} sec".format(glamorise._timer_nlidb_execution.last))
+        print("timer_nlidb_json_result_set : {:.2f} sec".format(glamorise._timer_nlidb_json_result_set.last))
+        print("timer_pos : {:.2f} sec".format(glamorise._timer_pos.last))
+        print("timer_exibition : {:.2f} sec".format(glamorise._timer_exibition.last))
+
+    for (key, value) in Timer.timers.items():
+        print("total {} : {:.2f} sec".format(key, value))
     del glamorise
 

@@ -41,8 +41,9 @@ class MockNlidb:
         except:
             return synonym
 
-    def execute_query(self, nlq):
-        try:
+    def execute_query(self, nlq, timer_nlidb_execution, timer_nlidb_json_result_set):
+        timer_nlidb_execution.start()
+        try:            
             # mock NLQ processing, return the SQL for the NLQ query
             sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
             sql = self.__SimpleSQLLite.execute_sql(sql, 'SQL generated')[0]
@@ -54,7 +55,9 @@ class MockNlidb:
 
             # internal data dictionary table of SQLite
             sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
-            column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]
+            timer_nlidb_execution.stop()
+            timer_nlidb_json_result_set.start()
+            column_types = self.__SimpleSQLLite.execute_sql(sql, 'Metadata collected')[0]            
             # prepare the column names and types as JSON
             columns = json.dumps([(column_name, column_type[1])
                                   for column_name in column_names

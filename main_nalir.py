@@ -5,6 +5,7 @@
 from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
 import csv
+from codetiming import Timer
 
 patterns_json_txt = """{
   "units_of_measurement" : [],
@@ -75,6 +76,9 @@ with open('./datasets/nlqs_mas.txt', encoding="utf-8") as file:
     line_count = 0
     # create GLAMORISE object (the child class is instantiated)#     
     for nlq in lines:    
+        line_count += 1
+        if line_count < 4:
+            continue
         #nlq ='return me the citations of each paper in PVLDB'                                              
         if jupyter:
             print("\n\n")
@@ -101,8 +105,16 @@ with open('./datasets/nlqs_mas.txt', encoding="utf-8") as file:
         else:
             print("GLAMORISE Result")
             # print the result as a pandas dataframe
-            print(glamorise.pd)
+            print(glamorise.pd)        
+        
+        print("timer_pre : {:.2f} sec".format(glamorise._timer_pre.last))
+        print("timer_nlidb_execution : {:.2f} sec".format(glamorise._timer_nlidb_execution.last))
+        print("timer_nlidb_json_result_set : {:.2f} sec".format(glamorise._timer_nlidb_json_result_set.last))
+        print("timer_pos : {:.2f} sec".format(glamorise._timer_pos.last))
+        print("timer_exibition : {:.2f} sec".format(glamorise._timer_exibition.last))
 
-    # do not ident
-    del glamorise
+    # do not ident    
+    for (key, value) in Timer.timers.items():
+        print("total {} : {:.2f} sec".format(key, value))
+    del glamorise    
 
