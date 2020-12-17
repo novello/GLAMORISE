@@ -5,6 +5,7 @@
 from unittest import TestCase
 import csv
 from glamorise_nlidb import GlamoriseNlidb
+from codetiming import Timer
 
 patterns_json_txt = """{
   "units_of_measurement" : ["cubic meters"],
@@ -95,6 +96,15 @@ class TestGLAMORISE(TestCase):
                 finally:
                     # print anyway, just for convenience (pytest cuts the string)
                     print('\nGLAMORISE SQL\nExpected: ', row[3].lower())
-                    print('Actual:   ', glamorise.pos_glamorise_sql.lower())
+                    print('Actual:   ', glamorise.pos_glamorise_sql.lower())                    
+                    print("timer_pre : {:.2f} sec".format(glamorise._timer_pre.last))
+                    print("timer_nlidb_execution : {:.2f} sec".format(glamorise._timer_nlidb_execution.last))
+                    print("timer_nlidb_json_result_set : {:.2f} sec".format(glamorise._timer_nlidb_json_result_set.last))
+                    print("timer_pos : {:.2f} sec".format(glamorise._timer_pos.last))
+                    print("timer_exibition : {:.2f} sec".format(glamorise._timer_exibition.last))
+                    
+            for (key, value) in Timer.timers.items():
+                print("total {} : {:.2f} sec".format(key, value))
+            del glamorise    
             csv_file.seek(1)
             print('{} NLQ questions tested'.format(sum(1 for line in csv_reader)))

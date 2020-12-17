@@ -89,7 +89,9 @@ class NalirNlidb:
         except:
             return synonym
 
-    def execute_query(self, nlq):        
+    def execute_query(self, nlq, timer_nlidb_execution, timer_nlidb_json_result_set):   
+        timer_nlidb_execution.start()     
+        columns = result_set = self.__sql = ''
         try:
             config = ConfigHandler(reset=True,config_json_text=NalirNlidb.config_json_text)
             rdbms = RDBMS(config)
@@ -120,6 +122,8 @@ class NalirNlidb:
 
             
             #result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
+            timer_nlidb_execution.stop()
+            timer_nlidb_json_result_set.start()
             result_set, cursor_description = rdbms.conduct_sql(self.__sql)
             
             columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))
@@ -130,5 +134,7 @@ class NalirNlidb:
 
             return columns, result_set, self.__sql
         except:
-            print("Error processing NLQ: ", nlq)
+            print("Error processing NLQ in NaLIR: ", nlq)
             raise
+        finally:
+            return columns, result_set, self.__sql

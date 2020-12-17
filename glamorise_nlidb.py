@@ -23,7 +23,9 @@ class GlamoriseNlidb(Glamorise):
 
     def _send_question_receive_answer(self):
         # send the NLQ question and receive the JSON with the columns and result set
-        columns, result_set, self._pos_nlidb_sql = self.__nlidb.execute_query(self.pre_prepared_query)         
+        columns, result_set, self._pos_nlidb_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
+                                                                              self._timer_nlidb_execution,
+                                                                              self._timer_nlidb_json_result_set)         
         return columns, result_set
 
     def _translate_fields(self, fields):
