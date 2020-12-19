@@ -1,4 +1,4 @@
-from simple_sqllite import SimpleSQLLite
+from simple_sqlite import SimpleSQLite
 import json
 from os import path
 import sys
@@ -17,22 +17,15 @@ from nalir import *
 # Simple class to act as a NLIDB
 class NalirNlidb:
 
-    config_json_text = '''{
-    "connection":{
-            "host": "localhost",
-            "password":"desenvolvimento123",
-            "user":"nalir",
-            "database":"mas"
-        },
-        "loggingMode": "ERROR",
-        "zfiles_path":"/home/novello/nalir-glamorise/zfiles",
-        "jars_path":"/home/novello/nalir-glamorise/jars/new_jars"
-    }
-    '''
+    
 
-    def __init__(self):
+    def __init__(self, config_db, token_path):
         # open the database
-        self.__SimpleSQLLite = SimpleSQLLite('./datasets/NaLIR.db')
+        self.__SimpleSQLite = SimpleSQLite('./datasets/nalir_mas.db')
+        self.__config_db = config_db
+        self.__token_path = token_path
+        self.__config = ConfigHandler(reset=True,config_json_text=self.__config_db)
+        self.__rdbms = RDBMS(self.__config)
 
     def __change_select(self):
         sql_list = self.__sql.split('\n')        
@@ -82,25 +75,24 @@ class NalirNlidb:
    
     def field_synonym(self, synonym):
         # responsible for the translation of the field to the appropriated column
-        try:
-            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym + "'"
-            field, cursor_description = (self.__SimpleSQLLite.execute_sql(sql, 'Field translated'))
+        try:            
+            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" + synonym.lower() + "'"
+            field, cursor_description = self.__rdbms.conduct_sql(sql)
             return list(field)[0][0]
-        except:
+        except Exception as e:
             return synonym
+            #print('Exception: ', e)
 
     def execute_query(self, nlq, timer_nlidb_execution, timer_nlidb_json_result_set):   
         timer_nlidb_execution.start()     
         columns = result_set = self.__sql = ''
-        try:
-            config = ConfigHandler(reset=True,config_json_text=NalirNlidb.config_json_text)
-            rdbms = RDBMS(config)
-            query = Query(nlq, rdbms.schema_graph)
+        try:            
+            query = Query(nlq, self.__rdbms.schema_graph)
             # Stanford Dependency Parser
-            StanfordParser(query,config)
+            StanfordParser(query,self.__config)
 
             # Node Mapper
-            NodeMapper.phrase_process(query,rdbms,config)
+            NodeMapper.phrase_process(query,self.__rdbms,self.__config, token_path = self.__token_path)
 
             # Entity Resolution
             # The entity pairs denote that two nodes represente the same entity.
@@ -108,33 +100,31 @@ class NalirNlidb:
 
 
             # Tree Structure Adjustor
-            TreeStructureAdjustor.tree_structure_adjust(query,rdbms)
+            TreeStructureAdjustor.tree_structure_adjust(query,self.__rdbms)
 
             # Explainer
             explain(query)
 
             # SQL Translator
             # **Important Node**: The error message is resultant of line 191 of file data_structure/block.py
-            translate(query, rdbms)
+            translate(query, self.__rdbms)
             self.__sql = query.translated_sql
 
             self.__change_select()            
 
             
-            #result_set, cursor_description = self.__SimpleSQLLite.execute_sql(sql_result, 'Query executed')
+            #result_set, cursor_description = self.__SimpleSQLite.execute_sql(sql_result, 'Query executed')
             timer_nlidb_execution.stop()
             timer_nlidb_json_result_set.start()
-            result_set, cursor_description = rdbms.conduct_sql(self.__sql)
+            result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql)
             
             columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))
             
             columns = json.dumps(columns)
             # prepare the result set as JSON
-            result_set = json.dumps(result_set)
-
-            return columns, result_set, self.__sql
-        except:
+            result_set = json.dumps(result_set)            
+        except Exception as e:
             print("Error processing NLQ in NaLIR: ", nlq)
-            raise
-        finally:
+            print("Exception: ", e)
+        finally:            
             return columns, result_set, self.__sql

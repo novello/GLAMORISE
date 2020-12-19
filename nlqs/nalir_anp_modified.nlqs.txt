@@ -1,0 +1,21 @@
+What was the production of oil in the state of Rio de Janeiro?
+What was the average production of oil per month per year in the state of Rio de Janeiro?
+What was the average production of oil per year in the state of Alagoas?
+What is the number of fields in Paraná state?
+What was the maximum production of oil in the state of Ceará per field?
+What was the minimum production of gas in the state of São Paulo per basin?
+What was the average oil production per month per year by the operator Petrobrás?
+What was the mean production of gas per year per field?
+What was the mean production of gas per month per year per field?
+What was the mean production of gas per field per month per year?
+What was the mean production of gas per month per year per field?
+What was the mean petroleum production per month per year per field in the state of Rio de Janeiro?
+What was the mean petroleum production by field by Rio de Janeiro?
+What was the mean production of gas per field with production greater than 100 cubic meters? ###
+What was the mean production of gas per basin with production less than 1000 cubic meters? ###
+Which field produces the most oil production per month per year? ###
+Which basin has the highest oil production per year? ###
+Which federated state has the lowest production of gas? ###
+Which state of the federation has the lowest production of gas? ###
+What was the average production of oil per field and state in the year in 2015? ###
+What was the average production of oil per field per month in the state of Rio de Janeiro and year 2015? 
