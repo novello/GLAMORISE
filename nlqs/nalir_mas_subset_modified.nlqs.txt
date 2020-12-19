@@ -1,0 +1,73 @@
+return me the number of authors of "Making database systems usable".
+return me the number of authors who have cited the publications by "H. V. Jagadish".
+return me the number of authors who have cooperated with "H. V. Jagadish".
+return me the number of authors who have more than 10 publications containing keyword "Relational Database".
+return me the number of authors who have publications containing keyword "Relational Database".
+return me the number of authors who have publications in PVLDB.
+return me the number of authors who have publications in the VLDB conference.
+return me the number of citations of "Making database systems usable" in each year.
+return me the number of citations of "Making database systems usable".
+return me the number of conferences which have publications by "H. V. Jagadish".
+return me the number of conferences, which have more than 60 publications containing keyword "Relational Database".
+return me the number of journals which have publications by "H. V. Jagadish".
+return me the number of journals, which have more than 60 publications containing keyword "Relational Database".
+return me the number of keywords in Databases area.
+return me the number of keywords in PVLDB.
+return me the number of keywords in the publications of "University of Michigan".
+return me the number of keywords in VLDB conference.
+return me the number of keywords, which have been contained by more than 10 publications of "H. V. Jagadish".
+return me the number of keywords, which have been contained by more than 100 publications in PVLDB.
+return me the number of keywords, which have been contained by more than 100 publications in VLDB conference.
+return me the number of keywords.
+return me the number of organizations in Databases area located in "North America".
+return me the number of organizations in Databases area.
+return me the number of publications after 2000 in "University of Michigan".
+return me the number of publications after 2000.
+return me the number of publications by "H. V. Jagadish" after 2000.
+return me the number of publications by "H. V. Jagadish" on PVLDB after 2000.
+return me the number of publications by "H. V. Jagadish" on PVLDB.
+return me the number of publications by "H. V. Jagadish" on VLDB conference after 2000.
+return me the number of publications by "H. V. Jagadish" on VLDB conference.
+return me the number of publications by "H. V. Jagadish".
+return me the number of publications in "University of Michigan" in Databases area.
+return me the number of publications in "University of Michigan".
+return me the number of publications in PVLDB after 2000 in "University of Michigan".
+return me the number of publications in PVLDB containing keyword "Keyword search".
+return me the number of publications in PVLDB in "University of Michigan".
+return me the number of publications in VLDB after 2000 in "University of Michigan".
+return me the number of publications in VLDB conference containing keyword "Information Retrieval".
+return me the number of publications in VLDB conference in "University of Michigan".
+return me the number of publications on PVLDB after 2000.
+return me the number of publications on PVLDB.
+return me the number of publications on VLDB conference after 2000.
+return me the number of publications on VLDB conference.
+return me the number of publications published in PVLDB in each year.
+return me the number of publications published in the VLDB conference before 2000.
+return me the number of publications published in the VLDB conference in each year.
+return me the number of publications published on PVLDB before 2000.
+return me the number of publications which contain the keyword "Natural Language".
+return me the number of publications written by "H. V. Jagadish"
+return me the number of publications written by "H. V. Jagadish" and "Divesh Srivastava" before 2000.
+return me the number of publications written by "H. V. Jagadish" and "Divesh Srivastava".
+return me the number of publications written by "H. V. Jagadish" in each year.
+return me the number of references of "Making database systems usable".
+return me the number of researchers in "University of Michigan".
+return me the number of researchers in Databases area in "University of Michigan".
+return me the number of the authors who have more than 10 publications containing keyword "Relational Database".
+return me the number of the conferences
+return me the number of the journals
+return me the number of the keywords of "Making database systems usable".
+return me the number of the keywords related to "H. V. Jagadish".
+return me the number of the organizations in "North America".
+return me the number of the organizations.
+return me the number of the publications of "H. V. Jagadish" containing keyword "User Study".
+return me the total citations of all the publications in PVLDB.
+return me the total citations of all the publications in the VLDB conference.
+return me the total citations of publications in PVLDB before 2005.
+return me the total citations of publications in PVLDB in 2005.
+return me the total citations of publications in PVLDB in each year.
+return me the total citations of publications in the VLDB conference before 2005.
+return me the total citations of publications in the VLDB conference in 2005.
+return me the total citations of publications in the VLDB conference in each year.
+return me the total citations of the publications containing keyword "Natural Language"
+return me the total citations of the publications in "University of Michigan".

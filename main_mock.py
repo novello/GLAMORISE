@@ -5,7 +5,6 @@
 from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
 import csv
-from codetiming import Timer
 
 patterns_json_txt = """{
   "units_of_measurement" : ["cubic meters"],
@@ -69,8 +68,7 @@ patterns_json_txt = """{
 
 
 
-jupyter = mc.is_jupyter_notebook()
-with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
+with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:
     # read the file with the NLQ questions
     csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
     # jump title line
@@ -80,42 +78,9 @@ with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
     glamorise = GlamoriseNlidb(patterns = patterns_json_txt)
     for row in csv_reader:
         # the NLQ is the first column of the CSV
-        nl_query = row[0]        
-        if jupyter:
-            print("\n\n")
-            mc.printmd("**Natural Language Query**: " + nl_query)
-        else:
-            print("\n\nNatural Language Query: ",nl_query)
+        nlq = row[0]        
+        mc.print_results(glamorise, nlq)
 
-        glamorise.execute(nl_query)
-
-        if jupyter:
-            mc.printmd("**spaCy Parse Tree**")
-            # show spaCy parse tree
-            glamorise.customized_displacy()
-        if jupyter:
-            mc.printmd("**GLAMORISE Internal Properties**")
-        else:
-            print("GLAMORISE Internal Properties")
-        mc.dump(glamorise)
-
-        if jupyter:
-            mc.printmd("**GLAMORISE Result**")
-            # display the result as a pandas dataframe
-            display(glamorise.pd)
-        else:
-            print("GLAMORISE Result")
-            # print the result as a pandas dataframe
-            print(glamorise.pd)
-
-        
-        print("timer_pre : {:.2f} sec".format(glamorise._timer_pre.last))
-        print("timer_nlidb_execution : {:.2f} sec".format(glamorise._timer_nlidb_execution.last))
-        print("timer_nlidb_json_result_set : {:.2f} sec".format(glamorise._timer_nlidb_json_result_set.last))
-        print("timer_pos : {:.2f} sec".format(glamorise._timer_pos.last))
-        print("timer_exibition : {:.2f} sec".format(glamorise._timer_exibition.last))
-
-    for (key, value) in Timer.timers.items():
-        print("total {} : {:.2f} sec".format(key, value))
+    mc.print_total_timers()
     del glamorise
 

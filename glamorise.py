@@ -17,7 +17,7 @@ from collections import defaultdict
 from word2number import w2n
 import os
 from copy import deepcopy
-from simple_sqllite import SimpleSQLLite
+from simple_sqlite import SimpleSQLite
 from codetiming import Timer
 
 
@@ -98,7 +98,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__build_patterns()
 
         # GLAMORISE local database. Used to persist the NLIDB result set and to process the query with aggregation
-        self.__SimpleSQLLite = SimpleSQLLite('./datasets/GLAMORISE.db')
+        self.__SimpleSQLite = SimpleSQLite('./datasets/glamorise.db')
 
     def initialize_and_reset_attr(self):
         self._timer_total = Timer(name="timer_total", logger=None)
@@ -374,10 +374,10 @@ class Glamorise(metaclass=abc.ABCMeta):
         sql = '''DROP TABLE IF EXISTS NLIDB_RESULT_SET; 
                  CREATE TABLE NLIDB_RESULT_SET (''' + \
                  ', '.join([column[0] + ' ' + column[1] for column in columns]) + ');'
-        self.__SimpleSQLLite.execute_sql(sql)
+        self.__SimpleSQLite.execute_sql(sql)
         #insert the result set passed from the NLIDB in the table
         sql = 'INSERT INTO NLIDB_RESULT_SET VALUES(' + ''.join(['?, ' for field in result_set[0]])[:-2] + ')'
-        self.__SimpleSQLLite.executemany_sql(sql, result_set)
+        self.__SimpleSQLite.executemany_sql(sql, result_set)
 
     def _processor(self, columns, result_set):
         self._timer_pos.start()
@@ -398,7 +398,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self._timer_pos.stop()
         self._timer_exibition.start()
         if columns and result_set:
-            self.__pd = self.__SimpleSQLLite.pandas_dataframe(self.__pos_glamorise_sql)
+            self.__pd = self.__SimpleSQLite.pandas_dataframe(self.__pos_glamorise_sql)
         self._timer_exibition.stop()
         self._timer_total.stop()
 
@@ -414,8 +414,8 @@ class Glamorise(metaclass=abc.ABCMeta):
             result_set = json.loads(result_set)
         if self._timer_nlidb_json_result_set._start_time:    
             self._timer_nlidb_json_result_set.stop()
-        if result_set != []:
-            self._processor(columns, result_set)
+        #if result_set != []:
+        self._processor(columns, result_set)
 
     @abc.abstractmethod
     def _send_question_receive_answer(self):
@@ -511,5 +511,5 @@ class Glamorise(metaclass=abc.ABCMeta):
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
-        self.__SimpleSQLLite.execute_sql(sql)
-        os.remove('./datasets/GLAMORISE.db')
+        self.__SimpleSQLite.execute_sql(sql)
+        os.remove('./datasets/glamorise.db')

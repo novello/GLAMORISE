@@ -1,4 +1,4 @@
-from simple_sqllite import SimpleSQLLite
+from simple_sqlite import SimpleSQLite
 from mock_nlidb import MockNlidb
 from nalir_nlidb import NalirNlidb
 from glamorise import Glamorise
@@ -9,13 +9,13 @@ from glamorise import Glamorise
 # the implementation has to be changed depending on the NLIDB
 class GlamoriseNlidb(Glamorise):
 
-    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = ''):
+    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = '', config_db = '', token_path = ''):
         super(GlamoriseNlidb, self).__init__(lang, patterns)
         # NLIDB instance
         if NLIDB == 'Mock':
             self.__nlidb = MockNlidb()
         elif NLIDB == 'NaLIR':
-            self.__nlidb = NalirNlidb()
+            self.__nlidb = NalirNlidb(config_db, token_path)
         
     @property
     def pos_nlidb_sql(self):

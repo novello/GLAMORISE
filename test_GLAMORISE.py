@@ -70,7 +70,7 @@ patterns_json_txt = """{
 class TestGLAMORISE(TestCase):
     def test_GLAMORISE_methods(self):
         # set of questions to test
-        with open('./datasets/pfp.csv', encoding="utf-8") as csv_file:
+        with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
             #jump the title line
             next(csv_reader)
