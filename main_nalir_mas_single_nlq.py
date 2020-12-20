@@ -84,7 +84,7 @@ patterns_json_txt = """{
 jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db)
 
-nlq ='return me the number of authors who have cited the publications by "Einstein"'
+nlq ='return me the keyword, which have been contained by the most number of "papers" in VLDB conference.'
 
 mc.print_results(glamorise, nlq)
 
