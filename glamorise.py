@@ -129,6 +129,8 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__matched_sents = []  # Collect data of matched sentences to be visualized  
         
         self.__pre_prepared_query = ''
+        self.__pre_before_query = ''
+        self.__original_query = ''
 
         self.__select_clause = ''
         self.__from_clause = ''
@@ -144,8 +146,12 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pd = None       
 
     @property
-    def query(self):
-        return self.__query
+    def pre_before_query(self):
+        return self.__pre_before_query
+
+    @property
+    def original_query(self):
+        return self.__original_query
 
     @property
     def pre_prepared_query(self):
@@ -343,21 +349,42 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     def __prepare_query_to_NLIDB(self):
         # set the query that is going to be passed to the NLIDB initially as the received query
-        self.__pre_prepared_query = self.__query
+        self.__pre_prepared_query = self.__pre_before_query
         # then cut the texts to be cut
-        for cut_text in self.__pre_cut_text:
-            regex = r"(^|(.*?[\s.,;!?]+))(" + cut_text.lower() + r"([\s.,;!?]|$))(([\s., ;!?]*.*)|$)"
-            self.__pre_prepared_query = re.sub(regex, r"\1\5", self.__pre_prepared_query, flags=re.I)
+        self.__pre_prepared_query = self.__cut_text(self.__pre_cut_text, self.__pre_prepared_query)        
         # then replace the texts that must be replaced
-        for replaced_text in self.__pre_replaced_text:
+        self.__pre_prepared_query = self.__replace_text(self.__pre_replaced_text, self.__pre_prepared_query)  
+        if patterns_json.get('pre_after_cut_text'): 
+            self.__pre_prepared_query = self.__cut_text(patterns_json['pre_after_cut_text'], self.__pre_prepared_query)
+        if patterns_json.get('pre_after_replace_text'): 
+            self.__pre_prepared_query = self.__replace_text(patterns_json['pre_after_replace_text'], self.__pre_prepared_query)                    
+        
+    def __replace_text(self, replaced_text_list, query):
+        result = query
+        # then replace the texts that must be replaced
+        for replaced_text in replaced_text_list:
             regex = r"(^|(.*?[\s.,;!?]+))(" + replaced_text.lower() + r")(([\s., ;!?]*.*)|$)"
-            str = r"\1" + self.__pre_replaced_text[replaced_text] + r"\5"
-            self.__pre_prepared_query = re.sub(regex, str, self.__pre_prepared_query, flags=re.I)
-        return self.__pre_prepared_query
+            str = r"\1" + replaced_text_list[replaced_text] + r"\5"
+            result = re.sub(regex, str, result, flags=re.I)
+        return result
+
+    def __cut_text(self,cut_text_list, query):
+        result = query
+        # then cut the texts to be cut
+        for cut_text in cut_text_list:
+            regex = r"(^|(.*?[\s.,;!?]+))(" + cut_text.lower() + r"([\s.,;!?]|$))(([\s., ;!?]*.*)|$)"
+            result = re.sub(regex, r"\1\5", result, flags=re.I)
+        return result
 
     def __preprocessor(self, query):
         self._timer_pre.start()
-        self.__query = query
+        self.__original_query = query
+        if patterns_json.get('pre_before_cut_text'): 
+            query = self.__cut_text(patterns_json['pre_before_cut_text'], query)
+        if patterns_json.get('pre_before_replace_text'): 
+            query = self.__replace_text(patterns_json['pre_before_replace_text'], query)            
+        self.__pre_before_query = query
+        
         self.__doc = self.__nlp(query)        
         self.__matches = self.__matcher(self.__doc)                   
         temp = defaultdict(list)          

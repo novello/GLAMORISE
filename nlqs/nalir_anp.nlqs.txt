@@ -1,0 +1,12 @@
+What was the per month mean gas production per field?
+What was the per field mean gas production per month?
+What was the mean monthly petroleum production by field in the state of Rio de Janeiro?
+What was the mean yearly petroleum production by field by Rio de Janeiro?
+What was the mean gas production per field with production greater than 100 cubic meters?
+What was the mean gas production per basin with production less than 1000 cubic meters?
+Which field produces the most oil per month?
+Which basin has the highest yearly oil production?
+Which federated state has the lowest gas production?
+Which state of the federation has the lowest gas production?
+What was the average yearly production of oil per field and state in the year in 2015?
+What was the average monthly production of oil per field in the state of Rio de Janeiro and year 2015?

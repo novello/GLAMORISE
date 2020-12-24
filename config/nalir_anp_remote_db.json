@@ -1,0 +1,11 @@
+{
+    "connection":{
+            "host": "10.10.90.97",
+            "password":"123mudar",
+            "user":"nalir",
+            "database":"anp"
+    },
+    "loggingMode": "ERROR",
+    "zfiles_path":"/home/novello/nalir-glamorise/zfiles",
+    "jars_path":"/home/novello/nalir-glamorise/jars/new_jars"
+}

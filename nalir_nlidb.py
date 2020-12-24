@@ -32,10 +32,13 @@ class NalirNlidb:
         result = re.search('(SELECT )(DISTINCT )?(.*)$', sql_list[0], re.IGNORECASE|re.MULTILINE)        
         select = ''
         fields = result.group(3).split(',')
+        all_fields = []
         transformed_fields = []
         for field in fields:
             field = field.strip()
-            transformed_fields.append(field + ' as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
+            if field not in all_fields:            
+                all_fields.append(field)
+                transformed_fields.append(field + ' as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
         self.__sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'

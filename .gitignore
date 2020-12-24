@@ -113,3 +113,4 @@ docker-compose.yml
 
 #datasets
 datasets/anp_complete.db
+datasets/ngsdb.sql
