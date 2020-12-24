@@ -6,7 +6,7 @@ def dump(obj):
     if attr in ['pre_aggregation_functions', 'pre_aggregation_fields', 'pre_group_by_fields',
                 'pre_time_scale_aggregation_functions', 'pre_time_scale_aggregation_fields', 'pre_time_scale_group_by_fields',
                 'pre_having_fields', 'pre_having_conditions', 'pre_having_values', 'pre_having_units',
-                'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'pre_prepared_query',
+                'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'original_query', 'pre_before_query', 'pre_prepared_query',
                 'pos_group_by_fields', 'pos_glamorise_sql', 'pos_nlidb_sql'
                 ] and getattr(obj, attr):
         print("%s = %r" % (attr, getattr(obj, attr)))
