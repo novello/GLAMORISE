@@ -16,7 +16,7 @@ with open('./config/glamorise_nalir_mas_test.json') as json_file:
 jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db)
 
-nlq ='return me the keyword, which have been contained by the most number of publications in VLDB conference.'
+nlq ='return me the keyword, with the number of publications in VLDB conference.'
 
 mc.print_results(glamorise, nlq)
 

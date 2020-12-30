@@ -1,3 +1,12 @@
+What was the production of oil in the state of Rio de Janeiro?
+What was the average monthly production of oil in the state of Rio de Janeiro?
+What was the average yearly production of oil in the state of Alagoas?
+How many fields are there in Paraná?
+What was the maximum production of oil in the state of Ceará per field?
+What was the minimum gas production in the state of São Paulo per basin?
+What was the average monthly oil production by the operator Petrobrás?
+What was the mean yearly gas production per field?
+What was the mean gas production per month per field?
 What was the per month mean gas production per field?
 What was the per field mean gas production per month?
 What was the mean monthly petroleum production by field in the state of Rio de Janeiro?

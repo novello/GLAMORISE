@@ -83,6 +83,7 @@ class Glamorise(metaclass=abc.ABCMeta):
     def __init__(self, lang="en_core_web_sm", patterns = ""):
         global patterns_json 
         patterns_json = json.loads(patterns)    
+        self._patterns_json = patterns_json
 
         # internal properties
         self.__nlp = spacy.load(lang)            
@@ -104,7 +105,8 @@ class Glamorise(metaclass=abc.ABCMeta):
         self._timer_total = Timer(name="timer_total", logger=None)
         self._timer_total.start()
         self._timer_pre = Timer(name="timer_pre", logger=None)
-        self._timer_nlidb_execution = Timer(name="timer_nlidb_execution", logger=None)
+        self._timer_nlidb_execution_first_and_second_attempt = Timer(name="timer_nlidb_execution_first_and_second_attempt", logger=None)
+        self._timer_nlidb_execution_third_attempt = Timer(name="_timer_nlidb_execution_third_attempt", logger=None)
         self._timer_nlidb_json_result_set = Timer(name="timer_nlidb_json_result_set", logger=None)
         self._timer_pos = Timer(name="timer_pos", logger=None)
         self._timer_exibition = Timer(name="timer_exibition", logger=None)
@@ -128,7 +130,8 @@ class Glamorise(metaclass=abc.ABCMeta):
 
         self.__matched_sents = []  # Collect data of matched sentences to be visualized  
         
-        self.__pre_prepared_query = ''
+        self._pre_prepared_query = ''
+        self._pre_prepared_query_before_field_translation = ''
         self.__pre_before_query = ''
         self.__original_query = ''
 
@@ -138,6 +141,9 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__having_clause = ''
         self.__order_by_clause = ''
         self.__pos_glamorise_sql = ''
+
+        # NLIDB fields
+        self._nlidb_interface_fields = []
 
         # fields revealed only in the NLIDB
         self.__pos_group_by_fields = []
@@ -155,7 +161,11 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     @property
     def pre_prepared_query(self):
-        return self.__pre_prepared_query
+        return self._pre_prepared_query
+
+    @property
+    def pre_prepared_query_before_field_translation(self):
+        return self._pre_prepared_query_before_field_translation
 
     @property
     def pre_aggregation_functions(self):
@@ -236,10 +246,18 @@ class Glamorise(metaclass=abc.ABCMeta):
     @property
     def pd(self):                                 
         return deepcopy(self.__pd)
+    
+    @property
+    def patterns_json(self):                                 
+        return deepcopy(self._patterns_json)
 
     @property
     def pos_group_by_fields(self):
         return deepcopy(self.__pos_group_by_fields)
+
+    @property
+    def nlidb_interface_fields(self):
+        return deepcopy(self._nlidb_interface_fields)    
 
     def __build_field(self, span, field, pos = '', unit_of_measurement = False, time_scale_group_by_field = '', replace_text = ''):                
         if time_scale_group_by_field != '':
@@ -349,15 +367,15 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     def __prepare_query_to_NLIDB(self):
         # set the query that is going to be passed to the NLIDB initially as the received query
-        self.__pre_prepared_query = self.__pre_before_query
+        self._pre_prepared_query = self.__pre_before_query
         # then cut the texts to be cut
-        self.__pre_prepared_query = self.__cut_text(self.__pre_cut_text, self.__pre_prepared_query)        
+        self._pre_prepared_query = self.__cut_text(self.__pre_cut_text, self._pre_prepared_query)        
         # then replace the texts that must be replaced
-        self.__pre_prepared_query = self.__replace_text(self.__pre_replaced_text, self.__pre_prepared_query)  
+        self._pre_prepared_query = self.__replace_text(self.__pre_replaced_text, self._pre_prepared_query)  
         if patterns_json.get('pre_after_cut_text'): 
-            self.__pre_prepared_query = self.__cut_text(patterns_json['pre_after_cut_text'], self.__pre_prepared_query)
+            self._pre_prepared_query = self.__cut_text(patterns_json['pre_after_cut_text'], self._pre_prepared_query)
         if patterns_json.get('pre_after_replace_text'): 
-            self.__pre_prepared_query = self.__replace_text(patterns_json['pre_after_replace_text'], self.__pre_prepared_query)                    
+            self._pre_prepared_query = self.__replace_text(patterns_json['pre_after_replace_text'], self._pre_prepared_query)                    
         
     def __replace_text(self, replaced_text_list, query):
         result = query
@@ -409,9 +427,7 @@ class Glamorise(metaclass=abc.ABCMeta):
     def _processor(self, columns, result_set):
         self._timer_pos.start()
         # processor steps
-
-        # the field translation is done by the child class that is aware of the NLIDB column names
-        self._translate_all_fields()
+        #         
         # look for fields that GLAMORISE did not identify
         # because it is the work of the NLIDB (query part without aggregation)
         self.__pos_group_by_fields = [column[0].lower() for column in columns \
@@ -432,7 +448,7 @@ class Glamorise(metaclass=abc.ABCMeta):
     def execute(self, query):
         self.initialize_and_reset_attr()        
         self.__preprocessor(query)
-        columns, result_set = self._send_question_receive_answer()
+        columns, result_set = self._nlidb_interface()
         # JSON columns names and types received by the NLIDB converted to list        
         if columns:
             columns = json.loads(columns)
@@ -445,7 +461,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self._processor(columns, result_set)
 
     @abc.abstractmethod
-    def _send_question_receive_answer(self):
+    def _nlidb_interface(self):
        pass
 
     @abc.abstractmethod

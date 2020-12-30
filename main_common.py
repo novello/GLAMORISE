@@ -6,10 +6,11 @@ def dump(obj):
     if attr in ['pre_aggregation_functions', 'pre_aggregation_fields', 'pre_group_by_fields',
                 'pre_time_scale_aggregation_functions', 'pre_time_scale_aggregation_fields', 'pre_time_scale_group_by_fields',
                 'pre_having_fields', 'pre_having_conditions', 'pre_having_values', 'pre_having_units',
-                'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'original_query', 'pre_before_query', 'pre_prepared_query',
-                'pos_group_by_fields', 'pos_glamorise_sql', 'pos_nlidb_sql'
+                'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'original_query', 'pre_before_query', 'pre_prepared_query', 'pre_prepared_query_before_field_translation',
+                'nlidb_interface_fields',
+                'pos_group_by_fields', 'pos_glamorise_sql', 'pos_nlidb_sql', 'pos_nlidb_sql_first_attempt', 'pos_nlidb_sql_second_attempt', 'pos_nlidb_sql_third_attempt'
                 ] and getattr(obj, attr):
-        print("%s = %r" % (attr, getattr(obj, attr)))
+        print("%s = %r\n" % (attr, getattr(obj, attr)))
 
 def is_jupyter_notebook():
     # check the environment
@@ -57,7 +58,8 @@ def print_results(glamorise, nlq):
 
 
     print("timer_pre : {:.2f} sec".format(glamorise._timer_pre.last))
-    print("timer_nlidb_execution : {:.2f} sec".format(glamorise._timer_nlidb_execution.last))
+    print("timer_nlidb_execution_first_and_second_attempt : {:.2f} sec".format(glamorise._timer_nlidb_execution_first_and_second_attempt.last))    
+    print("timer_nlidb_execution_third_attempt : {:.2f} sec".format(glamorise._timer_nlidb_execution_third_attempt.last))
     print("timer_nlidb_json_result_set : {:.2f} sec".format(glamorise._timer_nlidb_json_result_set.last))
     print("timer_pos : {:.2f} sec".format(glamorise._timer_pos.last))
     print("timer_exibition : {:.2f} sec".format(glamorise._timer_exibition.last))
