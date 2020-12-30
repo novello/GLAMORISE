@@ -1,9 +1,8 @@
 {
   "units_of_measurement" : [],
-    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
-    "pre_before_cut_text" : ["which have been contained by"],
-    "pre_before_replace_text" : {"VLDB conference" : "VLDB", "paper" : "publication", "papers" : "publications"},
-    "pre_after_replace_text" : {"keyword" : "keyword keyword"},
+    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],    
+    "nlidb_sql_translate_fields" : true,
+    "nlidb_attempt_level" : 3,
     "patterns" : {
         "than options" : {
             "reserved_words" : ["more than", "greater than", "less than", "equal to", "greater than or equal to", "less than or equal to"],

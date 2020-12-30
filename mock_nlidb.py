@@ -35,14 +35,14 @@ class MockNlidb:
     def field_synonym(self, synonym):
         # responsible for the translation of the field to the appropriated column
         try:
-            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym + "'"
+            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym.lower().replace(' ', '_').replace('.', '_') + "'"
             field, cursor_description = (self.__SimpleSQLite.execute_sql(sql, 'Field translated'))
-            return list(field)[0][0]
+            return list(field)[0][0].replace(' ', '_').replace('.', '_')
         except:
             return synonym
 
-    def execute_query(self, nlq, timer_nlidb_execution, timer_nlidb_json_result_set):
-        timer_nlidb_execution.start()
+    def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt,  timer_nlidb_execution_third_attempt, timer_nlidb_json_result_set, nlidb_attempt_level, nlidb_interface_fields):
+        timer_nlidb_execution_first_and_second_attempt.start()
         try:            
             # mock NLQ processing, return the SQL for the NLQ query
             sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
@@ -55,7 +55,7 @@ class MockNlidb:
 
             # internal data dictionary table of SQLite
             sql = "SELECT name, type FROM PRAGMA_TABLE_INFO('ANP')"
-            timer_nlidb_execution.stop()
+            timer_nlidb_execution_first_and_second_attempt.stop()
             timer_nlidb_json_result_set.start()
             column_types = self.__SimpleSQLite.execute_sql(sql, 'Metadata collected')[0]            
             # prepare the column names and types as JSON
@@ -64,6 +64,6 @@ class MockNlidb:
                                     for column_type in column_types
                                         if column_type[0] == column_name])
             print(sql_result)                                                                       
-            return columns, result_set, sql_result
+            return columns, result_set, sql_result, sql_result, '', ''
         except:
             print("Query not found: ", nlq)

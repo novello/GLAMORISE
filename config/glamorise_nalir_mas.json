@@ -1,6 +1,8 @@
 {
   "units_of_measurement" : [],
     "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
+    "nlidb_sql_translate_fields" : true,
+    "nlidb_attempt_level" : 2,
     "patterns" : {
         "than options" : {
             "reserved_words" : ["more than", "greater than", "less than", "equal to", "greater than or equal to", "less than or equal to"],
