@@ -18,20 +18,20 @@ class GlamoriseNlidb(Glamorise):
             self.__nlidb = NalirNlidb(config_db, token_path)
         
     @property
-    def pos_nlidb_sql(self):
-        return self._pos_nlidb_sql 
+    def nlidb_interface_sql(self):
+        return self._nlidb_interface_sql 
 
     @property
-    def pos_nlidb_sql_first_attempt(self):
-        return self._pos_nlidb_sql_first_attempt
+    def nlidb_interface_first_attempt_sql(self):
+        return self._nlidb_interface_first_attempt_sql
 
     @property
-    def pos_nlidb_sql_second_attempt(self):
-        return self._pos_nlidb_sql_second_attempt
+    def nlidb_interface_second_attempt_sql(self):
+        return self._nlidb_interface_second_attempt_sql
 
     @property
-    def pos_nlidb_sql_third_attempt(self):
-        return self._pos_nlidb_sql_third_attempt
+    def nlidb_interface_third_attempt_sql(self):
+        return self._nlidb_interface_third_attempt_sql
 
     def _nlidb_interface(self):
         # the field translation is done by the child class that is aware of the NLIDB column names
@@ -44,8 +44,8 @@ class GlamoriseNlidb(Glamorise):
         nlidb_attempt_level = 1
         if self._patterns_json.get('nlidb_attempt_level'): 
             nlidb_attempt_level = self._patterns_json['nlidb_attempt_level']
-        columns, result_set, self._pos_nlidb_sql, self._pos_nlidb_sql_first_attempt, \
-        self._pos_nlidb_sql_second_attempt, self._pos_nlidb_sql_third_attempt = self.__nlidb.execute_query(self.pre_prepared_query, 
+        columns, result_set, self._nlidb_interface_sql, self._nlidb_interface_first_attempt_sql, \
+        self._nlidb_interface_second_attempt_sql, self._nlidb_interface_third_attempt_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
                                                                               self._timer_nlidb_execution_first_and_second_attempt,                                                                              
                                                                               self._timer_nlidb_execution_third_attempt,
                                                                               self._timer_nlidb_json_result_set,

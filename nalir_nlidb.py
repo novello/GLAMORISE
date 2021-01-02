@@ -114,16 +114,16 @@ class NalirNlidb:
     def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt, timer_nlidb_execution_third_attempt, timer_nlidb_json_result_set, nlidb_attempt_level, nlidb_interface_fields):   
         timer_nlidb_execution_first_and_second_attempt.start()     
         columns = result_set = self.__sql = ''
-        self.__sql_first_attempt = self.__sql_second_attempt = self.__sql_third_attempt = ''
+        self.__first_attempt_sql = self.__second_attempt_sql = self.__third_attempt_sql = ''
         try:            
             self.__sql = self.__run_query(nlq)
-            self.__sql_first_attempt = self.__sql
+            self.__first_attempt_sql = self.__sql
 
 
             if self.__sql:
                 if nlidb_attempt_level > 1:
                     self.__include_fields(nlidb_interface_fields)
-                    self.__sql_second_attempt = self.__sql
+                    self.__second_attempt_sql = self.__sql
 
                 self.__change_select()            
             
@@ -137,7 +137,7 @@ class NalirNlidb:
                 timer_nlidb_execution_third_attempt.start()
                 prior_sql = self.__sql
                 self.__nlq_rebuild(nlidb_interface_fields)
-                self.__sql_third_attempt = self.__sql
+                self.__third_attempt_sql = self.__sql
                 self.__change_select()
                 if self.__sql != prior_sql:
                     result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql)                 
@@ -153,7 +153,7 @@ class NalirNlidb:
             print("Error processing NLQ in NaLIR: ", nlq)
             print("Exception: ", e)
         finally:                                             
-            return columns, result_set, self.__sql, self.__sql_first_attempt, self.__sql_second_attempt, self.__sql_third_attempt
+            return columns, result_set, self.__sql, self.__first_attempt_sql, self.__second_attempt_sql, self.__third_attempt_sql
 
     def __run_query(self, nlq):
         try:
@@ -191,9 +191,9 @@ class NalirNlidb:
         from_new_sql_fields, from_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(FROM )(.*)$', 1, 2, ',')
         where_new_sql_fields, where_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
 
-        select_fields, select_result, sql_list = self.__get_fields_in_sql(self.__sql_second_attempt, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
-        from_fields, from_result, sql_list = self.__get_fields_in_sql(self.__sql_second_attempt, '(FROM )(.*)$', 1, 2, ',')
-        where_fields, where_result, sql_list = self.__get_fields_in_sql(self.__sql_second_attempt, '(WHERE )(.*)$', 2, 2, ' AND ')
+        select_fields, select_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
+        from_fields, from_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(FROM )(.*)$', 1, 2, ',')
+        where_fields, where_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
 
         select_final_fields = set()
         from_final_fields = set()

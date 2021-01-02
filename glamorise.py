@@ -568,6 +568,30 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_glamorise_sql = (self.__select_clause + self.__from_clause + self.__group_by_clause + ' ' + \
                      self.__having_clause + ' ' + self.__order_by_clause).replace("  ", " ").strip()
 
+    def dump(self, sub_str):
+        for attr in dir(self):
+            # only the properties that are important to print
+            # if attr in ['pre_aggregation_functions', 'pre_aggregation_fields', 'pre_group_by_fields',
+            #             'pre_time_scale_aggregation_functions', 'pre_time_scale_aggregation_fields', 'pre_time_scale_group_by_fields',
+            #             'pre_having_fields', 'pre_having_conditions', 'pre_having_values', 'pre_having_units',
+            #             'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'original_query', 'pre_before_query', 'pre_prepared_query', 'pre_prepared_query_before_field_translation',
+            #             'nlidb_interface_fields',
+            #             'pos_aggregation_functions', 'pos_aggregation_fields', 'pos_group_by_fields', 'pos_glamorise_sql', 'nlidb_interface_sql', 'nlidb_interface_first_attempt_sql', 'nlidb_interface_second_attempt_sql', 'nlidb_interface_third_attempt_sql'
+            #             ] and getattr(self, attr):
+            if attr.startswith(sub_str) and getattr(self, attr):
+                if attr.endswith('_sql'):
+                    print("\n%s = %r\n" % (attr, getattr(self, attr)))
+                else:
+                    print("%s = %r" % (attr, getattr(self, attr)))
+    
+    def print_timers(self):
+        print("timer_pre: {:.2f} sec".format(self._timer_pre.last))
+        print("timer_nlidb_execution_first_and_second_attempt: {:.2f} sec".format(self._timer_nlidb_execution_first_and_second_attempt.last))    
+        print("timer_nlidb_execution_third_attempt: {:.2f} sec".format(self._timer_nlidb_execution_third_attempt.last))           
+        print("timer_nlidb_json_result_set: {:.2f} sec".format(self._timer_nlidb_json_result_set.last))
+        print("timer_pos: {:.2f} sec".format(self._timer_pos.last))
+        print("timer_exibition: {:.2f} sec".format(self._timer_exibition.last))
+
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
