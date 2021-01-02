@@ -112,7 +112,9 @@ class Glamorise(metaclass=abc.ABCMeta):
         self._timer_exibition = Timer(name="timer_exibition", logger=None)
 
         self._pre_aggregation_functions = []
+        self._pos_aggregation_functions = []
         self._pre_aggregation_fields = []
+        self._pos_aggregation_fields = []
         self._pre_group_by_fields = []
 
         self._pre_time_scale_aggregation_functions = []
@@ -143,7 +145,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_glamorise_sql = ''
 
         # NLIDB fields
-        self._nlidb_interface_fields = []
+        self._nlidb_interface_fields = set()
 
         # fields revealed only in the NLIDB
         self.__pos_group_by_fields = []
@@ -172,8 +174,16 @@ class Glamorise(metaclass=abc.ABCMeta):
         return deepcopy(self._pre_aggregation_functions)
 
     @property
+    def pos_aggregation_functions(self):
+        return deepcopy(self._pos_aggregation_functions)
+
+    @property
     def pre_aggregation_fields(self):
         return deepcopy(self._pre_aggregation_fields)
+
+    @property
+    def pos_aggregation_fields(self):
+        return deepcopy(self._pos_aggregation_fields)
 
     @property
     def pre_group_by_fields(self):
@@ -434,7 +444,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                                                   if column[0].lower() not in self._pre_group_by_fields +
                                                   self._pre_aggregation_fields + self._pre_time_scale_aggregation_fields +
                                                   self._pre_time_scale_group_by_fields]
-        self.__prepare_aggregate_SQL()
+        self.__prepare_aggregate_SQL(columns)
         if columns and result_set:
             self.__create_table_and_insert_data(columns, result_set)
         # prepare a pandas dataframe with the result
@@ -468,7 +478,7 @@ class Glamorise(metaclass=abc.ABCMeta):
     def _translate_fields(self):
         pass
 
-    def __prepare_aggregate_SQL(self):
+    def __prepare_aggregate_SQL(self, columns):
         #initialize clauses
         if self._pre_aggregation_fields:
             self.__select_clause = 'SELECT '
@@ -506,22 +516,29 @@ class Glamorise(metaclass=abc.ABCMeta):
                     self.__order_by_clause += post_processing_group_by_field + ', '
 
         # building the syntax of the aggregate functions, aggregate fields e.g. min(production),
-        # and candidate aggregate field and function if they exist
-        for i in range(len(self._pre_aggregation_functions)):
-            # building sql part for aggregate field and function
-            self.__select_clause += self._pre_aggregation_functions[i] + \
-                                    '(' + self._pre_aggregation_fields[i] + ') as ' + \
-                                    self._pre_aggregation_functions[i] + '_' + \
-                                    self._pre_aggregation_fields[i] + ', '
+        # and candidate aggregate field and function if they exist    
+        column_dict = {x[0] : x[1] for x in columns}    
+        self._pos_aggregation_functions = deepcopy(self._pre_aggregation_functions)
+        self._pos_aggregation_fields = deepcopy(self._pre_aggregation_fields)
+        for i in range(len(self._pos_aggregation_functions)):            
+            # changing from count to sum in numeroc fields
+            if self._pos_aggregation_fields[i] in column_dict:
+                if column_dict[self._pos_aggregation_fields[i]] in ['REAL', 'INTEGER'] and self._pos_aggregation_functions[i] == 'count':                    
+                    self._pos_aggregation_functions[i] = 'sum'
+            # building sql part for aggregate field and function        
+            self.__select_clause += self._pos_aggregation_functions[i] + \
+                                    '(' + self._pos_aggregation_fields[i] + ') as ' + \
+                                    self._pos_aggregation_functions[i] + '_' + \
+                                    self._pos_aggregation_fields[i] + ', '
 
             # building sql part for candidate aggregate field and function
             # it is done as a subquery, but if one day SQLite is substituted it could be done with nested functions
             # e.g. SELECT avg(sum(oil_production) as avg_sum_oil_production FROM NLIDB_result_set GROUP BY year
-            if self._pre_aggregation_fields[i] in self._pre_time_scale_aggregation_fields:
-                j = self._pre_time_scale_aggregation_fields.index(self._pre_aggregation_fields[i])
+            if self._pos_aggregation_fields[i] in self._pre_time_scale_aggregation_fields:
+                j = self._pre_time_scale_aggregation_fields.index(self._pos_aggregation_fields[i])
                 self.__from_clause = ' FROM (SELECT ' + nested_group_by_field + self._pre_time_scale_aggregation_functions[j] + '(' + \
-                                     self._pre_aggregation_fields[i] + ') as ' + \
-                                     self._pre_aggregation_fields[i] + ' FROM NLIDB_result_set'
+                                     self._pos_aggregation_fields[i] + ') as ' + \
+                                     self._pos_aggregation_fields[i] + ' FROM NLIDB_result_set'
                 self.__from_clause += ' GROUP BY ' + nested_group_by_field + \
                                       ', '.join(self._pre_time_scale_group_by_fields) + ') '
 
@@ -533,7 +550,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         # building the HAVING clause having field, followed by operator, followed by value
         for i in range(len(self._pre_having_fields)):
             # we have to change the use of aggregate function in the future
-            self.__having_clause += self._pre_aggregation_functions[i] + \
+            self.__having_clause += self._pos_aggregation_functions[i] + \
                                     '(' + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
                                     + self._pre_having_values[i] + ' and '
 

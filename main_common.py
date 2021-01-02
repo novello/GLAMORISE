@@ -8,7 +8,7 @@ def dump(obj):
                 'pre_having_fields', 'pre_having_conditions', 'pre_having_values', 'pre_having_units',
                 'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'original_query', 'pre_before_query', 'pre_prepared_query', 'pre_prepared_query_before_field_translation',
                 'nlidb_interface_fields',
-                'pos_group_by_fields', 'pos_glamorise_sql', 'pos_nlidb_sql', 'pos_nlidb_sql_first_attempt', 'pos_nlidb_sql_second_attempt', 'pos_nlidb_sql_third_attempt'
+                'pos_aggregation_functions', 'pos_aggregation_fields', 'pos_group_by_fields', 'pos_glamorise_sql', 'pos_nlidb_sql', 'pos_nlidb_sql_first_attempt', 'pos_nlidb_sql_second_attempt', 'pos_nlidb_sql_third_attempt'
                 ] and getattr(obj, attr):
         print("%s = %r\n" % (attr, getattr(obj, attr)))
 

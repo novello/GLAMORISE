@@ -34,6 +34,16 @@ CREATE TABLE `NLIDB_FIELD_SYNONYMS` (
 
 LOCK TABLES `NLIDB_FIELD_SYNONYMS` WRITE;
 /*!40000 ALTER TABLE `NLIDB_FIELD_SYNONYMS` DISABLE KEYS */;
-INSERT INTO `NLIDB_FIELD_SYNONYMS` VALUES ('author','author_name'),('conference','conference_name'),('citation','publication_citation_num'),('paper','publication_title'),('journal','journal_name'),('publication','publication_title'),('keyword','keyword_keyword'),('year','publication_year'),('organization','organization_name'),('researcher','author_name'),('reference','publication_reference_num');
+INSERT INTO `NLIDB_FIELD_SYNONYMS` VALUES ('author','author.name'),
+('conference','conference.name'),
+('citation','publication.citation_num'),
+('paper','publication.title'),
+('journal','journal.name'),
+('publication','publication.title'),
+('keyword','keyword.keyword'),
+('year','publication.year'),
+('organization','organization.name'),
+('researcher','author.name'),
+('reference','publication.reference_num');
 /*!40000 ALTER TABLE `NLIDB_FIELD_SYNONYMS` ENABLE KEYS */;
 UNLOCK TABLES;

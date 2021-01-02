@@ -4,7 +4,6 @@
 
 from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
-import csv
 from codetiming import Timer
 
 with open('./config/nalir_mas_local_db.json') as json_file:
