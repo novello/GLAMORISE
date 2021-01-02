@@ -59,7 +59,7 @@ def print_results(glamorise, nlq):
 
     print("timer_pre : {:.2f} sec".format(glamorise._timer_pre.last))
     print("timer_nlidb_execution_first_and_second_attempt : {:.2f} sec".format(glamorise._timer_nlidb_execution_first_and_second_attempt.last))    
-    print("timer_nlidb_execution_third_attempt : {:.2f} sec".format(glamorise._timer_nlidb_execution_third_attempt.last))
+    print("timer_nlidb_execution_third_attempt : {:.2f} sec".format(glamorise._timer_nlidb_execution_third_attempt.last))           
     print("timer_nlidb_json_result_set : {:.2f} sec".format(glamorise._timer_nlidb_json_result_set.last))
     print("timer_pos : {:.2f} sec".format(glamorise._timer_pos.last))
     print("timer_exibition : {:.2f} sec".format(glamorise._timer_exibition.last))
