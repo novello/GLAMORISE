@@ -8,30 +8,7 @@ class MockNlidb:
         # open the database
         self.__SimpleSQLite = SimpleSQLite('./datasets/mock_nlidb_anp.db')
 
-    def create_table(self):
-        # used to create table, just in a task to import is needed
-        sql = '''CREATE TABLE NLIDB_RESULT_SET (
-                                FIELD TEXT,            
-                                BASIN TEXT,
-                                STATE TEXT,            
-                                OPERATOR TEXT,
-                                CONTRACT_NUMBER TEXT,
-                                OIL_PRODUCTION REAL,
-                                GAS_PRODUCTION REAL,
-                                MONTH INTEGER,
-                                YEAR INTEGER);'''
-        self.__SimpleSQLite.execute_sql(sql, 'Table created')
-
-    def drop_table(self):
-        sql = '''DROP TABLE NLIDB_RESULT_SET;'''
-        self.__SimpleSQLite.execute_sql(sql, 'Table dropped')
-
-    def insert_data(self):
-        # used to insert data, just in a task to import is needed
-        with open('./datasets/anp_insert.txt', 'r', encoding='utf8') as file:
-            sql = file.read()
-            self.__SimpleSQLite.execute_sql(sql, '')
-
+    
     def field_synonym(self, synonym):
         # responsible for the translation of the field to the appropriated column
         try:
@@ -41,7 +18,7 @@ class MockNlidb:
         except:
             return synonym
 
-    def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt,  timer_nlidb_execution_third_attempt, timer_nlidb_json_result_set, nlidb_attempt_level, nlidb_interface_fields):
+    def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt,  timer_nlidb_json_result_set):
         timer_nlidb_execution_first_and_second_attempt.start()
         try:            
             # mock NLQ processing, return the SQL for the NLQ query
@@ -64,6 +41,6 @@ class MockNlidb:
                                     for column_type in column_types
                                         if column_type[0] == column_name])
             print(sql_result)                                                                       
-            return columns, result_set, sql_result, sql_result, '', ''
+            return columns, result_set, sql_result
         except:
             print("Query not found: ", nlq)

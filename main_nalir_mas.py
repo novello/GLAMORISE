@@ -22,8 +22,7 @@ with open('./nlqs/nalir_mas_subset_modified.nlqs.txt', encoding="utf-8") as file
     for nlq in lines:    
         line_count += 1
         #if line_count < 13:
-        #    continue
-        #nlq ='return me the citations of each paper in PVLDB'                                              
+        #    continue        
         mc.print_results(glamorise, nlq)
 
     mc.print_total_timers()

@@ -15,7 +15,7 @@ class GlamoriseNlidb(Glamorise):
         if NLIDB == 'Mock':
             self.__nlidb = MockNlidb()
         elif NLIDB == 'NaLIR':
-            self.__nlidb = NalirNlidb(config_db, token_path)
+            self.__nlidb = NalirNlidb(config_db, token_path)        
         
     @property
     def nlidb_interface_sql(self):
@@ -43,14 +43,21 @@ class GlamoriseNlidb(Glamorise):
         # send the NLQ question and receive the JSON with the columns and result set
         nlidb_attempt_level = 1
         if self._patterns_json.get('nlidb_attempt_level'): 
-            nlidb_attempt_level = self._patterns_json['nlidb_attempt_level']
-        columns, result_set, self._nlidb_interface_sql, self._nlidb_interface_first_attempt_sql, \
-        self._nlidb_interface_second_attempt_sql, self._nlidb_interface_third_attempt_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
+            nlidb_attempt_level = self._patterns_json['nlidb_attempt_level']        
+
+        if isinstance(self.__nlidb, NalirNlidb):
+            columns, result_set, self._nlidb_interface_sql, self._nlidb_interface_first_attempt_sql, \
+            self._nlidb_interface_second_attempt_sql, self._nlidb_interface_third_attempt_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
                                                                               self._timer_nlidb_execution_first_and_second_attempt,                                                                              
                                                                               self._timer_nlidb_execution_third_attempt,
                                                                               self._timer_nlidb_json_result_set,
                                                                               nlidb_attempt_level,
                                                                               self._nlidb_interface_fields)         
+        elif isinstance(self.__nlidb, MockNlidb):
+            columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
+                                                                              self._timer_nlidb_execution_first_and_second_attempt,                                                                                                                                                            
+                                                                              self._timer_nlidb_json_result_set)    
+
         return columns, result_set
 
     def _nlidb_sql_translate_fields(self):

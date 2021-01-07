@@ -2,9 +2,8 @@
     "units_of_measurement" : [],
     "compound_pattern_dep" : [{"POS": "NOUN", "DEP": "compound"}, {"POS": "NOUN"}],
     "compound_pattern_of" : [{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER": "of", "POS": "ADP"}, {"POS": "NOUN"}],
-    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
-    "pre_after_cut_text" : ["are there"],
-    "replace_synonyms" : true,
+    "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],    
+    "nlidb_sql_translate_fields" : true,
     "pre_after_replace_text" : {"month gas production" : "gas production per month", "year gas production" : "gas production per year", "month oil production" : "oil production per month", "year oil production" : "oil production per year", "how many" : "return", "how much": "return", "per month" : "per month per year", "by month" : "per month per year", "for each month" : "per month per year"},
     "patterns" : {
         "than options" : {
