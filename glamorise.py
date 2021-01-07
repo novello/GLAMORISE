@@ -48,14 +48,18 @@ class CompoundMerger(Merger):
         self._type = 'compound'
         # Register a new token extension to flag compound nouns
         Token.set_extension("compound_noun", default=False, force=True)
+        compound_pattern_dep = []
+        if patterns_json.get('compound_pattern_dep'):
+            compound_pattern_dep = patterns_json['compound_pattern_dep']
+        compound_pattern_of = []
+        if patterns_json.get('compound_pattern_of'):
+            compound_pattern_of = patterns_json['compound_pattern_of']            
         self.matcher = Matcher(nlp.vocab)
         self.matcher.add(
             "CompoundMerger",
             None,
-            [{'POS': 'NOUN', 'DEP': 'compound'},
-           {'POS': 'NOUN'}],[{'POS': 'NOUN', 'LOWER':{'NOT_IN': ['number']}},
-           {'LOWER': 'of', 'POS': 'ADP'},
-           {'POS': 'NOUN'}]     
+            compound_pattern_dep,
+            compound_pattern_of
         )
  
  
@@ -66,16 +70,17 @@ class UnitsOfMeasurementMerger(Merger):
         # Register a new token extension to flag units of measurement
         Token.set_extension("units_of_measurement", default=False, force=True)
         self.matcher = Matcher(nlp.vocab)
-        for unit_of_measurement in patterns_json['units_of_measurement']:           
-          units_of_measurement_pattern = []
-          splits = unit_of_measurement.split()      
-          for split in splits:        
-            units_of_measurement_pattern = units_of_measurement_pattern + [{'LOWER' : split.lower()}]
-          self.matcher.add(
-              "UnitsOfMeasurementMerger" + unit_of_measurement.replace(' ', ''),
-              None,
-              units_of_measurement_pattern
-            )
+        if patterns_json.get('units_of_measurement'):
+            for unit_of_measurement in patterns_json['units_of_measurement']:         
+                units_of_measurement_pattern = []
+                splits = unit_of_measurement.split()      
+                for split in splits:        
+                    units_of_measurement_pattern = units_of_measurement_pattern + [{'LOWER' : split.lower()}]
+                self.matcher.add(
+                    "UnitsOfMeasurementMerger" + unit_of_measurement.replace(' ', ''),
+                    None,
+                    units_of_measurement_pattern
+                )
 
 #main class
 class Glamorise(metaclass=abc.ABCMeta):    
