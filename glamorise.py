@@ -574,15 +574,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                      self.__having_clause + ' ' + self.__order_by_clause).replace("  ", " ").strip()
 
     def dump(self, sub_str):
-        for attr in dir(self):
-            # only the properties that are important to print
-            # if attr in ['pre_aggregation_functions', 'pre_aggregation_fields', 'pre_group_by_fields',
-            #             'pre_time_scale_aggregation_functions', 'pre_time_scale_aggregation_fields', 'pre_time_scale_group_by_fields',
-            #             'pre_having_fields', 'pre_having_conditions', 'pre_having_values', 'pre_having_units',
-            #             'pre_group_by', 'pre_cut_text', 'pre_replaced_text', 'original_query', 'pre_before_query', 'pre_prepared_query', 'pre_prepared_query_before_field_translation',
-            #             'nlidb_interface_fields',
-            #             'pos_aggregation_functions', 'pos_aggregation_fields', 'pos_group_by_fields', 'pos_glamorise_sql', 'nlidb_interface_sql', 'nlidb_interface_first_attempt_sql', 'nlidb_interface_second_attempt_sql', 'nlidb_interface_third_attempt_sql'
-            #             ] and getattr(self, attr):
+        for attr in dir(self):            
             if attr.startswith(sub_str) and getattr(self, attr):
                 if attr.endswith('_sql'):
                     print("\n%s = %r\n" % (attr, getattr(self, attr)))
