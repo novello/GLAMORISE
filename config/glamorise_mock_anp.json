@@ -1,7 +1,7 @@
 {
-    "units_of_measurement" : ["cubic meters"],
-    "compound_pattern_dep" : [{"POS": "NOUN", "DEP": "compound"}, {"POS": "NOUN"}],
-    "compound_pattern_of" : [{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER": "of", "POS": "ADP"}, {"POS": "NOUN"}],
+    "units_of_measurement" : ["cubic meters"],    
+    "compound_pattern_dep" : [{"POS": "NOUN", "DEP": "compound"}, {"POS": "NOUN"}],    
+    "compound_pattern_of" : [{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER": "of", "POS": "ADP"}, {"POS": "NOUN"}],        
     "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
     "patterns" : {
         "than options" : {
