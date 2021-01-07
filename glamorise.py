@@ -55,12 +55,12 @@ class CompoundMerger(Merger):
         if patterns_json.get('compound_pattern_of'):
             compound_pattern_of = patterns_json['compound_pattern_of']            
         self.matcher = Matcher(nlp.vocab)
-        self.matcher.add(
-            "CompoundMerger",
-            None,
-            compound_pattern_dep,
-            compound_pattern_of
-        )
+        if compound_pattern_dep and compound_pattern_of:
+            self.matcher.add("CompoundMerger", None, compound_pattern_dep, compound_pattern_of)
+        elif compound_pattern_dep:
+            self.matcher.add("CompoundMerger", None, compound_pattern_dep)
+        elif compound_pattern_of:
+            self.matcher.add("CompoundMerger", None, compound_pattern_of)
  
  
  
