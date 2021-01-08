@@ -56,7 +56,10 @@ class GlamoriseNlidb(Glamorise):
         elif isinstance(self.__nlidb, MockNlidb):
             columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
                                                                               self._timer_nlidb_execution_first_and_second_attempt,                                                                                                                                                            
-                                                                              self._timer_nlidb_json_result_set)    
+                                                                              self._timer_nlidb_json_result_set) 
+             
+            self._nlidb_interface_first_attempt_sql = \
+            self._nlidb_interface_second_attempt_sql = self._nlidb_interface_third_attempt_sql = 'N/A'
 
         return columns, result_set
 
