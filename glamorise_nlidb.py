@@ -6,16 +6,28 @@ from glamorise import Glamorise
 
 
 # this child class is aware of the NLIDB
-# the implementation has to be changed depending on the NLIDB
+# the implementation has to be changed to contemplate new NLIDBs
 class GlamoriseNlidb(Glamorise):
 
     def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = '', config_db = '', token_path = ''):
         super(GlamoriseNlidb, self).__init__(lang, patterns)
+        # customize as needed customize as needed according to integration with other NLIDBs. 
+        # Don't forget to create the specific class for NLIDB following the model of NalirNlid
+
         # NLIDB instance
         if NLIDB == 'Mock':
             self.__nlidb = MockNlidb()
         elif NLIDB == 'NaLIR':
             self.__nlidb = NalirNlidb(config_db, token_path)        
+
+        # 
+        # add more NLIDBs here
+        #       
+            
+        self._nlidb_interface_sql = ''     
+        self._nlidb_interface_first_attempt_sql = ''
+        self._nlidb_interface_second_attempt_sql = ''
+        self._nlidb_interface_third_attempt_sql = ''
         
     @property
     def nlidb_interface_sql(self):
@@ -44,8 +56,16 @@ class GlamoriseNlidb(Glamorise):
         nlidb_attempt_level = 1
         if self._patterns_json.get('nlidb_attempt_level'): 
             nlidb_attempt_level = self._patterns_json['nlidb_attempt_level']        
+    
 
-        if isinstance(self.__nlidb, NalirNlidb):
+        # customize as needed customize as needed according to integration with other NLIDBs. 
+        # Don't forget to create the specific class for NLIDB following the model of NalirNlidb
+
+        if isinstance(self.__nlidb, MockNlidb):
+            columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
+                                                                              self._timer_nlidb_execution_first_and_second_attempt,                                                                                                                                                            
+                                                                              self._timer_nlidb_json_result_set)             
+        elif isinstance(self.__nlidb, NalirNlidb):
             columns, result_set, self._nlidb_interface_sql, self._nlidb_interface_first_attempt_sql, \
             self._nlidb_interface_second_attempt_sql, self._nlidb_interface_third_attempt_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
                                                                               self._timer_nlidb_execution_first_and_second_attempt,                                                                              
@@ -53,13 +73,13 @@ class GlamoriseNlidb(Glamorise):
                                                                               self._timer_nlidb_json_result_set,
                                                                               nlidb_attempt_level,
                                                                               self._nlidb_interface_fields)         
-        elif isinstance(self.__nlidb, MockNlidb):
-            columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
-                                                                              self._timer_nlidb_execution_first_and_second_attempt,                                                                                                                                                            
-                                                                              self._timer_nlidb_json_result_set) 
              
-            self._nlidb_interface_first_attempt_sql = \
-            self._nlidb_interface_second_attempt_sql = self._nlidb_interface_third_attempt_sql = 'N/A'
+        # 
+        # add more NLIDBs here
+        #     
+
+        else:
+            columns = result_set = None
 
         return columns, result_set
 
@@ -76,7 +96,7 @@ class GlamoriseNlidb(Glamorise):
             # ask the NLIDB for the appropriate column name
             fields[i] = self.__nlidb.field_synonym(fields[i])
         # the trick to convert fields that were converted to more than one column
-        # E.g.: month -> year, month
+        # E.g.: month -> year,month
         if fields:
             fields_str = ','.join(fields)
             fields = fields_str.split(',')
