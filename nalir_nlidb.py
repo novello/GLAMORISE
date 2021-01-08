@@ -102,8 +102,8 @@ class NalirNlidb:
             return nlidb_nql
             #print('Exception: ', e        
 
-    def __include_fields(self, nlidb_interface_fields):
-        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')        
+    def __include_fields(self, glamorise_all_fields, nlidb_interface_fields):
+        fields = glamorise_all_fields
         for nlidb_interface_field in nlidb_interface_fields:            
             if nlidb_interface_field not in fields:            
                 fields.append(nlidb_interface_field)                
@@ -178,6 +178,7 @@ class NalirNlidb:
             print("Exception: ", e)        
 
     def __nlq_rebuild(self, nlidb_interface_fields):
+        nlq = ''
         try:
             nlq = "give me all " + " for each ".join(nlidb_interface_fields).replace(".", "_")
             new_sql = self.__run_query(nlq)             
