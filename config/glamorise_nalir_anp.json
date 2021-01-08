@@ -1,10 +1,9 @@
 {
-    "units_of_measurement" : [],
+    "units_of_measurement" : ["cubic meters"],
     "compound_pattern_dep" : [{"POS": "NOUN", "DEP": "compound"}, {"POS": "NOUN"}],
     "compound_pattern_of" : [{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER": "of", "POS": "ADP"}, {"POS": "NOUN"}],
     "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],    
-    "nlidb_sql_translate_fields" : true,
-    "pre_after_replace_text" : {"month gas production" : "gas production per month", "year gas production" : "gas production per year", "month oil production" : "oil production per month", "year oil production" : "oil production per year", "how many" : "return", "how much": "return", "per month" : "per month per year", "by month" : "per month per year", "for each month" : "per month per year"},
+    "nlidb_nlq_translate_fields" : true,    
     "patterns" : {
         "than options" : {
             "reserved_words" : ["more than", "greater than", "less than", "equal to", "greater than or equal to", "less than or equal to"],

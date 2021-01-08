@@ -21,10 +21,10 @@ def mc_print(string):
 
 def mc_display(pd):
     if jupyter:
-        display(pd)
+        return display(pd)
     else:                
         print(pd)
-    return pd    
+      
 
 
 
@@ -66,7 +66,7 @@ def print_results(glamorise, nlq):
     result += '</br></br>'
     result += mc_print("**GLAMORISE Result**")
     # display the result as a pandas dataframe
-    #result += mc_display(glamorise.pd)    
+    mc_display(glamorise.pd)    
 
     result += glamorise.print_timers()
 

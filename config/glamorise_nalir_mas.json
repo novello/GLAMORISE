@@ -3,7 +3,7 @@
     "compound_pattern_dep" : [{"POS": "NOUN", "DEP": "compound"}, {"POS": "NOUN"}],
     "compound_pattern_of" : [{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER": "of", "POS": "ADP"}, {"POS": "NOUN"}],
     "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],
-    "nlidb_sql_translate_fields" : true,
+    "nlidb_nlq_translate_fields" : false,
     "nlidb_attempt_level" : 3,
     "patterns" : {
         "than options" : {
@@ -49,8 +49,7 @@
             "pre_cut_text" : true
         },
         "superlative max" : {
-            "reserved_words" : ["most", "most number of", "biggest", "longest", "furthest", "highest", "tallest", "greatest", "best", "oldest", "max", "maximum"],
-            "pre_time_scale_replace_text" : {"most" : "for each", "most number of" : "for each", "biggest" : "for each", "longest" : "for each", "furthest" : "for each", "highest" : "for each", "tallest" : "for each", "greatest" : "for each", "best" : "for each", "oldest" : "for each", "max" : "for each", "maximum" : "for each"},
+            "reserved_words" : ["most", "most number of", "biggest", "longest", "furthest", "highest", "tallest", "greatest", "best", "oldest", "max", "maximum"],            
             "pre_aggregation_functions" : "max",
             "pre_cut_text" : true
         },
