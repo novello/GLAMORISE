@@ -157,7 +157,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_group_by_fields = []
         
         # create the pandas dataframe just if it called before being fed
-        self.__pd = None       
+        self.__pd = pd.DataFrame()       
 
     @property
     def pre_before_query(self):
@@ -372,7 +372,8 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     def __prepare_query_to_NLIDB(self):
         # set the query that is going to be passed to the NLIDB initially as the received query
-        self._pre_prepared_query = self.__pre_before_query
+        if patterns_json.get('pre_after_cut_text') or patterns_json.get('pre_after_replace_text'):
+            self.__pre_before_query = self._pre_prepared_query
         # then cut the texts to be cut
         self._pre_prepared_query = self.__cut_text(self.__pre_cut_text, self._pre_prepared_query)        
         # then replace the texts that must be replaced
@@ -406,7 +407,7 @@ class Glamorise(metaclass=abc.ABCMeta):
             query = self.__cut_text(patterns_json['pre_before_cut_text'], query)
         if patterns_json.get('pre_before_replace_text'): 
             query = self.__replace_text(patterns_json['pre_before_replace_text'], query)            
-        self.__pre_before_query = query
+        self._pre_prepared_query = query
         
         self.__doc = self.__nlp(query)        
         self.__matches = self.__matcher(self.__doc)                   

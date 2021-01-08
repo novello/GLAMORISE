@@ -20,8 +20,7 @@ class NalirNlidb:
     
 
     def __init__(self, config_db, token_path):
-        # open the database
-        self.__SimpleSQLite = SimpleSQLite('./datasets/nalir_mas.db')
+        # open the database        
         self.__config_db = config_db
         self.__token_path = token_path
         self.__config = ConfigHandler(reset=True,config_json_text=self.__config_db)

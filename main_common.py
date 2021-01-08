@@ -36,30 +36,30 @@ def print_results(glamorise, nlq):
 
     glamorise.execute(nlq)
     
-    #result += '</br>'
-    #result += mc_print("**spaCy Parse Tree**")
+    result += '</br>'
+    result += mc_print("**spaCy Parse Tree**")
     # show spaCy parse tree and entities
-    #result += glamorise.customized_displacy()
+    result += glamorise.customized_displacy()
     result += '</br>'
     result += mc_print("**spaCy Entities**")
     result += glamorise.customized_displacy_entities()
 
     print("\n\n")
     result += '</br></br></br>'
-    result += mc_print("GLAMORISE Internal Properties")
+    result += mc_print("**GLAMORISE Internal Properties**")
     print("\n")
     result += '</br></br>'
-    result += mc_print("GLAMORISE Preprocessor Properties")
+    result += mc_print("**GLAMORISE Preprocessor Properties**")
     result += glamorise.dump('pre_')
 
     print("\n")
     result += '</br></br>'
-    result += mc_print("GLAMORISE NLIDB Interface Properties")
+    result += mc_print("**GLAMORISE NLIDB Interface Properties**")
     result += glamorise.dump('nlidb_interface_')
 
     print("\n")
     result += '</br></br>'
-    result += mc_print("GLAMORISE Post-processor Properties")
+    result += mc_print("**GLAMORISE Post-processor Properties**")
     result += glamorise.dump('pos_')
 
     print("\n")
@@ -78,7 +78,7 @@ def print_total_timers():
     result = ''
     for (key, value) in Timer.timers.items():
         print("total {} : {:.2f} sec".format(key, value))
-        result += "total {} : {:.2f} sec".format(key, value)
+        result += "</br>total {} : {:.2f} sec".format(key, value)
     return result    
 
 jupyter = is_jupyter_notebook()        
