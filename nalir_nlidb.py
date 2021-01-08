@@ -43,7 +43,7 @@ class NalirNlidb:
         sql_list = sql.split('\n')
         result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
         fields_str = result.group(group_num)
-        fields = [x.strip() for x in fields_str.split(separator)]
+        fields = {x.strip() for x in fields_str.split(separator)}
         return fields, result, sql_list
 
     def __translate_mysql_datatype_to_sqlite(self, type):
@@ -79,39 +79,41 @@ class NalirNlidb:
         return field_type[type]
 
    
-    def field_synonym(self, synonym):
+    def field_synonym(self, synonym, replace_dot = True):
         # responsible for the translation of the field to the appropriated column
         try:            
             sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" + synonym.lower().replace(' ', '_').replace('.', '_') + "'"
             field, cursor_description = self.__rdbms.conduct_sql(sql)
-            return list(field)[0][0].replace(' ', '_').replace('.', '_')
+            field = list(field)[0][0].replace(' ', '_')
+            if replace_dot:
+                field = field.replace('.', '_')
+            return field
         except Exception as e:
             return synonym
             #print('Exception: ', e)
 
-    def translate_all_field_synonyms_in_sql(self, nlidb_nql, nlidb_interface_fields):    
+    def translate_all_field_synonyms_in_nlq(self, nlidb_nlq, nlidb_interface_fields):    
         try:            
             sql = "SELECT synonym, field FROM NLIDB_FIELD_SYNONYMS"
             results, cursor_description = self.__rdbms.conduct_sql(sql)            
             for line in results:
-                if line[0] in nlidb_nql:
-                    nlidb_nql = nlidb_nql.replace(line[0], line[1].replace(' ', '_').replace('.', '_'))
+                if line[0] in nlidb_nlq:
+                    nlidb_nlq = nlidb_nlq.replace(line[0], line[1].replace(' ', '_').replace('.', '_'))
                     nlidb_interface_fields.add(line[1])            
-            return nlidb_nql  
+            return nlidb_nlq  
         except Exception as e:
-            return nlidb_nql
+            return nlidb_nlq
             #print('Exception: ', e        
 
-    def __include_fields(self, glamorise_all_fields, nlidb_interface_fields):
-        fields = glamorise_all_fields
-        for nlidb_interface_field in nlidb_interface_fields:            
-            if nlidb_interface_field not in fields:            
-                fields.append(nlidb_interface_field)                
+    def __include_fields(self, additional_fields):
+        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')        
+        for nlidb_interface_field in additional_fields:                        
+            fields.add(nlidb_interface_field)                
         self.__sql = result.group(1) + result.group(2) + ', '.join(fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'
 
-    def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt, timer_nlidb_execution_third_attempt, timer_nlidb_json_result_set, nlidb_attempt_level, nlidb_interface_fields):   
+    def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt, timer_nlidb_execution_third_attempt, timer_nlidb_json_result_set, nlidb_attempt_level, fields):           
         timer_nlidb_execution_first_and_second_attempt.start()     
         columns = result_set = self.__sql = ''
         self.__first_attempt_sql = self.__second_attempt_sql = self.__third_attempt_sql = ''
@@ -122,7 +124,7 @@ class NalirNlidb:
 
             if self.__sql:
                 if nlidb_attempt_level > 1:
-                    self.__include_fields(nlidb_interface_fields)
+                    self.__include_fields(fields)
                     self.__second_attempt_sql = self.__sql
 
                 self.__change_select()            
@@ -135,8 +137,8 @@ class NalirNlidb:
             if not result_set and nlidb_attempt_level == 3:            
                 timer_nlidb_json_result_set.stop()
                 timer_nlidb_execution_third_attempt.start()
-                prior_sql = self.__sql
-                self.__nlq_rebuild(nlidb_interface_fields)
+                prior_sql = self.__sql                
+                self.__nlq_rebuild(fields)
                 self.__third_attempt_sql = self.__sql
                 self.__change_select()
                 if self.__sql != prior_sql:
@@ -155,7 +157,7 @@ class NalirNlidb:
         finally:                                             
             return columns, result_set, self.__sql, self.__first_attempt_sql, self.__second_attempt_sql, self.__third_attempt_sql
 
-    def __run_query(self, nlq):
+    def __run_query(self, nlq):        
         try:
             query = Query(nlq, self.__rdbms.schema_graph)
             # Stanford Dependency Parser
@@ -177,10 +179,9 @@ class NalirNlidb:
             print("Error processing NLQ in NaLIR: ", nlq)
             print("Exception: ", e)        
 
-    def __nlq_rebuild(self, nlidb_interface_fields):
-        nlq = ''
+    def __nlq_rebuild(self, fields):
         try:
-            nlq = "give me all " + " for each ".join(nlidb_interface_fields).replace(".", "_")
+            nlq = "give me all " + " for each ".join(fields).replace(".", "_")
             new_sql = self.__run_query(nlq)             
             self.__sql = self.__join_sql(new_sql)            
         except Exception as e:

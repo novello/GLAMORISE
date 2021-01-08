@@ -3,7 +3,7 @@
     "compound_pattern_dep" : [{"POS": "NOUN", "DEP": "compound"}, {"POS": "NOUN"}],
     "compound_pattern_of" : [{"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}, {"LOWER": "of", "POS": "ADP"}, {"POS": "NOUN"}],
     "default_pattern" : [{"POS": "ADV", "OP": "*"}, {"POS": "ADJ", "OP": "*"}, {"POS": "NOUN", "LOWER":{"NOT_IN": ["number"]}}],    
-    "nlidb_sql_translate_fields" : true,
+    "nlidb_nlq_translate_fields" : true,
     "nlidb_attempt_level" : 3,
     "patterns" : {
         "than options" : {

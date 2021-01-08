@@ -9,12 +9,15 @@ class MockNlidb:
         self.__SimpleSQLite = SimpleSQLite('./datasets/mock_nlidb_anp.db')
 
     
-    def field_synonym(self, synonym):
+    def field_synonym(self, synonym, replace_dot = True):
         # responsible for the translation of the field to the appropriated column
         try:
             sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym.lower().replace(' ', '_').replace('.', '_') + "'"
             field, cursor_description = (self.__SimpleSQLite.execute_sql(sql, 'Field translated'))
-            return list(field)[0][0].replace(' ', '_').replace('.', '_')
+            field = list(field)[0][0].replace(' ', '_')
+            if replace_dot:
+                field = field.replace('.', '_')
+            return field
         except:
             return synonym
 
