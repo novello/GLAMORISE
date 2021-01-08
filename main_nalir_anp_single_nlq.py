@@ -4,8 +4,7 @@
 
 from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
-import csv
-from codetiming import Timer
+
 
 token_path = '../nalir-glamorise/zfiles/tokens.anp.xml'
 

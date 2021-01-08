@@ -17,50 +17,68 @@ def mc_print(string):
         display(Markdown(string))
     else:
         print(string)
+    return string     
 
 def mc_display(pd):
     if jupyter:
         display(pd)
     else:                
         print(pd)
+    return pd    
 
 
 
-def print_results(glamorise, nlq):    
+def print_results(glamorise, nlq):        
+    result = ''
     print("\n\n")
-    mc_print("**Natural Language Query**: " + nlq)
+    result += '</br></br>'
+    result += mc_print("**Natural Language Query**: " + nlq)
 
     glamorise.execute(nlq)
     
-    if jupyter:
-        mc_print("**spaCy Parse Tree**")
-        # show spaCy parse tree
-        glamorise.customized_displacy()
+    result += '</br>'
+    result += mc_print("**spaCy Parse Tree**")
+    # show spaCy parse tree and entities
+    result += glamorise.customized_displacy()
+    result += '</br>'
+    result += mc_print("**spaCy Entities**")
+    result += glamorise.customized_displacy_entities()
 
     print("\n\n")
-    mc_print("GLAMORISE Internal Properties")
+    result += '</br></br></br>'
+    result += mc_print("GLAMORISE Internal Properties")
     print("\n")
-    mc_print("GLAMORISE Preprocessor Properties")
-    glamorise.dump('pre_')
+    result += '</br></br>'
+    result += mc_print("GLAMORISE Preprocessor Properties")
+    result += glamorise.dump('pre_')
 
     print("\n")
-    mc_print("GLAMORISE NLIDB Interface Properties")
-    glamorise.dump('nlidb_interface_')
+    result += '</br></br>'
+    result += mc_print("GLAMORISE NLIDB Interface Properties")
+    result += glamorise.dump('nlidb_interface_')
 
     print("\n")
-    mc_print("GLAMORISE Post-processor Properties")
-    glamorise.dump('pos_')
+    result += '</br></br>'
+    result += mc_print("GLAMORISE Post-processor Properties")
+    result += glamorise.dump('pos_')
 
-    mc_print("**GLAMORISE Result**")
+    print("\n")
+    result += '</br></br>'
+    result += mc_print("**GLAMORISE Result**")
     # display the result as a pandas dataframe
-    mc_display(glamorise.pd)    
+    #result += mc_display(glamorise.pd)    
 
-    glamorise.print_timers()
+    result += glamorise.print_timers()
+
+    return result 
     
 
 
 def print_total_timers():
+    result = ''
     for (key, value) in Timer.timers.items():
         print("total {} : {:.2f} sec".format(key, value))
+        result += "total {} : {:.2f} sec".format(key, value)
+    return result    
 
 jupyter = is_jupyter_notebook()        

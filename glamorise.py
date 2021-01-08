@@ -19,6 +19,7 @@ import os
 from copy import deepcopy
 from simple_sqlite import SimpleSQLite
 from codetiming import Timer
+from flask import jsonify
 
 
 
@@ -315,17 +316,6 @@ class Glamorise(metaclass=abc.ABCMeta):
                     self.__matcher.add(key + ' | ' + reserved_words , self.collect_sents, final_pattern)
 
 
-    #ajustar fine_gained no código antigo
-    def customized_displacy(self):
-        # set the displacy parameters
-        displacy.render(self.__doc, style='dep', jupyter=True,
-                        options={'compact' : False, 'distance': 90, 'fine_grained': False,
-                                'add_lemma': True, 'collapse_phrases': False})
-
-    #novo
-    def customized_displacy_entities(self):
-        displacy.render(self.__matched_sents, style="ent", manual=True, jupyter=True)
-
     def collect_sents(self, matcher, doc, i, matches):      
         match_id, start, end = matches[i]
         match = self.__nlp.vocab.strings[match_id]
@@ -573,21 +563,44 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_glamorise_sql = (self.__select_clause + self.__from_clause + self.__group_by_clause + ' ' + \
                      self.__having_clause + ' ' + self.__order_by_clause).replace("  ", " ").strip()
 
-    def dump(self, sub_str):
+    def dump(self, sub_str, json = False):        
+        result = ''
         for attr in dir(self):            
             if attr.startswith(sub_str) and getattr(self, attr):
                 if attr.endswith('_sql'):
                     print("\n%s = %r\n" % (attr, getattr(self, attr)))
+                    result += "</br></br>%s = %r</br>" % (attr, getattr(self, attr))
                 else:
                     print("%s = %r" % (attr, getattr(self, attr)))
+                    result += "</br>%s = %r" % (attr, getattr(self, attr))
+        return result            
     
-    def print_timers(self):
+    def print_timers(self, json = False):        
+        result = ''
         print("timer_pre: {:.2f} sec".format(self._timer_pre.last))
+        result += "</br>timer_pre: {:.2f} sec".format(self._timer_pre.last)
         print("timer_nlidb_execution_first_and_second_attempt: {:.2f} sec".format(self._timer_nlidb_execution_first_and_second_attempt.last))    
+        result += "</br>timer_nlidb_execution_first_and_second_attempt: {:.2f} sec".format(self._timer_nlidb_execution_first_and_second_attempt.last)
         print("timer_nlidb_execution_third_attempt: {:.2f} sec".format(self._timer_nlidb_execution_third_attempt.last))           
+        result += "</br>timer_nlidb_execution_third_attempt: {:.2f} sec".format(self._timer_nlidb_execution_third_attempt.last)
         print("timer_nlidb_json_result_set: {:.2f} sec".format(self._timer_nlidb_json_result_set.last))
+        result += "</br>timer_nlidb_json_result_set: {:.2f} sec".format(self._timer_nlidb_json_result_set.last)
         print("timer_pos: {:.2f} sec".format(self._timer_pos.last))
+        result += "</br>timer_pos: {:.2f} sec".format(self._timer_pos.last)
         print("timer_exibition: {:.2f} sec".format(self._timer_exibition.last))
+        result += "</br>timer_exibition: {:.2f} sec".format(self._timer_exibition.last)
+        return result
+
+    #ajustar fine_gained no código antigo
+    def customized_displacy(self):
+        # set the displacy parameters
+        return displacy.render(self.__doc, style='dep', 
+                        options={'compact' : False, 'distance': 100, 'fine_grained': False,
+                                'add_lemma': True, 'collapse_phrases': False})
+
+    #novo
+    def customized_displacy_entities(self):
+        return displacy.render(self.__matched_sents, style="ent", manual=True)    
 
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
