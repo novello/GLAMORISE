@@ -8,6 +8,14 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+    
+
     <title>GLAMORISE (GeneraL Aggregation MOdule using a RelatIonal databaSE)</title>
   </head>
   <body>
@@ -19,14 +27,14 @@
           </div>            
         </div>           
       </div> 
-      </br></br>
-      <form method="POST" action="/answer_nlqs">    
+      </br></br>      
+      <form>          
         <div class="row form-group">
           <div class="input-group">
             <div class="input-group-prepend">
               <span class="input-group-text">
                 Ask one or more Natural Language Queries (NLQs). 
-                </br>Enter one question per line.
+                </br>Press Enter t ask another question.
               </span>          
             </div>
             <textarea class="form-control form-control-lg" id="glamoriseTextarea" rows="5" name="nlqs"></textarea>        
@@ -34,16 +42,15 @@
         </div>
         <div class="row">
             <div class="input-group-btn">              
-              <button type="submit" class="btn btn-secondary btn-lg">Send query(ies)</button> 
+              <button id="submitButton" type="submit" class="btn btn-default">Send query(ies)</button> 
             </div>
-        </div>
+        </div>        
       </form>
+      </br>
+      <div id="result" class="alert alert-success" role="alert" style="display:none;">
+      </div>
     </div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    
   </body>
 </html>
