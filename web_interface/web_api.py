@@ -17,7 +17,7 @@ app.config["DEBUG"] = True
 def index():
     return render_template('index.html')
 
-@app.route('/backend_answer_nlqs', methods=['POST'])
+@app.route('/backend_answer_nlqs', methods=['GET','POST'])
 def backend_answer_nlqs():    
     #with open('./config/glamorise_mock_anp.json') as json_file:
     #    patterns_json_txt = json_file.read()   
@@ -35,8 +35,10 @@ def backend_answer_nlqs():
     
     nlqs = []
     if request.method == 'POST':		
-        nlqs = request.form['nlqs']
-        nlqs = nlqs.split('\n')
+        nlqs = request.form['nlqs']        
+    elif request.method == 'GET':	
+        nlqs =  request.args.get('nlqs')
+    nlqs = nlqs.split('\n')    
 
     if nlqs: 
         for nlq in nlqs:
@@ -44,9 +46,9 @@ def backend_answer_nlqs():
             html = mc.print_results(glamorise, nlq)      
 
             html += mc.print_total_timers()         
-            return jsonify({'pd' : glamorise})
+            return render_template('partial_results.html',  rawtext = html, tables=[glamorise.pd.to_html(classes='data')], titles=glamorise.pd.columns.values)    
 
-@app.route('/answer_nlqs', methods=['POST'])
+@app.route('/answer_nlqs', methods=['GET','POST'])
 def answer_nlqs():
     #with open('./config/glamorise_mock_anp.json') as json_file:
     #    patterns_json_txt = json_file.read()   
@@ -64,8 +66,10 @@ def answer_nlqs():
     
     nlqs = []
     if request.method == 'POST':		
-        nlqs = request.form['nlqs']
-        nlqs = nlqs.split('\n')
+        nlqs = request.form['nlqs']        
+    elif request.method == 'GET':	
+        nlqs =  request.args.get('nlqs')
+    nlqs = nlqs.split('\n')    
 
     if nlqs: 
         for nlq in nlqs:
