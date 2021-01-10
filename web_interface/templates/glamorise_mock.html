@@ -1,0 +1,49 @@
+{% include "header.html" %}     
+      <!-- Nav tabs -->
+      <nav>
+        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+          <a class="nav-item nav-link active fa fa-home" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
+          <a class="nav-item nav-link fa fa-cog" id="nav-profile-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-profile" aria-selected="false">Settings</a>
+      </nav>
+      <!-- Tab panes -->
+      <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">             
+          <form>          
+            <div class="row form-group">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    Ask a Natural Language Query (NLQ).                       
+                  </span>          
+                </div>
+                <textarea class="form-control form-control-lg" id="glamoriseTextarea" rows="5" name="nlqs"></textarea>        
+              </div>                   
+            </div>
+            <div class="row">
+                <div class="input-group-btn">              
+                  <button id="submitButton" type="submit" class="btn btn-default">Send query(ies)</button> 
+                </div>
+            </div>        
+          </form>              
+        </div>
+        <div class="tab-pane fade" id="nav-settings">
+            <h2>Settings</h2>                
+        </div>        
+      </div>
+
+
+      </div>
+
+  
+      </br>      
+      <div class="row " id="loadingDiv" style="display:none;">
+        <div class="mx-auto">
+          <h2> Loading...</h2>
+          <div class="image">
+            <img src="{{url_for('static', filename='spinner.svg')}}" alt="spinner">    
+          </div>            
+        </div>           
+      </div>
+      <div id="result" class="alert alert-success" role="alert" style="display:none;">
+      </div>    
+{% include "footer.html" %}

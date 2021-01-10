@@ -37,6 +37,7 @@ class NalirNlidb:
         self.__sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'
+        self.__sql =  self.__sql[0:-1]
 
     def __get_fields_in_sql(self, sql, regex, sql_list_position, group_num, separator):
         sql_list = sql.split('\n')
@@ -111,6 +112,7 @@ class NalirNlidb:
         self.__sql = result.group(1) + result.group(2) + ', '.join(fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'
+        self.__sql =  self.__sql[0:-1]  
 
     def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt, timer_nlidb_execution_third_attempt, timer_nlidb_json_result_set, nlidb_attempt_level, fields):           
         timer_nlidb_execution_first_and_second_attempt.start()     
@@ -121,9 +123,10 @@ class NalirNlidb:
             self.__first_attempt_sql = self.__sql
 
 
-            if self.__sql:
-                if nlidb_attempt_level > 1:
-                    self.__include_fields(fields)
+            if self.__sql and nlidb_attempt_level > 1:
+                previous_sql = self.__sql
+                self.__include_fields(fields)
+                if self.__sql != previous_sql:
                     self.__second_attempt_sql = self.__sql
 
                 self.__change_select()            
@@ -136,11 +139,11 @@ class NalirNlidb:
             if not result_set and nlidb_attempt_level == 3:            
                 timer_nlidb_json_result_set.stop()
                 timer_nlidb_execution_third_attempt.start()
-                prior_sql = self.__sql                
+                previous_sql = self.__sql                
                 self.__nlq_rebuild(fields)
                 self.__third_attempt_sql = self.__sql
                 self.__change_select()
-                if self.__sql != prior_sql:
+                if self.__sql != previous_sql:
                     result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql)                 
                 timer_nlidb_execution_third_attempt.stop()
                 timer_nlidb_json_result_set.start()
