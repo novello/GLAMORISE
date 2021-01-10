@@ -1,0 +1,24 @@
+
+  nav > div a.nav-item.nav-link,
+  nav > div a.nav-item.nav-link.active
+  {
+    color:#818c9c;   
+  }
+  
+  nav > div a.nav-item.nav-link.active:after
+   {
+    content: "";
+    position: relative;    
+    border-top-color: #aaaaaa ;
+  }
+  
+  
+  nav > div a.nav-item.nav-link:hover,
+  nav > div a.nav-item.nav-link:focus
+  {
+    border: none;
+      background: #aaaaaa;
+      color:#fff;
+      border-radius:0;
+      transition:background 1s linear;
+  }

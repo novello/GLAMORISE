@@ -36,12 +36,12 @@ def print_results(glamorise, nlq):
 
     glamorise.execute(nlq)
     
-    result += '</br>'
-    result += mc_print("**spaCy Parse Tree**")
+    result += '</br>'    
     # show spaCy parse tree and entities
-    result += glamorise.customized_displacy()
-    result += '</br>'
-    result += mc_print("**spaCy Entities**")
+    #result += mc_print("**spaCy Parse Tree**")
+    #result += glamorise.customized_displacy()
+    #result += '</br>'
+    result += mc_print("**Patterns Recognized by GLAMORISE**")
     result += glamorise.customized_displacy_entities()
 
     print("\n\n")

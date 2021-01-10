@@ -17,6 +17,10 @@ app.config["DEBUG"] = True
 def index():
     return render_template('index.html')
 
+@app.route('/glamorise_mock')
+def glamorise_mock():
+    return render_template('glamorise_mock.html')    
+
 @app.route('/backend_answer_nlqs', methods=['GET','POST'])
 def backend_answer_nlqs():    
     #with open('./config/glamorise_mock_anp.json') as json_file:
