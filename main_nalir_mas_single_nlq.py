@@ -14,7 +14,7 @@ with open('./config/glamorise_nalir_mas.json') as json_file:
 jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db)
 
-nlq ='return me the author in the "University of Michigan" who have more than 5 total citations.'
+nlq ='return me the author in the "University of Michigan" who have more than 5000 total citations.'
 
 mc.print_results(glamorise, nlq)
 

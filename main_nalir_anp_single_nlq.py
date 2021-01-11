@@ -18,7 +18,7 @@ with open('./config/glamorise_nalir_anp.json') as json_file:
 # create GLAMORISE object (the child class is instantiated)
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, token_path = token_path)
 
-nlq = 'What was the average oil production per month per year by the operator Petrobrás?'    
+nlq = 'What was the average monthly production of oil in the state of Rio de Janeiro?'    
 
 mc.print_results(glamorise, nlq)
 

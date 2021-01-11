@@ -43,7 +43,7 @@ class NalirNlidb:
         sql_list = sql.split('\n')
         result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
         fields_str = result.group(group_num)
-        fields = {x.strip() for x in fields_str.split(separator)}
+        fields = list(dict.fromkeys([x.strip() for x in fields_str.split(separator)]))
         return fields, result, sql_list
 
     def __translate_mysql_datatype_to_sqlite(self, type):
@@ -99,16 +99,17 @@ class NalirNlidb:
             for line in results:
                 if line[0] in nlidb_nlq:
                     nlidb_nlq = nlidb_nlq.replace(line[0], line[1].replace(' ', '_').replace('.', '_'))
-                    nlidb_interface_fields.add(line[1])            
+                    nlidb_interface_fields.append(line[1])            
+            nlidb_interface_fields = list(dict.fromkeys(nlidb_interface_fields))
             return nlidb_nlq  
         except Exception as e:
             return nlidb_nlq
             #print('Exception: ', e        
 
     def __include_fields(self, additional_fields):
-        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')        
-        for nlidb_interface_field in additional_fields:                        
-            fields.add(nlidb_interface_field)                
+        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')                
+        fields = fields + additional_fields
+        fields = list(dict.fromkeys(fields))
         self.__sql = result.group(1) + result.group(2) + ', '.join(fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'
@@ -199,25 +200,29 @@ class NalirNlidb:
         from_fields, from_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(FROM )(.*)$', 1, 2, ',')
         where_fields, where_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
 
-        select_final_fields = set()
-        from_final_fields = set()
-        where_final_fields = set()
+        # select_final_fields = set()
+        # from_final_fields = set()
+        # where_final_fields = set()
 
-        for select_new_sql_field in select_new_sql_fields:
-            if select_new_sql_field not in select_fields:
-                select_final_fields.add(select_new_sql_field)
+        # for select_new_sql_field in select_new_sql_fields:
+        #     if select_new_sql_field not in select_fields:
+        #         select_final_fields.add(select_new_sql_field)
 
-        for from_new_sql_field in from_new_sql_fields:
-            if from_new_sql_field not in from_fields:
-                from_final_fields.add(from_new_sql_field)
+        # for from_new_sql_field in from_new_sql_fields:
+        #     if from_new_sql_field not in from_fields:
+        #         from_final_fields.add(from_new_sql_field)
 
-        for where_new_sql_field in where_new_sql_fields:
-            if where_new_sql_field not in where_fields:
-                where_final_fields.add(where_new_sql_field)        
+        # for where_new_sql_field in where_new_sql_fields:
+        #     if where_new_sql_field not in where_fields:
+        #         where_final_fields.add(where_new_sql_field)        
 
-        select_final_fields.update(select_fields)
-        from_final_fields.update(from_fields)
-        where_final_fields.update(where_fields)
+        # select_final_fields.update(select_fields)
+        # from_final_fields.update(from_fields)
+        # where_final_fields.update(where_fields)
+
+        select_final_fields = list(dict.fromkeys(select_new_sql_fields + select_fields))
+        from_final_fields = list(dict.fromkeys(from_new_sql_fields + from_fields))
+        where_final_fields = list(dict.fromkeys(where_new_sql_fields + where_fields))
 
         select_str = "SELECT DISTINCT " + ', '.join(select_final_fields)
         from_str = "\nFROM " + ', '.join(from_final_fields)

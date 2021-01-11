@@ -107,12 +107,12 @@ class GlamoriseNlidb(Glamorise):
 
     def _translate_all_fields(self):
         # prepare a set with all fields identified by GLAMORISE to help the NLIDB to improve the SQL
-        self._all_fields = set(list(self._nlidb_interface_fields) + 
+        self._all_fields = list(dict.fromkeys(self._nlidb_interface_fields + 
                                self._translate_fields(self._pre_aggregation_fields, replace_dot = False) +
                                self._translate_fields(self._pre_group_by_fields, replace_dot = False) + 
                                self._translate_fields(self._pre_time_scale_aggregation_fields, replace_dot = False) +
                                self._translate_fields(self._pre_time_scale_group_by_fields, replace_dot = False) + 
-                               self._translate_fields(self._pre_having_fields, replace_dot = False))
+                               self._translate_fields(self._pre_having_fields, replace_dot = False)))
 
         # translate all fields that GLAMORISE is aware of
         self._pre_aggregation_fields = self._translate_fields(self._pre_aggregation_fields)

@@ -23,7 +23,8 @@ class MockNlidb:
 
     def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt,  timer_nlidb_json_result_set):
         timer_nlidb_execution_first_and_second_attempt.start()
-        try:            
+        columns = result_set = sql_result =''
+        try:           
             # mock NLQ processing, return the SQL for the NLQ query
             sql = "SELECT sql FROM NLIDB_SQL_FROM_NLQ WHERE lower(nlq) = '" + nlq.lower() + "'"
             sql = self.__SimpleSQLite.execute_sql(sql, 'SQL generated')[0]
@@ -47,3 +48,5 @@ class MockNlidb:
             return columns, result_set, sql_result
         except:
             print("Query not found: ", nlq)
+        finally:
+            return columns, result_set, sql_result    

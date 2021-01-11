@@ -4,17 +4,24 @@ $(document).ready(function() {
 		$('#result').text('').hide();
 		$('#loadingDiv').show();
 		$('#glamoriseTextarea').attr('disabled', 'disabled');
+		$('#glamoriseJSonConfig').attr('disabled', 'disabled');
+		$('#nalirXmlConfig').attr('disabled', 'disabled');
 		$('#submitButton').attr('disabled', 'disabled');		
 		$.ajax({
 			data : {
-				nlqs : $('#glamoriseTextarea').val()				
+				nlq : $('#glamoriseTextarea').val(),
+				type : $('#hiddenType').val(),
+				glamoriseJsonConfig : $('#glamoriseJsonConfig').val(),
+				nalirXmlConfig : $('#nalirXmlConfig').val()
 			},
 			type : 'GET',
-			url : '/backend_answer_nlqs'
+			url : '/backend'
 		})
 		.done(function(data) {
 			$('#loadingDiv').hide();
 			$('#glamoriseTextarea').removeAttr('disabled');
+			$('#glamoriseJSonConfig').removeAttr('disabled');
+			$('#nalirXmlConfig').removeAttr('disabled');
 			$('#submitButton').removeAttr('disabled');
 			if (data) {
 				$('#result').html(data).show();			

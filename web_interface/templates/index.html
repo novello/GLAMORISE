@@ -1,34 +1,35 @@
-{% include "header.html" %}
-    <div class="row ">
-        <div class="col-sm-4">
-            <div class="card h-100 d-inline-block" style="width: 18rem;">
-                <img class="card-img-top" src="{{url_for('static', filename='petrobras_platform_1.jpg')}}" alt="Petrobras Platform">        
-                <div class="card-body">
-                    <h5 class="card-title">GLAMORISE with Mock NLIDB - ANP database</h5>
-                    <p class="card-text">Use this to test GLAMORISE with Mock NLIDB using a ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) database.</p>
-                    <a href="/glamorise_mock" class="btn btn-primary">Go</a>
+{% extends "base.html" %}
+    {% block content %}    
+        <div class="row ">
+            <div class="col-sm-4">
+                <div class="card h-100 d-inline-block" style="width: 18rem;">
+                    <img class="card-img-top" src="{{url_for('static', filename='petrobras_platform_1.jpg')}}" alt="Petrobras Platform">        
+                    <div class="card-body">
+                        <h5 class="card-title">GLAMORISE with Mock NLIDB - ANP database</h5>
+                        <p class="card-text">Use this to test GLAMORISE with Mock NLIDB using a ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) database.</p>
+                        <a href="/glamorise_mock_anp" class="btn btn-primary">Go</a>
+                    </div>
                 </div>
-            </div>
-        </div>    
-        <div class="col-sm-4">
-            <div class="card  h-100 d-inline-block" style="width: 18rem;">
-                <img class="card-img-top" src="{{url_for('static', filename='petrobras_platform_2.jpg')}}" alt="Petrobras Platform">
-                <div class="card-body">
-                    <h5 class="card-title">GLAMORISE with NaLIR NLIDB - ANP database</h5>
-                    <p class="card-text">Use this to test GLAMORISE with NaLIR NLIDB using a ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) database.</p>
-                    <a href="#" class="btn btn-primary">Go</a>
+            </div>    
+            <div class="col-sm-4">
+                <div class="card  h-100 d-inline-block" style="width: 18rem;">
+                    <img class="card-img-top" src="{{url_for('static', filename='petrobras_platform_2.jpg')}}" alt="Petrobras Platform">
+                    <div class="card-body">
+                        <h5 class="card-title">GLAMORISE with NaLIR NLIDB - ANP database</h5>
+                        <p class="card-text">Use this to test GLAMORISE with NaLIR NLIDB using a ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) database.</p>
+                        <a href="/glamorise_nalir_anp" class="btn btn-primary">Go</a>
+                    </div>
                 </div>
-            </div>
-        </div>    
-        <div class="col-sm-4">    
-            <div class="card h-100 d-inline-block" style="width: 18rem;">
-                <img class="card-img-top" src="{{url_for('static', filename='mas.jpg')}}" alt="Microsoft Academic Search">
-                <div class="card-body">
-                    <h5 class="card-title">GLAMORISE with NaLIR NLIDB - MAS database</h5>
-                    <p class="card-text">Use this to test GLAMORISE with NaLIR NLIDB using a MAS (Microsoft Academic Search) database.</p>
-                    <a href="#" class="btn btn-primary">Go</a>
+            </div>    
+            <div class="col-sm-4">    
+                <div class="card h-100 d-inline-block" style="width: 18rem;">
+                    <img class="card-img-top" src="{{url_for('static', filename='mas.jpg')}}" alt="Microsoft Academic Search">
+                    <div class="card-body">
+                        <h5 class="card-title">GLAMORISE with NaLIR NLIDB - MAS database</h5>
+                        <p class="card-text">Use this to test GLAMORISE with NaLIR NLIDB using a MAS (Microsoft Academic Search) database.</p>
+                        <a href="/glamorise_nalir_mas" class="btn btn-primary">Go</a>
+                    </div>
                 </div>
-            </div>
-        </div>    
-    </div>
-  {% include "footer.html" %}
+            </div>    
+        </div>
+    {% endblock content %}
