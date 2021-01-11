@@ -151,7 +151,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_glamorise_sql = ''
 
         # NLIDB fields
-        self._nlidb_interface_fields = set()
+        self._nlidb_interface_fields = []
 
         # fields revealed only in the NLIDB
         self.__pos_group_by_fields = []
@@ -437,9 +437,9 @@ class Glamorise(metaclass=abc.ABCMeta):
         # look for fields that GLAMORISE did not identify
         # because it is the work of the NLIDB (query part without aggregation)
         self.__pos_group_by_fields = [column[0].lower() for column in columns \
-                                                  if column[0].lower() not in self._pre_group_by_fields +
+                                                  if column[0].lower() not in [x.lower() for x in self._pre_group_by_fields +
                                                   self._pre_aggregation_fields + self._pre_time_scale_aggregation_fields +
-                                                  self._pre_time_scale_group_by_fields]
+                                                  self._pre_time_scale_group_by_fields]]
         self.__prepare_aggregate_SQL(columns)
         if columns and result_set:
             self.__create_table_and_insert_data(columns, result_set)
