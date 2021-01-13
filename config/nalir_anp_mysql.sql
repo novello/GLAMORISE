@@ -67,26 +67,27 @@ CREATE TABLE `NLIDB_FIELD_SYNONYMS` (
 LOCK TABLES `NLIDB_FIELD_SYNONYMS` WRITE;
 /*!40000 ALTER TABLE `NLIDB_FIELD_SYNONYMS` DISABLE KEYS */;
 INSERT INTO `NLIDB_FIELD_SYNONYMS` (`SYNONYM`, `FIELD`) VALUES
-('production_of_gas', 'anp_gas_production'),
-('oil_production', 'anp_oil_production'),
-('production_of_oil', 'anp_oil_production'),
-('petroleum_production', 'anp_oil_production'),
-('production_of_petroleum', 'anp_oil_production'),
-('oil', 'anp_oil_production'),
-('petroleum', 'anp_oil_production'),
-('gas', 'anp_gas_production'),
-('gas_production', 'anp_gas_production'),
-('federated_state', 'anp_state'),
-('state_of_brazil', 'anp_state'),
-('state_of_federation', 'anp_state'),
-('state_of_federal_republic', 'anp_state'),
-('field', 'anp_field'),
-('operator', 'anp_operator'),
-('state', 'anp_state'),
-('contract_number', 'anp_contract_number'),
-('basin', 'anp_basin'),
-('year', 'anp_year'),
-('month', 'anp_year, anp_month');
+('production_of_gas', 'ANP.GAS_PRODUCTION'),
+('oil_production', 'ANP.OIL_PRODUCTION'),
+('production_of_oil', 'ANP.OIL_PRODUCTION'),
+('petroleum_production', 'ANP.OIL_PRODUCTION'),
+('production_of_petroleum', 'ANP.OIL_PRODUCTION'),
+('production', 'ANP.OIL_PRODUCTION'),
+('oil', 'ANP.OIL_PRODUCTION'),
+('petroleum', 'ANP.OIL_PRODUCTION'),
+('gas', 'ANP.GAS_PRODUCTION'),
+('gas_production', 'ANP.GAS_PRODUCTION'),
+('federated_state', 'ANP.STATE'),
+('state_of_brazil', 'ANP.STATE'),
+('state_of_federation', 'ANP.STATE'),
+('state_of_federal_republic', 'ANP.STATE'),
+('field', 'ANP.FIELD'),
+('operator', 'ANP.OPERATOR'),
+('state', 'ANP.STATE'),
+('contract_number', 'ANP.CONTRACT_NUMBER'),
+('basin', 'ANP.BASIN'),
+('year', 'ANP.YEAR'),
+('month', 'ANP.YEAR,ANP.MONTH');
 /*!40000 ALTER TABLE `NLIDB_FIELD_SYNONYMS` ENABLE KEYS */;
 UNLOCK TABLES;
 

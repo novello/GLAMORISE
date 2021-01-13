@@ -25,7 +25,18 @@
 
   #glamoriseJsonConfig, #nalirXmlConfig
  { 
-  font-size: 10px; 
+  font-size: 12px; 
   font-family: "Lucida Console", "Courier New", monospace;
-  color:black;
+  background-color:black;  
+}
+
+#glamoriseJsonConfig
+{
+  color:yellowgreen;
+  
+}
+
+#nalirXmlConfig
+{
+  color:green;
 }

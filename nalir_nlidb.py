@@ -40,11 +40,14 @@ class NalirNlidb:
         self.__sql =  self.__sql[0:-1]
 
     def __get_fields_in_sql(self, sql, regex, sql_list_position, group_num, separator):
-        sql_list = sql.split('\n')
-        result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
-        fields_str = result.group(group_num)
-        fields = list(dict.fromkeys([x.strip() for x in fields_str.split(separator)]))
-        return fields, result, sql_list
+        try:
+            sql_list = sql.split('\n')
+            result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
+            fields_str = result.group(group_num)
+            fields = list(dict.fromkeys([x.strip() for x in fields_str.split(separator)]))
+            return fields, result, sql_list
+        except:
+            return [], '', []
 
     def __translate_mysql_datatype_to_sqlite(self, type):
         field_type = {
@@ -127,8 +130,7 @@ class NalirNlidb:
             if self.__sql and nlidb_attempt_level > 1:
                 previous_sql = self.__sql
                 self.__include_fields(fields)
-                if self.__sql != previous_sql:
-                    self.__second_attempt_sql = self.__sql
+                self.__second_attempt_sql = self.__sql
 
                 self.__change_select()            
             
@@ -193,42 +195,23 @@ class NalirNlidb:
 
     def __join_sql(self, new_sql):
         select_new_sql_fields, select_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
-        from_new_sql_fields, from_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(FROM )(.*)$', 1, 2, ',')
-        where_new_sql_fields, where_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
+        from_new_sql_fields, from_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(FROM )(.*)$', 1, 2, ',')        
 
         select_fields, select_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
         from_fields, from_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(FROM )(.*)$', 1, 2, ',')
         where_fields, where_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
-
-        # select_final_fields = set()
-        # from_final_fields = set()
-        # where_final_fields = set()
-
-        # for select_new_sql_field in select_new_sql_fields:
-        #     if select_new_sql_field not in select_fields:
-        #         select_final_fields.add(select_new_sql_field)
-
-        # for from_new_sql_field in from_new_sql_fields:
-        #     if from_new_sql_field not in from_fields:
-        #         from_final_fields.add(from_new_sql_field)
-
-        # for where_new_sql_field in where_new_sql_fields:
-        #     if where_new_sql_field not in where_fields:
-        #         where_final_fields.add(where_new_sql_field)        
-
-        # select_final_fields.update(select_fields)
-        # from_final_fields.update(from_fields)
-        # where_final_fields.update(where_fields)
-
+        
         select_final_fields = list(dict.fromkeys(select_new_sql_fields + select_fields))
         from_final_fields = list(dict.fromkeys(from_new_sql_fields + from_fields))
-        where_final_fields = list(dict.fromkeys(where_new_sql_fields + where_fields))
+        where_final_fields = list(dict.fromkeys(where_fields))
 
         select_str = "SELECT DISTINCT " + ', '.join(select_final_fields)
         from_str = "\nFROM " + ', '.join(from_final_fields)
-        where_str = "\nWHERE " + ' AND '.join(where_final_fields)
-        
-        sql = select_str + from_str + where_str
+        if where_final_fields:
+            where_str = "\nWHERE " + ' AND '.join(where_final_fields)
+            sql = select_str + from_str + where_str
+        else:
+            sql = select_str + from_str
         return sql
 
 

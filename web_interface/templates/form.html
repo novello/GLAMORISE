@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-    {% block content %}    
+    {% block content %}
       {% if type == 'glamorise_mock_anp' %}
-        <h1>Glamorise using NLIDB Mock (Database: ANP)</h1>
+        {% include "mock_anp.html" %}
       {% elif type == 'glamorise_nalir_anp' %}
-        <h1>Glamorise using NLIDB NaLIR (Database: ANP)</h1>
+        {% include "nalir_anp.html" %}
       {% elif type == 'glamorise_nalir_mas' %}
-        <h1>Glamorise using NLIDB NaLIR (Database: MAS)</h1>
-      {% endif %}
+        {% include "nalir_mas.html" %}
+      {% endif %}           
       <!-- Nav tabs -->
       <nav>
         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
@@ -73,10 +73,10 @@
           <h2> Loading...</h2>
           <h2> Depending on the query, the process may take a couple of minutes. </h2>
           <div class="image">
-            <img src="{{url_for('static', filename='images/spinner.svg')}}" alt="spinner">    
+            <img src="{{url_for('static', filename='images/spinner.gif')}}" alt="spinner">    
           </div>            
         </div>           
       </div>
       <div id="result" class="alert alert-success" role="alert" style="display:none;">
-      </div>    
+      </div>  
     {% endblock content %}
