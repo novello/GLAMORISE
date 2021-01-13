@@ -4,6 +4,19 @@
 <types>
 <!-- Command Token, verb -->
 <CMT_V>
+<phrase>what
+<example>What was the production of oil in the state of Rio de Janeiro?</example>
+</phrase>
+<phrase>which
+<example>Which field produces the most oil per month?</example>
+</phrase>
+<phrase>how
+<example>How many fields are there in Paraná?</example>
+</phrase>
+<phrase>who</phrase>
+<phrase>whom</phrase>
+<phrase>where</phrase>
+<phrase>when</phrase>
 <phrase>tell
 <example>Tell me all the books published in year 1993.</example>
 </phrase>
@@ -55,59 +68,6 @@ in the order of
 </OBT>
 <!-- Function Token, adjective -->
 <FT>
-<phrase>minimum
-<function>min</function>
-<example>Find the books with the minimum price.</example>
-</phrase>
-<phrase>most
-<function>max</function>
-</phrase>
-<phrase>biggest
-<function>max</function>
-</phrase>
-<phrase>least
-<function>min</function>
-</phrase>
-<phrase>earliest
-<function>min</function>
-<example>What is the book published by Ayn Rand with the earliest year?</example>
-</phrase>
-<phrase>smallest
-<function>min</function>
-<example>What is the book with the smallest number of authors?</example>
-</phrase>
-<phrase>lowest
-<function>min</function>
-<example>What is the book with the lowest price?</example>
-</phrase>
-<phrase>maximum
-<function>max</function>
-<example>What is the book with the maximum price?</example>
-</phrase>
-<phrase>latest
-<function>max</function>
-<example>What is the book published by Ayn Rand with the latest year? </example>
-</phrase>
-<phrase>largest
-<function>max</function>
-<example>What is the book with the largest number of authors?</example>
-</phrase>
-<phrase>highest
-<function>max</function>
-<example>What is the book with the highest price?</example>
-</phrase>
-<phrase>average
-<function>avg</function>
-<example>What is the average price of all the books published in 1995?</example>
-</phrase>
-<phrase>total
-<function>sum</function>
-<example>Find the books with a total of 5 authors.</example>
-</phrase>
-<phrase>number of
-<function>count</function>
-<example>Find the books, where the number of authors of each book is 5.</example>
-</phrase>
 </FT>
 <!-- Operator Token, adj -->
 <OT>
@@ -177,6 +137,12 @@ in the order of
 <example>Return all the books, where the name of every author of each book ends with "Green". </example>
 </phrase>
 <phrase>each
+<quantity>each</quantity>
+</phrase>
+<phrase>per
+<quantity>each</quantity>
+</phrase>
+<phrase>by
 <quantity>each</quantity>
 </phrase>
 <phrase>all

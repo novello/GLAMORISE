@@ -71,9 +71,8 @@ def backend():
                 with open('./config/nalir_anp_local_db.json') as json_file:
                     config_db = json_file.read()        
                 #with open('./config/glamorise_nalir_anp.json') as json_file:
-                #    patterns_json_txt = json_file.read()
-                token_path = '../nalir-glamorise/zfiles/tokens.anp.xml'    
-                glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, token_path = token_path)
+                #    patterns_json_txt = json_file.read()                
+                glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db)
             elif type == 'glamorise_nalir_mas':
                 with open('./config/nalir_mas_local_db.json') as json_file:
                     config_db = json_file.read()        
