@@ -1,2 +1,2 @@
 # GLAMORISE
-GLAMORISE (GeneraL Aggregation MOdule for RelatIonal databaSEs)
+GLAMORISE (GeneraL Aggregation MOdule using a RelatIonal databaSE)  
