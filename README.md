@@ -823,9 +823,9 @@ If you want to change the patterns accepted by GLAMORISE and NaLIR, this could b
 
 
 #### NaLIR Configuration File
+./config/nalir_tokens.xml
 
 ``` xml
-./config/nalir_tokens.xml
 <?xml version="1.0" ?>
 <!-- define tokens for dependency parse tree -->
 <!-- all terms are in lower case -->
