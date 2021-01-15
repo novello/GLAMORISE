@@ -23,7 +23,7 @@ The paths below are relative to the root path of the GLAMORISE project. You are 
 Used with the Mock NLIDB (for testing purposes) which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) SQLite database.
 
 ``` bash
-  $sqlite3 test.db < ./config/mock_nlidb_anp_sqlite.sql
+  $sqlite3 ./datasets/mock_nlidb_anp.db < ./config/mock_nlidb_anp_sqlite.sql
 ```
 
 
