@@ -67,7 +67,7 @@ You will have to adjust the relative path of the project nalir-glamorise and GLA
 
 ### NaLIR database and special folders configurations
 
-You will have to adjust the JSON files bellow with the correct database connection information and the path under the project nalir-glamorise to the folders zfiles and new_jars
+You will have to adjust the JSON files below with the correct database connection information and the path under the nalir-glamorise project to the folders zfiles and new_jars
 
 
 #### ANP database
@@ -106,7 +106,7 @@ You will have to adjust the JSON files bellow with the correct database connecti
 
 ## Test Coverage
 
-If you changed the code and want to test if it broke anything, there is a simple set of tasks covering the Mock NLIDB in ./test_glamorise.py
+If you have changed the code and would like to test if it has broken anything, there is a simple set of tasks covering the Mock NLIDB in ./test_glamorise.py
 
 
 ## Web Interface
@@ -118,7 +118,7 @@ To use the project in a convenient way, a web interface was created that can be 
 
 ### GLAMORISE and NaLIR customization of pattern files
 
-If you want to change the patterns accepted by GLAMORISE and NaLIR, this could be achieved modifying the following files below:
+If you want to change the patterns accepted by GLAMORISE and NaLIR, this could be achieved by modifying the following files below:
 
 
 #### GLAMORISE Mock ANP
