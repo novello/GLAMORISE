@@ -49,26 +49,20 @@ First follow all the installation steps in the README of the nalir-glamorise pro
 ```
 
 
-## Path adjustment
-
-You will have to adjust the relative path of the project nalir-glamorise to the project GLAMORISE in the following file and line:
-
-./nalir_nlidb.py
-
-``` python
-    sys.path.append(path.abspath('../nalir-glamorise'))
-```
-
-You will have to adjust the absolute path of the project nalir-glamorise and GLAMORISE in the following file and lines:
-
-./web_interface/web_api.py
-``` python
-  sys.path.append(path.abspath('/home/novello/nalir-glamorise'))
-  sys.path.append(path.abspath('/home/novello/GLAMORISE'))
-```
-
-
 ## Configuration files
+
+
+### Path adjustment
+
+You will have to adjust the relative path of the project nalir-glamorise and GLAMORISE in the following JSON file:
+
+./config/path.json
+``` json
+    {
+        "nalir_relative_path" : "../nalir-glamorise",    
+        "glamorise_relative_path" : "./"
+    }  
+```
 
 
 ### NaLIR database and special folders configurations

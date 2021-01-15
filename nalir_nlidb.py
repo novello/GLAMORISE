@@ -2,7 +2,10 @@ from simple_sqlite import SimpleSQLite
 import json
 from os import path
 import sys
-sys.path.append(path.abspath('../nalir-glamorise'))
+with open('./config/path.json') as json_file:
+    json_path = json_file.read()
+json_path = json.loads(json_path)
+sys.path.append(path.abspath(json_path['nalir_relative_path']))
 from mysql.connector import FieldType
 import re
 import nltk

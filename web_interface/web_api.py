@@ -4,8 +4,12 @@ from flaskext.markdown import Markdown
 
 from os import path
 import sys
-sys.path.append(path.abspath('/home/novello/nalir-glamorise'))
-sys.path.append(path.abspath('/home/novello/GLAMORISE'))
+import json
+with open('./config/path.json') as json_file:
+    json_path = json_file.read()
+json_path = json.loads(json_path)
+sys.path.append(path.abspath(json_path['nalir_relative_path']))
+sys.path.append(path.abspath(json_path['glamorise_relative_path']))
 import main_common as mc
 from glamorise_nlidb import GlamoriseNlidb
 
