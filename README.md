@@ -9,11 +9,13 @@ If you area going to use GLAMORISE with NaLIR you will have to clone the [nalir-
 
 The paths below are relative to the root path of the GLAMORISE project. You are expected to be positioned on this path.
 
+
 ## Setting up the environment
 
 ``` bash
   $ pip install -r requirements.txt
 ```
+
 
 ## Setting up the database
 ### ANP SQLite database
@@ -23,6 +25,8 @@ Used with the Mock NLIDB (for testing purposes) which uses an ANP (Agência Naci
 ``` bash
   $sqlite3 test.db < ./config/mock_nlidb_anp_sqlite.sql
 ```
+
+
 ### ANP MySQL database
 
 Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) MySQL database.
@@ -31,6 +35,7 @@ Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Br
 ``` bash
     $ mysql -D mas -u <user> -p < ./config/nalir_anp_mysql.sql
 ```
+
 
 ### MAS MySQL database
 
@@ -42,6 +47,7 @@ First follow all the installation steps in the README of the nalir-glamorise pro
 ``` bash
     $ mysql -D mas -u <user> -p < ./config/setup_mas_glamorise.sql
 ```
+
 
 ## Path adjustment
 
@@ -61,11 +67,14 @@ You will have to adjust the absolute path of the project nalir-glamorise and GLA
   sys.path.append(path.abspath('/home/novello/GLAMORISE'))
 ```
 
+
 ## Configuration files
+
 
 ### NaLIR database and special folders configurations
 
 You will have to adjust the JSON files bellow with the correct database connection information and the path under the project nalir-glamorise to the folders zfiles and new_jars
+
 
 #### ANP database
 ./config/nalir_anp_local_db.json
@@ -82,6 +91,7 @@ You will have to adjust the JSON files bellow with the correct database connecti
     "jars_path":"/home/novello/nalir-glamorise/jars/new_jars"
 }
 ```
+
 
 #### MAS database
 ./config/nalir_mas_local_db.json
