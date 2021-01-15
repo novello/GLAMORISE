@@ -10,8 +10,8 @@ from codetiming import Timer
 with open('./config/glamorise_mock_anp.json') as json_file:
     patterns_json_txt = json_file.read()
 
-class TestGLAMORISE(TestCase):
-    def test_GLAMORISE_methods(self):
+class TestGlamorise(TestCase):
+    def test_glamorise_methods(self):
         # set of questions to test
         with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=';', quotechar="'")
