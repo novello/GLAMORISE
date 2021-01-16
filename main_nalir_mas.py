@@ -17,7 +17,7 @@ with open('./config/glamorise_nalir_mas.json') as json_file:
 
 jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = token_path)
-with open('./nlqs/nalir_mas_subset_modified.nlqs.txt', encoding="utf-8") as file:            
+with open('./nlqs/nalir_mas_subset.nlqs.txt', encoding="utf-8") as file:            
     # read the file with the NLQ questions
     lines = file.readlines()     
     line_count = 0
