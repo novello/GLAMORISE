@@ -26,7 +26,7 @@ Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Br
 
 
 ``` bash
-    $ mysql -D mas -u <user> -p < ./config/nalir_anp_mysql.sql
+    $ mysql -D anp -u <user> -p < ./config/nalir_anp_mysql.sql
 ```
 
 
