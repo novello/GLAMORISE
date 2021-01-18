@@ -4,10 +4,10 @@ from flaskext.markdown import Markdown
 
 from os import path
 import sys
-sys.path.append(path.abspath('/home/novello/nalir-glamorise'))
-sys.path.append(path.abspath('/home/novello/GLAMORISE'))
-import main_common as mc
+sys.path.append(path.abspath('C:/Users/admin/Documents/_tecgraf/Glamorise/GLAMORISE'))
+sys.path.append(path.abspath('C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise'))
 from glamorise_nlidb import GlamoriseNlidb
+import main_common as mc
 
 app = flask.Flask(__name__)
 Markdown(app)
