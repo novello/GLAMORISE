@@ -31,12 +31,13 @@ NLTK dependencies used by NaLIR.
 
 Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) MySQL database.
 
-First create the databases inside mysql
+First create the database inside mysql:
 
 ``` mysql
-    create database anp;
-    create database mas;
+    create database anp;    
 ```
+
+And then run the following dump:
 
 ``` bash
     $ mysql -D anp -u <user> -p < ./config/nalir_anp_mysql.sql
@@ -48,6 +49,14 @@ First create the databases inside mysql
 Used with the NaLIR NLIDB which uses the MAS (Microsoft Academic Search) MySQL database. This database is used in the NaLIR original paper.
 
 First follow all the installation steps in the README of the nalir-glamorise project and then run the command below:
+
+First create the database inside mysql:
+
+``` mysql
+    create database mas;    
+```
+
+And then run the following dump:
 
 
 ``` bash
