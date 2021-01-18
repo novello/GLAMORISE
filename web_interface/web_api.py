@@ -19,7 +19,7 @@ from glamorise_nlidb import GlamoriseNlidb
 
 app = flask.Flask(__name__)
 Markdown(app)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 
 
 @app.route('/')
