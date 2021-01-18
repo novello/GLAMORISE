@@ -110,8 +110,8 @@ You will have to adjust the JSON files below with the correct database connectio
 {
     "connection":{
             "host": "localhost",
-            "password":"your password",
-            "user":"your user",
+            "password":"your_password",
+            "user":"your_user",
             "database":"anp"
     },
     "loggingMode": "ERROR",
@@ -127,8 +127,8 @@ You will have to adjust the JSON files below with the correct database connectio
 {
     "connection":{
             "host": "localhost",
-            "password":"your password",
-            "user":"your user",
+            "password":"your_password",
+            "user":"your_user",
             "database":"mas"
     },
     "loggingMode": "ERROR",
