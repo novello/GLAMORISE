@@ -12,10 +12,17 @@ The paths below are relative to the root path of the GLAMORISE project. You are 
 
 ## Setting up the environment
 
+General dependencies 
+
 ``` bash
-  $ pip install -r requirements.txt
+  $ pip3 install -r requirements.txt
 ```
 
+NLTK dependencies used by NaLIR.
+
+``` bash
+  python3 ./config/nltk_setup.py
+```
 
 ## Setting up the database
 
@@ -24,6 +31,12 @@ The paths below are relative to the root path of the GLAMORISE project. You are 
 
 Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) MySQL database.
 
+First create the databases inside mysql
+
+``` mysql
+    create database anp;
+    create database mas;
+```
 
 ``` bash
     $ mysql -D anp -u <user> -p < ./config/nalir_anp_mysql.sql
