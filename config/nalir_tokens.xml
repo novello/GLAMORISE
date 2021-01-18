@@ -2,168 +2,168 @@
 <!-- define tokens for dependency parse tree -->
 <!-- all terms are in lower case -->
 <types>
-<!-- Command Token, verb -->
-<CMT_V>
-<phrase>what
-<example>What was the production of oil in the state of Rio de Janeiro?</example>
-</phrase>
-<phrase>which
-<example>Which field produces the most oil per month?</example>
-</phrase>
-<phrase>how
-<example>How many fields are there in Paraná?</example>
-</phrase>
-<phrase>who</phrase>
-<phrase>whom</phrase>
-<phrase>where</phrase>
-<phrase>when</phrase>
-<phrase>tell
-<example>Tell me all the books published in year 1993.</example>
-</phrase>
-<phrase>give
-<example>Give me all the books published in year 1993.</example>
-</phrase>
-<phrase>return
-<example>Return all the books published in year 1993.</example>
-</phrase>
-<phrase>list
-<example>List all the books published in year 1993.</example>
-</phrase>
-<phrase>find
-<example>Find all the books published in year 1993.</example>
-</phrase>
-<phrase>show
-<example>Show all the books published in year 1993.</example>
-</phrase>
-<phrase>retrieve
-<example>Retrieve all the books published in year 1993.</example>
-</phrase>
-<phrase>display
-<example>Display all the books published in year 1993.</example>
-</phrase>
-<phrase>search
-<example>Search all the books published in year 1993.</example>
-</phrase>
-<phrase>select
-<example>Select all the books published in year 1993.</example>
-</phrase>
-<!-- TODO: double check this -->
-<phrase>produce
-<example>Produce all the books published in year 1993.</example>
-</phrase>
-<phrase>generate</phrase>
-<phrase>list</phrase>
-</CMT_V>
-<!-- Order By Token -->
-<OBT>
-<phrase>sort by
-<example>Find all the books published by Ayn Rand, sorted by title.</example>
-</phrase>
-<phrase>order by
-<example>Find all the books published by Ayn Rand, ordered by title.</example>
-</phrase>
-<phrase>
+    <!-- Command Token, verb -->
+    <CMT_V>
+        <phrase>what
+            <example>What was the production of oil in the state of Rio de Janeiro?</example>
+        </phrase>
+        <phrase>which
+            <example>Which field produces the most oil per month?</example>
+        </phrase>
+        <phrase>how
+            <example>How many fields are there in Paraná?</example>
+        </phrase>
+        <phrase>who</phrase>
+        <phrase>whom</phrase>
+        <phrase>where</phrase>
+        <phrase>when</phrase>
+        <phrase>tell
+            <example>Tell me all the books published in year 1993.</example>
+        </phrase>
+        <phrase>give
+            <example>Give me all the books published in year 1993.</example>
+        </phrase>
+        <phrase>return
+            <example>Return all the books published in year 1993.</example>
+        </phrase>
+        <phrase>list
+            <example>List all the books published in year 1993.</example>
+        </phrase>
+        <phrase>find
+            <example>Find all the books published in year 1993.</example>
+        </phrase>
+        <phrase>show
+            <example>Show all the books published in year 1993.</example>
+        </phrase>
+        <phrase>retrieve
+            <example>Retrieve all the books published in year 1993.</example>
+        </phrase>
+        <phrase>display
+            <example>Display all the books published in year 1993.</example>
+        </phrase>
+        <phrase>search
+            <example>Search all the books published in year 1993.</example>
+        </phrase>
+        <phrase>select
+            <example>Select all the books published in year 1993.</example>
+        </phrase>
+        <!-- TODO: double check this -->
+        <phrase>produce
+            <example>Produce all the books published in year 1993.</example>
+        </phrase>
+        <phrase>generate</phrase>
+        <phrase>list</phrase>
+    </CMT_V>
+    <!-- Order By Token -->
+    <OBT>
+        <phrase>sort by
+            <example>Find all the books published by Ayn Rand, sorted by title.</example>
+        </phrase>
+        <phrase>order by
+            <example>Find all the books published by Ayn Rand, ordered by title.</example>
+        </phrase>
+        <phrase>
 in the order of
-</phrase>
-</OBT>
-<!-- Function Token, adjective -->
-<FT>
-</FT>
-<!-- Operator Token, adj -->
-<OT>
-<phrase>earlier
-<operator>&lt;</operator>
-<example>Find all the books of Ayn Rand, where the year of each book is earlier than the year of "Fountain Head".</example>
-</phrase>
-<phrase>later
-<operator>&gt;</operator>
-<example>Find all the books of Ayn Rand, where the year of each book is later than the year of "Fountain Head".</example>
-</phrase>
-<phrase>greater
-<operator>&gt;</operator>
-<example>Find all the books with greater than 2 editors.</example>
-</phrase>
-<phrase>more
-<operator>&gt;</operator>
-<example>Find all the books with more than 2 editors.</example>
-</phrase>
-<phrase>less
-<operator>&lt;</operator>
-<example>Find all the books with less than 5 authors.</example>
-</phrase>
-<phrase>larger
-<operator>&gt;</operator>
-<example>Find all the books, where the number of authors of each book is larger than 5.</example>
-</phrase>
-<phrase>smaller
-<operator>&lt;</operator>
-<example>Find all the books, where the number of authors of each book is smaller than 5.</example>
-</phrase>
-<phrase>higher
-<operator>&gt;</operator>
-<example>Find all the books, where the price of each book is higher than 100.</example>
-</phrase>
-<phrase>lower
-<operator>&lt;</operator>
-<example>Find all the books, where the price of each book is lower than 5.</example>
-</phrase>
-<phrase>at least
-<operator>&gt;=</operator>
-</phrase>
-<phrase>before
-<operator>&lt;</operator>
-<example>Find all the books by Ayn Rand published before 1949.</example>
-</phrase>
-<phrase>after
-<operator>&gt;</operator>
-<example>Find all the books published after 2004.</example>
-</phrase>
-<phrase>equal
-<operator>=</operator>
-<example>Find all the books of Ayn Rand, where the year of each book is equal to the year of "Fountain Head".</example>
-</phrase>
-<phrase>same
-<operator>=</operator>
-<example>Return the articles where the author is the same as the author of "Java and XML" </example>
-</phrase>
-<phrase>as many
-<operator>=</operator>
-</phrase>
-</OT>
-<!-- Qualifier Token -->
-<QT>
-<phrase>every
-<quantity>all</quantity>
-<example>Return all the books, where the name of every author of each book ends with "Green". </example>
-</phrase>
-<phrase>each
-<quantity>each</quantity>
-</phrase>
-<phrase>per
-<quantity>each</quantity>
-</phrase>
-<phrase>by
-<quantity>each</quantity>
-</phrase>
-<phrase>all
-<quantity>all</quantity>
-</phrase>
-<phrase>some
-<quantity>any</quantity>
-<example>Return all the books, where the name of some authors of each book ends with "Green". </example>
-</phrase>
-<phrase>any
-<quantity>any</quantity>
-</phrase>
-</QT>
-<!-- Negation Token -->
-<NEG>
-<phrase>not</phrase>
-<phrase>no</phrase>
-<phrase>didn't</phrase>
-<phrase>doesn't</phrase>
-<phrase>haven't</phrase>
-<phrase>hasn't</phrase>
-<phrase>nothing</phrase>
-</NEG>
+        </phrase>
+    </OBT>
+    <!-- Function Token, adjective -->
+    <FT>
+    </FT>
+    <!-- Operator Token, adj -->
+    <OT>
+        <phrase>earlier
+            <operator>&lt;</operator>
+            <example>Find all the books of Ayn Rand, where the year of each book is earlier than the year of "Fountain Head".</example>
+        </phrase>
+        <phrase>later
+            <operator>&gt;</operator>
+            <example>Find all the books of Ayn Rand, where the year of each book is later than the year of "Fountain Head".</example>
+        </phrase>
+        <phrase>greater
+            <operator>&gt;</operator>
+            <example>Find all the books with greater than 2 editors.</example>
+        </phrase>
+        <phrase>more
+            <operator>&gt;</operator>
+            <example>Find all the books with more than 2 editors.</example>
+        </phrase>
+        <phrase>less
+            <operator>&lt;</operator>
+            <example>Find all the books with less than 5 authors.</example>
+        </phrase>
+        <phrase>larger
+            <operator>&gt;</operator>
+            <example>Find all the books, where the number of authors of each book is larger than 5.</example>
+        </phrase>
+        <phrase>smaller
+            <operator>&lt;</operator>
+            <example>Find all the books, where the number of authors of each book is smaller than 5.</example>
+        </phrase>
+        <phrase>higher
+            <operator>&gt;</operator>
+            <example>Find all the books, where the price of each book is higher than 100.</example>
+        </phrase>
+        <phrase>lower
+            <operator>&lt;</operator>
+            <example>Find all the books, where the price of each book is lower than 5.</example>
+        </phrase>
+        <phrase>at least
+            <operator>&gt;=</operator>
+        </phrase>
+        <phrase>before
+            <operator>&lt;</operator>
+            <example>Find all the books by Ayn Rand published before 1949.</example>
+        </phrase>
+        <phrase>after
+            <operator>&gt;</operator>
+            <example>Find all the books published after 2004.</example>
+        </phrase>
+        <phrase>equal
+            <operator>=</operator>
+            <example>Find all the books of Ayn Rand, where the year of each book is equal to the year of "Fountain Head".</example>
+        </phrase>
+        <phrase>same
+            <operator>=</operator>
+            <example>Return the articles where the author is the same as the author of "Java and XML" </example>
+        </phrase>
+        <phrase>as many
+            <operator>=</operator>
+        </phrase>
+    </OT>
+    <!-- Qualifier Token -->
+    <QT>
+        <phrase>every
+            <quantity>all</quantity>
+            <example>Return all the books, where the name of every author of each book ends with "Green". </example>
+        </phrase>
+        <phrase>each
+            <quantity>each</quantity>
+        </phrase>
+        <phrase>per
+            <quantity>each</quantity>
+        </phrase>
+        <phrase>by
+            <quantity>each</quantity>
+        </phrase>
+        <phrase>all
+            <quantity>all</quantity>
+        </phrase>
+        <phrase>some
+            <quantity>any</quantity>
+            <example>Return all the books, where the name of some authors of each book ends with "Green". </example>
+        </phrase>
+        <phrase>any
+            <quantity>any</quantity>
+        </phrase>
+    </QT>
+    <!-- Negation Token -->
+    <NEG>
+        <phrase>not</phrase>
+        <phrase>no</phrase>
+        <phrase>didn't</phrase>
+        <phrase>doesn't</phrase>
+        <phrase>haven't</phrase>
+        <phrase>hasn't</phrase>
+        <phrase>nothing</phrase>
+    </NEG>
 </types>

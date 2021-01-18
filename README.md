@@ -21,7 +21,26 @@ General dependencies
 NLTK dependencies used by NaLIR.
 
 ``` bash
-  python3 ./config/nltk_setup.py
+  $ python3 ./config/nltk_setup.py
+```
+
+NLTK also needs a Java environment working with the JAVA_HOME environment variable set. To do this installation on Ubuntu follow the steps below:
+
+``` bash
+  $ sudo apt update
+  $ sudo apt install openjdk-11-jdk-headless
+```
+
+Update the environment file in a text editor:
+
+``` bash
+  $ sudo nano /etc/environment
+```
+
+ And configure in the file the JAVA_HOME variable value:
+
+ ``` bash
+  JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/java 
 ```
 
 ## Setting up the database
