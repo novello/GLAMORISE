@@ -40,7 +40,7 @@ Update the environment file in a text editor:
  And configure in the file the JAVA_HOME variable value:
 
  ``` bash
-  JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/java 
+  JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/java" 
 ```
 
 ## Setting up the database
