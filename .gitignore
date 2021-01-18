@@ -119,3 +119,5 @@ datasets/GLAMORISE.db
 
 
 web_interface/static/images/*Zone.Identifier
+config/nalir_anp_local_db.json
+config/nalir_mas_local_db.json

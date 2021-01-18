@@ -19,8 +19,7 @@ from glamorise_nlidb import GlamoriseNlidb
 
 app = flask.Flask(__name__)
 Markdown(app)
-app.config["DEBUG"] = True
-
+app.config["DEBUG"] = False
 
 @app.route('/')
 def index():
@@ -95,4 +94,4 @@ def backend():
         return ''
             
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
