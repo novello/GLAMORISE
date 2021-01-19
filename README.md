@@ -12,10 +12,36 @@ The paths below are relative to the root path of the GLAMORISE project. You are 
 
 ## Setting up the environment
 
+General dependencies 
+
 ``` bash
-  $ pip install -r requirements.txt
+  $ pip3 install -r requirements.txt
 ```
 
+NLTK dependencies used by NaLIR.
+
+``` bash
+  $ python3 ./config/nltk_setup.py
+```
+
+NLTK also needs a Java environment working with the JAVA_HOME environment variable set. To do this installation on Ubuntu follow the steps below:
+
+``` bash
+  $ sudo apt update
+  $ sudo apt install openjdk-11-jdk-headless
+```
+
+Update the environment file in a text editor:
+
+``` bash
+  $ sudo nano /etc/environment
+```
+
+ And configure in the file the JAVA_HOME variable value:
+
+ ``` bash
+  JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/java" 
+```
 
 ## Setting up the database
 
@@ -24,6 +50,13 @@ The paths below are relative to the root path of the GLAMORISE project. You are 
 
 Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) MySQL database.
 
+First create the database inside mysql:
+
+``` mysql
+    create database anp;    
+```
+
+And then run the following dump:
 
 ``` bash
     $ mysql -D anp -u <user> -p < ./config/nalir_anp_mysql.sql
@@ -35,6 +68,14 @@ Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Br
 Used with the NaLIR NLIDB which uses the MAS (Microsoft Academic Search) MySQL database. This database is used in the NaLIR original paper.
 
 First follow all the installation steps in the README of the nalir-glamorise project and then run the command below:
+
+First create the database inside mysql:
+
+``` mysql
+    create database mas;    
+```
+
+And then run the following dump:
 
 
 ``` bash
@@ -69,8 +110,8 @@ You will have to adjust the JSON files below with the correct database connectio
 {
     "connection":{
             "host": "localhost",
-            "password":"your password",
-            "user":"your user",
+            "password":"your_password",
+            "user":"your_user",
             "database":"anp"
     },
     "loggingMode": "ERROR",
@@ -86,8 +127,8 @@ You will have to adjust the JSON files below with the correct database connectio
 {
     "connection":{
             "host": "localhost",
-            "password":"your password",
-            "user":"your user",
+            "password":"your_password",
+            "user":"your_user",
             "database":"mas"
     },
     "loggingMode": "ERROR",

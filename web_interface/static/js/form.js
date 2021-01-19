@@ -27,7 +27,7 @@ $(document).ready(function() {
 				glamoriseJsonConfig : $('#glamoriseJsonConfig').val(),
 				nalirXmlConfig : $('#nalirXmlConfig').val()
 			},
-			type : 'GET',
+			type : 'POST',
 			url : '/backend'
 		})
 		.done(function(data) {
