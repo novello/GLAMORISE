@@ -64,7 +64,7 @@ def backend():
             nlq = request.form['nlq']
             type = request.form['type']
             patterns_json_txt = request.form['glamoriseJsonConfig']            
-            nalir_tokens =  (request.form['nalirXmlConfig'])               
+            nalir_tokens = request.form['nalirXmlConfig']              
         elif request.method == 'GET':
             nlq = request.args.get('nlq')        
             type = request.args.get('type')
