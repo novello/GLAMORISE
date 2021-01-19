@@ -1,11 +1,11 @@
 {
-    "connection":{
-            "host": "localhost",
-            "password":"123mudar",
-            "user":"nalir",
-            "database":"mas"
+    "connection": {
+        "host": "localhost",
+        "password": "your_password",
+        "user": "your_user",
+        "database": "anp"
     },
     "loggingMode": "ERROR",
-    "zfiles_path":"/home/desenvolvimento/nalir-glamorise/zfiles",
-    "jars_path":"/home/desenvolvimento/nalir-glamorise/jars/new_jars"
+    "zfiles_path": "/path/to/nalir-glamorise/zfiles",
+    "jars_path": "/path/to/nalir-glamorise/jars/new_jars"
 }
