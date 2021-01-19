@@ -1,0 +1,11 @@
+{
+    "connection": {
+        "host": "localhost",
+        "password": "your_password",
+        "user": "your_user",
+        "database": "mas"
+    },
+    "loggingMode": "ERROR",
+    "zfiles_path": "/path/to/nalir-glamorise/zfiles",
+    "jars_path": "/path/to/nalir-glamorise/jars/new_jars"
+}
