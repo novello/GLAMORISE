@@ -3,7 +3,7 @@
         "host": "localhost",
         "password": "your_password",
         "user": "your_user",
-        "database": "anp"
+        "database": "mas"
     },
     "loggingMode": "ERROR",
     "zfiles_path": "/path/to/nalir-glamorise/zfiles",
