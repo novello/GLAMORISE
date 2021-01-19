@@ -1,11 +1,11 @@
 {
     "connection":{
             "host": "localhost",
-            "password":"desenvolvimento123",
-            "user":"nalir",
+            "password":"zuzuga123",
+            "user":"root",
             "database":"anp"
     },
     "loggingMode": "ERROR",
-    "zfiles_path":"/home/novello/nalir-glamorise/zfiles",
-    "jars_path":"/home/novello/nalir-glamorise/jars/new_jars"
+    "zfiles_path":"C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise/zfiles",
+    "jars_path":"C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise/jars/new_jars"
 }
