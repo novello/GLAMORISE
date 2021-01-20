@@ -6,8 +6,9 @@ from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
 import csv
 from codetiming import Timer
+from os import path
 
-token_path = '../nalir-glamorise/zfiles/tokens.anp.xml'
+token_path = path.abspath('./config/nalir_tokens.xml')
 
 with open('./config/nalir_anp_local_db.json') as json_file:
     config_db = json_file.read()
@@ -17,7 +18,7 @@ with open('./config/glamorise_nalir_anp.json') as json_file:
 
    
 # create GLAMORISE object (the child class is instantiated)
-glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, token_path = token_path)
+glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = token_path)
 with open('./nlqs/nalir_anp.nlqs.txt', encoding="utf-8") as file:            
     # read the file with the NLQ questions
     lines = file.readlines()     

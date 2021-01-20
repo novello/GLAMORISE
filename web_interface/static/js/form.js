@@ -1,8 +1,21 @@
 $(document).ready(function() {
 
+	$('#instructionsButton').click(function(){				
+		if ($('#instructionsButton').text() == "Show Instructions") {
+			$('#instructions').show();
+			$('#instructionsButton').html("Hide Instructions");
+		}	
+		else {
+			$('#instructions').hide();
+			$('#instructionsButton').html("Show Instructions");
+		}	
+	});
+		
+
 	$('form').on('submit', function(event) {
 		$('#result').text('').hide();
 		$('#loadingDiv').show();
+		window.scrollTo(0,document.body.scrollHeight);
 		$('#glamoriseTextarea').attr('disabled', 'disabled');		
 		$('#glamoriseJsonConfig').attr('disabled', 'disabled');
 		$('#nalirXmlConfig').attr('disabled', 'disabled');
@@ -14,7 +27,7 @@ $(document).ready(function() {
 				glamoriseJsonConfig : $('#glamoriseJsonConfig').val(),
 				nalirXmlConfig : $('#nalirXmlConfig').val()
 			},
-			type : 'GET',
+			type : 'POST',
 			url : '/backend'
 		})
 		.done(function(data) {

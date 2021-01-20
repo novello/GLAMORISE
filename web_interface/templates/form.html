@@ -33,6 +33,11 @@
             <div class="row">
                 <div class="input-group-btn">              
                   <button id="submitButton" type="submit" class="btn btn-default">Send query</button> 
+                  {% if type == 'glamorise_mock_anp' %}
+                    <button id="instructionsButton" type="button" class="btn btn-default">Hide Instructions</button> 
+                  {% else %}                    
+                    <button id="instructionsButton" type="button" class="btn btn-default">Show Instructions</button>   
+                  {% endif %}  
                   <input type="hidden" id="hiddenType" name="type" value="{{ type }}">
                 </div>
             </div>                     
@@ -73,7 +78,7 @@
           <h2> Loading...</h2>
           <h2> Depending on the query, the process may take a couple of minutes. </h2>
           <div class="image">
-            <img src="{{url_for('static', filename='images/spinner.gif')}}" alt="spinner">    
+            <img src="{{url_for('static', filename='images/spinner.gif')}}" alt="spinner" id = "spinner">    
           </div>            
         </div>           
       </div>

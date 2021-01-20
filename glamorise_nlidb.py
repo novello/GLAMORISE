@@ -10,7 +10,7 @@ from copy import deepcopy
 # the implementation has to be changed to contemplate new NLIDBs
 class GlamoriseNlidb(Glamorise):
 
-    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = '', config_db = '', token_path = ''):
+    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = '', config_db = '', tokens = ''):
         super(GlamoriseNlidb, self).__init__(lang, patterns)
         # customize as needed customize as needed according to integration with other NLIDBs. 
         # Don't forget to create the specific class for NLIDB following the model of NalirNlid
@@ -19,7 +19,7 @@ class GlamoriseNlidb(Glamorise):
         if NLIDB == 'Mock':
             self.__nlidb = MockNlidb()
         elif NLIDB == 'NaLIR':
-            self.__nlidb = NalirNlidb(config_db, token_path)        
+            self.__nlidb = NalirNlidb(config_db, tokens)        
 
         # 
         # add more NLIDBs here

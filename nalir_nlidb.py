@@ -2,7 +2,10 @@ from simple_sqlite import SimpleSQLite
 import json
 from os import path
 import sys
-sys.path.append(path.abspath('../nalir-glamorise'))
+with open('./config/path.json') as json_file:
+    json_path = json_file.read()
+json_path = json.loads(json_path)
+sys.path.append(path.abspath(json_path['nalir_relative_path']))
 from mysql.connector import FieldType
 import re
 import nltk
@@ -22,7 +25,7 @@ class NalirNlidb:
     def __init__(self, config_db, token_path):
         # open the database        
         self.__config_db = config_db
-        self.__token_path = token_path
+        self.__tokens = token_path
         self.__config = ConfigHandler(reset=True,config_json_text=self.__config_db)
         self.__rdbms = RDBMS(self.__config)
 
@@ -168,7 +171,7 @@ class NalirNlidb:
             # Stanford Dependency Parser
             StanfordParser(query,self.__config)            
             # Node Mapper
-            NodeMapper.phrase_process(query,self.__rdbms,self.__config, token_path = self.__token_path)
+            NodeMapper.phrase_process(query,self.__rdbms,self.__config, tokens = self.__tokens)
             # Entity Resolution
             # The entity pairs denote that two nodes represente the same entity.
             entity_resolute(query)

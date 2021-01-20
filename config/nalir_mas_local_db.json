@@ -1,11 +1,11 @@
 {
-    "connection":{
-            "host": "localhost",
-            "password":"zuzuga123",
-            "user":"root",
-            "database":"mas"
+    "connection": {
+        "host": "localhost",
+        "password": "zuzuga123",
+        "user": "root",
+        "database": "mas"
     },
     "loggingMode": "ERROR",
-    "zfiles_path":"C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise/zfiles",
-    "jars_path":"C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise/jars/new_jars"
+    "zfiles_path": "C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise/zfiles",
+    "jars_path": "C:/Users/admin/Documents/_tecgraf/Glamorise/nalir-glamorise/jars/new_jars"
 }

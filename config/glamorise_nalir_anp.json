@@ -183,6 +183,7 @@
                 "lowest",
                 "worst",
                 "newest",
+                "first",
                 "min",
                 "minimum"
             ],
@@ -194,6 +195,7 @@
                 "most",
                 "most number of",
                 "biggest",
+                "largest",
                 "longest",
                 "furthest",
                 "highest",
@@ -201,6 +203,7 @@
                 "greatest",
                 "best",
                 "oldest",
+                "last",
                 "max",
                 "maximum"
             ],
