@@ -6,12 +6,12 @@ from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
 from os import path
 
-token_path = path.abspath('./config/nalir_tokens.xml')
+token_path = path.abspath('./config/environment/nalir_tokens.xml')
 
-with open('./config/nalir_mas_local_db.json') as json_file:
+with open('./config/environment/nalir_mas_db.json') as json_file:
     config_db = json_file.read()
         
-with open('./config/glamorise_nalir_mas.json') as json_file:
+with open('./config/environment/glamorise_nalir_mas.json') as json_file:
     patterns_json_txt = json_file.read()
 
 jupyter = mc.is_jupyter_notebook()

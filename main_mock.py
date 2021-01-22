@@ -6,7 +6,7 @@ from glamorise_nlidb import GlamoriseNlidb
 import main_common as mc
 import csv
 
-with open('./config/glamorise_mock_anp.json') as json_file:
+with open('./config/environment/glamorise_mock_anp.json') as json_file:
     patterns_json_txt = json_file.read()
 
 with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:

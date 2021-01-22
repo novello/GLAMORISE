@@ -21,7 +21,7 @@ General dependencies
 NLTK dependencies used by NaLIR.
 
 ``` bash
-  $ python3 ./config/nltk_setup.py
+  $ python3 ./config/setup/nltk_setup.py
 ```
 
 NLTK also needs a Java environment working with the JAVA_HOME environment variable set. To do this installation on Ubuntu follow the steps below:
@@ -56,16 +56,16 @@ First create the database inside mysql:
     create database anp;    
 ```
 
-And then run the following dump:
+And then run the following database dump:
 
 ``` bash
-    $ mysql -D anp -u <user> -p < ./config/nalir_anp_mysql.sql
+    $ mysql -D anp -u <user> -p < ./config/setup/nalir_anp_mysql.sql
 ```
 
-After that run the following script:
+After that run the following script, this is respponsible for creating the configuration needed by NaLIR in order to work correctly with the ANP database:
 
 ``` bash
-    mysql -D mas -u <user> -p < ./zfiles/setup_anp_nalir.sql
+    mysql -D anp -u <user> -p < ./zfiles/setup_anp_nalir.sql
 ```
 
 ### MAS MySQL database
@@ -79,11 +79,13 @@ First create the database inside mysql:
     create database mas;    
 ```
 
-After that follow all the installation steps in the README of the nalir-glamorise project and then run the following script:
+And then follow all the installation steps in the README of the nalir-glamorise project.
+
+After this run the following script below, it is respponsible for creating the configuration needed by GLAMORISE in order to work correctly with the MAS database:
 
 
 ``` bash
-    $ mysql -D mas -u <user> -p < ./config/setup_mas_glamorise.sql
+    $ mysql -D mas -u <user> -p < ./config/setup/setup_mas_glamorise.sql
 ```
 
 
@@ -94,7 +96,7 @@ After that follow all the installation steps in the README of the nalir-glamoris
 
 You will have to adjust the relative path of the project nalir-glamorise (nalir_relative_path) in the following JSON file:
 
-./config/path.json
+./config/environment/path.json
 ``` json
     {
         "nalir_relative_path" : "../nalir-glamorise",    
@@ -105,39 +107,41 @@ You will have to adjust the relative path of the project nalir-glamorise (nalir_
 
 ### NaLIR database and special folders configurations
 
-You will have to adjust the JSON files below with the correct database connection information and the path under the nalir-glamorise project to the folders zfiles and new_jars
+You will have to create the JSON files below with the correct database connection information and the path under the nalir-glamorise project to the folders zfiles and new_jars. Each one you can use the respective template file to customize:
 
 
 #### ANP database
-./config/nalir_anp_local_db.json
+create the file ./config/environment/nalir_anp_db.json
+based on the file ./config/environment/nalir_anp_db_template.json
 ``` json
 {
-    "connection":{
-            "host": "localhost",
-            "password":"your_password",
-            "user":"your_user",
-            "database":"anp"
+    "connection": {
+        "host": "localhost",
+        "password": "your_password",
+        "user": "your_user",
+        "database": "anp"
     },
     "loggingMode": "ERROR",
-    "zfiles_path":"/path/to/nalir-glamorise/zfiles",
-    "jars_path":"/path/to/nalir-glamorise/jars/new_jars"
+    "zfiles_path": "/path/to/nalir-glamorise/zfiles",
+    "jars_path": "/path/to/nalir-glamorise/jars/new_jars"
 }
 ```
 
 
 #### MAS database
-./config/nalir_mas_local_db.json
+create the file ./config/environment/nalir_mas_db.json
+based on the file ./config/environment/nalir_mas_db_template.json
 ``` json
 {
-    "connection":{
-            "host": "localhost",
-            "password":"your_password",
-            "user":"your_user",
-            "database":"mas"
+    "connection": {
+        "host": "localhost",
+        "password": "your_password",
+        "user": "your_user",
+        "database": "mas"
     },
     "loggingMode": "ERROR",
-    "zfiles_path":"/path/to/nalir-glamorise/zfiles",
-    "jars_path":"/path/to/nalir-glamorise/jars/new_jars"
+    "zfiles_path": "/path/to/nalir-glamorise/zfiles",
+    "jars_path": "/path/to/nalir-glamorise/jars/new_jars"
 }
 ```
 
@@ -161,22 +165,22 @@ If you want to change the patterns accepted by GLAMORISE and NaLIR, this could b
 
 #### GLAMORISE Mock ANP
 
-./config/glamorise_mock_anp.json
+./config/environment/glamorise_mock_anp.json
 
 
 #### GLAMORISE with NaLIR (ANP database)
 
-./config/glamorise_nalir_anp.json
+./config/environment/glamorise_nalir_anp.json
 
 
 #### GLAMORISE with NaLIR (MAS database)
 
-./config/glamorise_nalir_mas.json
+./config/environment/glamorise_nalir_mas.json
 
 
 #### NaLIR Configuration File
 
-./config/nalir_tokens.xml
+./config/environment/nalir_tokens.xml
 
 
 
