@@ -125,3 +125,6 @@ config/nalir_mas_local_db.json
 
 config/nalir_anp_local_db_local.json
 config/nalir_mas_local_db_local.json
+log.txt
+config/nalir_anp_db.json
+config/nalir_mas_db.json
