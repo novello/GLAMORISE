@@ -89,8 +89,7 @@ def backend():
                     config_db = json_file.read()                        
                 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
             html = mc.print_results(glamorise, nlq)
-
-            html += mc.print_total_timers()
+            
             return render_template('results.html',  rawtext=html, tables=[glamorise.pd.to_html(classes='data')], titles=glamorise.pd.columns.values)        
         else:
             return ''

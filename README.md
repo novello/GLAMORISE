@@ -1,9 +1,13 @@
 # GLAMORISE
 GLAMORISE (GeneraL Aggregation MOdule using a RelatIonal databaSE)  
 
+Natural Language Interface to Databases (NLIDB) systems usually do not deal with aggregations, which can be of two types: aggregation functions (such as count, sum, average, minimum, and maximum) and grouping functions (GROUP BY). GLAMORISE addresses the creation of a generic module, to be used in NLIDB systems, that allows such systems to perform queries with aggregations, on the condition that the query results the NLIDB returns are or can be transformed into tables.
+
 This project refers to the implementation of GLAMORISE Natural Language Interface to Databases (NLIDB). You can find out more about GLAMORISE in the following article:
 
-* [A Novel Solution for the Aggregation Problem in Natural Language Interface to Databases (NLIDB)](./paper/207509_1-A-Novel-Solution-for-the-Aggregation-Problem-in-Natural-Language-Interface-to-Databases-NLIDB.pdf). Novello, A., F.; and Casanova, M., A. Proc. XXXV Brazilian Symposium on Databases - SBBD. 2020. Awarded as the 2nd Best Short Paper.
+* [A Novel Solution for the Aggregation Problem in Natural Language Interface to Databases (NLIDB)](./web_interface/static/paper/207509_1-A-Novel-Solution-for-the-Aggregation-Problem-in-Natural-Language-Interface-to-Databases-NLIDB.pdf). Novello, A., F.; and Casanova, M., A. Proc. XXXV Brazilian Symposium on Databases - SBBD. 2020. Awarded as the 2nd Best Short Paper.
+
+A [working demo](http://glamorise.gruposantaisabel.com.br) is avaiable of this project is avaiable.
 
 This implementation of GLAMORISE uses NaLIR as one of its integtared NLIDBs, so you will have to clone the [nalir-glamorise](https://github.com/novello/nalir-glamorise) repository. This project is a customization of the [nalir-ssbd](https://github.com/pr3martins/nalir-sbbd) project which in turn is a Python port of the original [NaLIR project](https://github.com/umich-dbgroup/NaLIR). Please follow all the steps described in the README of the nalir-glamorise project.
 
@@ -153,7 +157,13 @@ If you have changed the code and would like to test if it has broken anything, t
 
 ## Web Interface
 
-To use the project in a convenient way, a web interface was created that can be loaded by running the file ./web_interface/web_api.py
+To use the project in a convenient way, a web interface was created. 
+
+You can start the web interface with the sehll script ./start_flask.sh
+
+You can stop the web interface with the shell script ./stop_flask.sh
+
+You can audit the log looking at the file ./log.txt
 
 
 ## [OPTIONAL] Configuration files
