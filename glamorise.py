@@ -19,7 +19,7 @@ import os
 from copy import deepcopy
 from simple_sqlite import SimpleSQLite
 from codetiming import Timer
-from flask import jsonify
+import uuid
 
 
 
@@ -106,7 +106,8 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__build_patterns()
 
         # GLAMORISE local database. Used to persist the NLIDB result set and to process the query with aggregation
-        self.__SimpleSQLite = SimpleSQLite('./datasets/glamorise.db')
+        self.__uid = uuid.uuid4().hex
+        self.__SimpleSQLite = SimpleSQLite('./datasets/glamorise_' + self.__uid + '.db')
 
     def initialize_and_reset_attr(self):
         self._timer_total = Timer(name="timer_total", logger=None)
@@ -504,6 +505,7 @@ class Glamorise(metaclass=abc.ABCMeta):
             self._timer_nlidb_json_result_set.stop()
         #if result_set != []:
         self._processor(columns, result_set)
+        self.__del__()
 
     @abc.abstractmethod
     def _nlidb_interface(self):
@@ -644,4 +646,6 @@ class Glamorise(metaclass=abc.ABCMeta):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
         self.__SimpleSQLite.execute_sql(sql)
-        os.remove('./datasets/glamorise.db')
+        os.remove('./datasets/glamorise_' + self.__uid + '.db')
+        
+        
