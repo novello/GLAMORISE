@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <p>The GLAMORISE logo or mascot was created in an unusual way. I was at the gym thinking about how to solve some
+            GLAMORISE issues, looking at the wall,
+            when looking at some misshapen spots, I saw this nice guy in the middle of them. It is true that for some
+            time I had been wanting to create a symbol
+            for the system and it ended up coming as an epiphany on a gym wall. </p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 text-center"></div>
+    <div class="col-md-4 text-center">
+        <figure class="figure">
+            <img src="{{url_for('static', filename='images/inspiration_logo_glamorise_full.jpg')}}" alt="GLAMORISE"
+                class="figure-img img-fluid rounded">
+            <figcaption class="figure-caption"> Full image. Try to find the little guy.</figcaption>
+        </figure>
+    </div>
+    <div class="col-md-4 text-center"></div>
+</div>
+</br></br>
+<div class="row">
+    <div class="col-md-4 text-center"></div>
+    <div class="col-md-4">
+        <div class="text-center">
+            <figure class="figure">
+                <img src="{{url_for('static', filename='images/inspiration_logo_glamorise_detail.jpg')}}"
+                    class="figure-img img-fluid rounded" alt="GLAMORISE">
+                <figcaption class="figure-caption">Detail of the spot where the little guy was located.</figcaption>
+            </figure>
+        </div>
+    </div>
+    <div class="col-md-4 text-center"></div>
+</div>
+{% endblock content %}

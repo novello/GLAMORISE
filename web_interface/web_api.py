@@ -26,6 +26,10 @@ app.config["DEBUG"] = False
 def index():
     return render_template('index.html')
 
+@app.route('/logo_history')
+def logo_history():
+    return render_template('logo_history.html')    
+
 
 @app.route('/glamorise_mock_anp')
 def glamorise_mock_anp():
