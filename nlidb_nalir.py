@@ -13,12 +13,12 @@ import nltk
 #nltk.download('wordnet')
 #nltk.download('punkt')
 
-
+from nlidb_base import NlidbBase
 from nalir import *
 
 
 # Simple class to act as a NLIDB
-class NalirNlidb:
+class NlidbNalir(NlidbBase):
 
     
 
@@ -88,15 +88,32 @@ class NalirNlidb:
     def field_synonym(self, synonym, replace_dot = True):
         # responsible for the translation of the field to the appropriated column
         try:            
-            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" + synonym.lower().replace(' ', '_').replace('.', '_') + "'"
-            field, cursor_description = self.__rdbms.conduct_sql(sql)
-            field = list(field)[0][0].replace(' ', '_')
+            field = self.query_synonym(synonym)
+
+        #continuar daqui
+        if not field:
+            sql = "SELECT synonym FROM NLIDB_FIELD_SYNONYMS"
+            rows, cursor_description = self.__rdbms.conduct_sql(sql)
+            synonym_list = [i[0] for i in rows]
+            synonym = self._find_by_similarity(field, synonym_list)
+            field = self.query_synonym(synonym)
+
+
             if replace_dot:
                 field = field.replace('.', '_')
             return field
         except Exception as e:
+            print('Exception: ', e)
             return synonym
-            #print('Exception: ', e)
+
+    def query_synonym(self, synonym):
+        synonym = synonym.lower().replace(' ', '_').replace('.', '_')
+        sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" +  synonym + \
+                  "' OR lower(synonym) = '" + self._alternative_compound_name(synonym, '_') + "'"
+        rows, cursor_description = self.__rdbms.conduct_sql(sql)
+        field = list(rows)[0][0].replace(' ', '_')
+        return field
+            
 
     def translate_all_field_synonyms_in_nlq(self, nlidb_nlq, nlidb_interface_fields):    
         try:            

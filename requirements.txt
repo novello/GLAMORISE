@@ -18,10 +18,10 @@ Flask_Markdown == 0.3
 # GLAMORISE/test_GLAMORISE.py: 8
 codetiming == 1.2.0
 
-# GLAMORISE/nalir_nlidb.py: 6
+# GLAMORISE/nlidb_nalir.py: 6
 mysql_connector_python == 8.0.21
 
-# GLAMORISE/nalir_nlidb.py: 8
+# GLAMORISE/nlidb_nalir.py: 8
 nltk == 3.5
 
 # GLAMORISE/glamorise.py: 13
@@ -32,6 +32,7 @@ pandas == 1.1.3
 # GLAMORISE/glamorise.py: 8,9,14,15
 spacy == 2.2.4
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
+https://github.com/explosion/spacy-models/releases/download/en_core_web_md-2.2.5/en_core_web_md-2.2.5.tar.gz
 
 # GLAMORISE/glamorise.py: 17
 word2number == 1.1
