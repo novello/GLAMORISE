@@ -159,7 +159,7 @@ If you have changed the code and would like to test if it has broken anything, t
 
 To use the project in a convenient way, a web interface was created. 
 
-You can start the web interface with the sehll script ./start_flask.sh
+You can start the web interface with the shell script ./start_flask.sh
 
 You can stop the web interface with the shell script ./stop_flask.sh
 
