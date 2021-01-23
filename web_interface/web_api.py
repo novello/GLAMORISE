@@ -29,7 +29,7 @@ def index():
 
 @app.route('/glamorise_mock_anp')
 def glamorise_mock_anp():
-    with open('./config/environment/glamorise_mock_anp.json') as json_file:
+    with open('./config/environment/glamorise_mock.json') as json_file:
         patterns_json_txt = json_file.read()
 
     return render_template('form.html', type='glamorise_mock_anp', patterns_json_txt=patterns_json_txt)
@@ -37,7 +37,7 @@ def glamorise_mock_anp():
 
 @app.route('/glamorise_nalir_anp')
 def glamorise_nalir_anp():
-    with open('./config/environment/glamorise_nalir_anp.json') as json_file:
+    with open('./config/environment/glamorise_nalir.json') as json_file:
         patterns_json_txt = json_file.read()
     with open('./config/environment/nalir_tokens.xml') as xml_file:
         nalir_tokens = xml_file.read()
@@ -47,7 +47,7 @@ def glamorise_nalir_anp():
 
 @app.route('/glamorise_nalir_mas')
 def glamorise_nalir_mas():
-    with open('./config/environment/glamorise_nalir_mas.json') as json_file:
+    with open('./config/environment/glamorise_nalir.json') as json_file:
         patterns_json_txt = json_file.read()
     with open('./config/environment/nalir_tokens.xml') as xml_file:
         nalir_tokens = xml_file.read()

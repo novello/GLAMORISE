@@ -7,7 +7,7 @@ import csv
 from glamorise_nlidb import GlamoriseNlidb
 from codetiming import Timer
 
-with open('./config/environment/glamorise_mock_anp.json') as json_file:
+with open('./config/environment/glamorise_mock.json') as json_file:
     patterns_json_txt = json_file.read()
 
 class TestGlamorise(TestCase):

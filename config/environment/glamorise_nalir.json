@@ -2,6 +2,7 @@
     "units_of_measurement": [
         "cubic meters"
     ],
+    "noun_lemmatization": true,
     "compound_pattern_dep": [
         {
             "POS": "NOUN",
@@ -46,6 +47,8 @@
             }
         }
     ],
+    "nlidb_nlq_translate_fields": false,
+    "nlidb_attempt_level": 3,
     "patterns": {
         "than options": {
             "reserved_words": [
@@ -90,11 +93,10 @@
             "reserved_words": [
                 "by",
                 "per",
-                "for each",
-                "of each"
+                "each"
             ],
             "pre_group_by": true,
-            "pre_cut_text": true
+            "pre_cut_text": false
         },
         "group by and": {
             "reserved_words": [
@@ -144,7 +146,7 @@
                 "count",
                 "sum"
             ],
-            "pre_cut_text": true
+            "pre_cut_text": false
         },
         "other count": {
             "reserved_words": [
@@ -183,7 +185,19 @@
                 "newest",
                 "first",
                 "min",
-                "minimum"
+                "minimum",
+                "least number of",
+                "smallest number of",
+                "tiniest number of",
+                "shortest number of",
+                "cheapest number of",
+                "nearest number of",
+                "lowest number of",
+                "worst number of",
+                "newest number of",
+                "first number of",
+                "min number of",
+                "minimum number of"
             ],
             "pre_aggregation_functions": "min",
             "pre_cut_text": true
@@ -191,7 +205,6 @@
         "superlative max": {
             "reserved_words": [
                 "most",
-                "most number of",
                 "biggest",
                 "largest",
                 "longest",
@@ -203,7 +216,20 @@
                 "oldest",
                 "last",
                 "max",
-                "maximum"
+                "maximum",
+                "most number of",
+                "biggest number of",
+                "largest number of",
+                "longest number of",
+                "furthest number of",
+                "highest number of",
+                "tallest number of",
+                "greatest number of",
+                "best number of",
+                "oldest number of",
+                "last number of",
+                "max number of",
+                "maximum number of"
             ],
             "pre_aggregation_functions": "max",
             "pre_cut_text": true
@@ -214,13 +240,47 @@
                 "monthly",
                 "yearly"
             ],
-            "pre_time_scale_replace_text": {
+            "pre_sub_query_replace_text": {
                 "daily": "day",
                 "monthly": "month",
                 "yearly": "year"
             },
-            "pre_time_scale_aggregation_functions": "sum",
+            "use_replace_text_as_group_by": true,
+            "pre_sub_query_aggregation_functions": "sum",
             "pre_cut_text": false
+        },
+        "sub query min/max count": {
+            "reserved_words": [
+                "least number of",
+                "smallest number of",
+                "tiniest number of",
+                "shortest number of",
+                "cheapest number of",
+                "nearest number of",
+                "lowest number of",
+                "worst number of",
+                "newest number of",
+                "first number of",
+                "min number of",
+                "minimum number of",
+                "most number of",
+                "biggest number of",
+                "largest number of",
+                "longest number of",
+                "furthest number of",
+                "highest number of",
+                "tallest number of",
+                "greatest number of",
+                "best number of",
+                "oldest number of",
+                "last number of",
+                "max number of",
+                "maximum number of"
+            ],
+            "use_replace_text_as_group_by": false,
+            "remove_external_group_by": true,
+            "pre_sub_query_aggregation_functions": "count",
+            "pre_cut_text": true
         }
     }
 }

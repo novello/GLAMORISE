@@ -41,8 +41,9 @@ class Merger(metaclass=abc.ABCMeta):
                     if self._type == 'compound':
                       token._.compound_noun = True  # Mark token as compound noun               
                     elif self._type == 'units_of_measurement':
-                      token._.compound_noun = True  # Mark token as compound noun                 
+                      token._.units_of_measurement = True  # Mark token as units_of_measurement                 
         return doc
+        
  
 class CompoundMerger(Merger):
     def __init__(self, nlp):     
@@ -123,9 +124,9 @@ class Glamorise(metaclass=abc.ABCMeta):
         self._pos_aggregation_fields = []
         self._pre_group_by_fields = []
 
-        self._pre_time_scale_aggregation_functions = []
-        self._pre_time_scale_aggregation_fields = []
-        self._pre_time_scale_group_by_fields = []        
+        self._pre_sub_query_aggregation_functions = []
+        self._pre_sub_query_aggregation_fields = []
+        self._pre_sub_query_group_by_fields = []        
         
         self._pre_having_fields = []
         self._pre_having_conditions = []
@@ -135,6 +136,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pre_cut_text = []
         self.__pre_replaced_text = {}
         self.__pre_group_by = False
+        self.__pre_remove_external_group_by = False
 
         self.__matched_sents = []  # Collect data of matched sentences to be visualized  
         
@@ -193,19 +195,19 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     @property
     def pre_group_by_fields(self):
-        return deepcopy(self._pre_group_by_fields)
+        return deepcopy(self._pre_group_by_fields)     
+    
+    @property
+    def pre_sub_query_aggregation_functions(self):
+        return deepcopy(self._pre_sub_query_aggregation_functions)
 
     @property
-    def pre_time_scale_aggregation_functions(self):
-        return deepcopy(self._pre_time_scale_aggregation_functions)
+    def pre_sub_query_aggregation_fields(self):
+        return deepcopy(self._pre_sub_query_aggregation_fields)
 
     @property
-    def pre_time_scale_aggregation_fields(self):
-        return deepcopy(self._pre_time_scale_aggregation_fields)
-
-    @property
-    def pre_time_scale_group_by_fields(self):
-        return deepcopy(self._pre_time_scale_group_by_fields)
+    def pre_sub_query_group_by_fields(self):
+        return deepcopy(self._pre_sub_query_group_by_fields)
 
     @property
     def pre_having_fields(self):
@@ -234,6 +236,10 @@ class Glamorise(metaclass=abc.ABCMeta):
     @property
     def pre_group_by(self):
         return self.__pre_group_by  
+
+    @property
+    def pre_remove_external_group_by(self):
+        return self.__pre_remove_external_group_by
 
     @property
     def select_clause(self):
@@ -277,7 +283,7 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     def __build_field(self, span, field, pos = '', unit_of_measurement = False, time_scale_group_by_field = '', replace_text = ''):                
         if time_scale_group_by_field != '':
-            self._pre_time_scale_group_by_fields.append(time_scale_group_by_field)
+            self._pre_sub_query_group_by_fields.append(time_scale_group_by_field)
             self.__pre_replaced_text[replace_text] = time_scale_group_by_field
             return
         
@@ -334,7 +340,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         options = [{'json_var' : 'pre_having_conditions', 'label' : 'HAVING | CONDITION'},
                 {'json_var' : 'pre_aggregation_functions', 'label' : 'AGGREGATION FUNCTION'},
                 {'json_var' : 'pre_group_by', 'label' : 'GROUP BY'},
-                {'json_var' : 'pre_time_scale_aggregation_functions', 'label' : 'TIMESCALE'}]
+                {'json_var' : 'pre_sub_query_aggregation_functions', 'label' : 'TIMESCALE'}]
         for option in options:
             if patterns_json['patterns'][pattern].get(option['json_var']):            
                 if isinstance(patterns_json['patterns'][pattern][option['json_var']], list):                
@@ -362,13 +368,19 @@ class Glamorise(metaclass=abc.ABCMeta):
             self.__build_field(span, 'pre_having_fields', 'NOUN')
             self.__build_field(span, 'pre_having_units', 'NOUN', True)    
             self.__build_field(span, 'pre_having_values', 'NUM')        
-        elif patterns_json['patterns'][pattern].get('pre_time_scale_replace_text'):
-            self.__build_field(span, 'pre_time_scale_aggregation_fields', 'NOUN')
+       
+        elif patterns_json['patterns'][pattern].get('pre_sub_query_aggregation_functions'):
+            self.__build_field(span, 'pre_sub_query_aggregation_fields', 'NOUN')
             self.__build_field(span, 'pre_having_units', 'NOUN', True)    
             replace_text_token = (patterns_json['patterns'][pattern]['reserved_words'][index])
-            self.__build_field(span, 'pre_time_scale_group_by_fields', 
-                        time_scale_group_by_field = patterns_json['patterns'][pattern]['pre_time_scale_replace_text'][replace_text_token],
-                        replace_text = replace_text_token)     
+            if patterns_json['patterns'][pattern].get('use_replace_text_as_group_by') and patterns_json['patterns'][pattern]['use_replace_text_as_group_by']:
+                self.__build_field(span, 'pre_sub_query_group_by_fields', 
+                            time_scale_group_by_field = patterns_json['patterns'][pattern]['pre_sub_query_replace_text'][replace_text_token],
+                            replace_text = replace_text_token)     
+
+        # set variable to remove external group by in the case of a query with subquery and a max/min count    
+        if patterns_json['patterns'][pattern].get('remove_external_group_by') and patterns_json['patterns'][pattern]['remove_external_group_by']:
+            self.__pre_remove_external_group_by = True                    
 
     def __prepare_query_to_NLIDB(self):
         # set the query that is going to be passed to the NLIDB initially as the received query
@@ -409,16 +421,33 @@ class Glamorise(metaclass=abc.ABCMeta):
             query = self.__replace_text(patterns_json['pre_before_replace_text'], query)            
         self._pre_prepared_query = query
         
-        self.__doc = self.__nlp(query)        
-        self.__matches = self.__matcher(self.__doc)                   
-        temp = defaultdict(list)          
-        # Using extend 
+        self.__doc = self.__nlp(query)
+        # if patterns_json.get('noun_lemmatization') and patterns_json['noun_lemmatization']:
+        #     query = " ".join(token.text if token.pos_ == 'NOUN' else token.lemma_ for token in self.__doc)
+        #     self.__doc = self.__nlp(query)
+
+        self.__matches = self.__matcher(self.__doc)                         
+
+        self.__adjust_aggregation_functions_and_fields()
+
+        temp = defaultdict(list)                  
+        # Building entities for customized displacy
         for elem in self.__matched_sents:
             temp[elem['text']].extend(elem['ents'])    
         self.__matched_sents = [{"ents":y, "text":x} for x, y in temp.items()]  
 
         self.__prepare_query_to_NLIDB()
         self._timer_pre.stop()
+
+    def __adjust_aggregation_functions_and_fields(self):
+        for i in range(len(self._pre_aggregation_fields)):
+            for j in range(len(self._pre_sub_query_aggregation_fields)):                
+                if self._pre_aggregation_fields[i] == self._pre_sub_query_aggregation_fields[j] and \
+                   self._pre_aggregation_functions[i] == self._pre_sub_query_aggregation_functions[j]:
+                    del self._pre_aggregation_fields[i]
+                    del self._pre_aggregation_functions[i]
+
+        
 
     def __create_table_and_insert_data(self, columns, result_set):
         # create the table to store the NLIDB result set
@@ -438,9 +467,11 @@ class Glamorise(metaclass=abc.ABCMeta):
         # because it is the work of the NLIDB (query part without aggregation)
         self.__pos_group_by_fields = [column[0].lower() for column in columns \
                                                   if column[0].lower() not in [x.lower() for x in self._pre_group_by_fields +
-                                                  self._pre_aggregation_fields + self._pre_time_scale_aggregation_fields +
-                                                  self._pre_time_scale_group_by_fields]]
-        self.__prepare_aggregate_SQL(columns)
+                                                  self._pre_aggregation_fields + self._pre_sub_query_aggregation_fields +
+                                                  self._pre_sub_query_group_by_fields]]
+        self.__replace_count_by_sum_in_numeric_fields(columns, self._pos_aggregation_functions, self._pos_aggregation_fields)
+        self.__replace_count_by_sum_in_numeric_fields(columns, self._pre_sub_query_aggregation_functions, self._pre_sub_query_aggregation_fields)
+        self.__prepare_aggregate_SQL()
         if columns and result_set:
             self.__create_table_and_insert_data(columns, result_set)
         # prepare a pandas dataframe with the result
@@ -450,6 +481,14 @@ class Glamorise(metaclass=abc.ABCMeta):
             self.__pd = self.__SimpleSQLite.pandas_dataframe(self.__pos_glamorise_sql)
         self._timer_exibition.stop()
         self._timer_total.stop()
+
+    def __replace_count_by_sum_in_numeric_fields(self, columns, aggregation_functions, aggregation_fields):
+        for i in range(len(aggregation_functions)):            
+            # changing from count to sum in numeric fields
+            column_dict = {x[0] : x[1] for x in columns}    
+            if aggregation_fields[i] in column_dict:
+                if column_dict[aggregation_fields[i]] in ['REAL', 'INTEGER'] and aggregation_functions[i] == 'count':                    
+                    aggregation_functions[i] = 'sum'
 
     def execute(self, query):
         self.initialize_and_reset_attr()        
@@ -474,7 +513,7 @@ class Glamorise(metaclass=abc.ABCMeta):
     def _translate_fields(self):
         pass
 
-    def __prepare_aggregate_SQL(self, columns):
+    def __prepare_aggregate_SQL(self):
         #initialize clauses
         if self._pre_aggregation_fields:
             self.__select_clause = 'SELECT '
@@ -490,16 +529,16 @@ class Glamorise(metaclass=abc.ABCMeta):
             self.__having_clause = 'HAVING '
 
         # the group by fields impact the clauses SELECT, GROUP BY and ORDER BY and nested queries
-        nested_group_by_field = ''
+        nested_group_by_field = []
         for group_by_field in self._pre_group_by_fields:
-            self.__select_clause += group_by_field + ', '
-            nested_group_by_field += group_by_field + ', '
+            self.__select_clause += group_by_field + ', '            
             self.__group_by_clause += group_by_field + ', '
+            nested_group_by_field.append(group_by_field)
             self.__order_by_clause += group_by_field + ', '
 
         #if it is an aggregation query:
         if self._pre_aggregation_fields:
-            # the same for the post processing group by fields (field identified just by the NLIDB)
+            # the same for the post processing group by fields (field identified just by the NLIDB)            
             for post_processing_group_by_field in self.__pos_group_by_fields:
                 # just if the field was not recognized by GLAMORISE
                     if not self.__group_by_clause:
@@ -507,20 +546,15 @@ class Glamorise(metaclass=abc.ABCMeta):
                     if not self.__order_by_clause:
                         self.__order_by_clause = 'ORDER BY '
                     self.__select_clause += post_processing_group_by_field + ', '
-                    nested_group_by_field += post_processing_group_by_field + ', '
+                    nested_group_by_field.append(post_processing_group_by_field)
                     self.__group_by_clause += post_processing_group_by_field + ', '
                     self.__order_by_clause += post_processing_group_by_field + ', '
 
         # building the syntax of the aggregate functions, aggregate fields e.g. min(production),
-        # and candidate aggregate field and function if they exist    
-        column_dict = {x[0] : x[1] for x in columns}    
+        # and candidate aggregate field and function if they exist            
         self._pos_aggregation_functions = deepcopy(self._pre_aggregation_functions)
         self._pos_aggregation_fields = deepcopy(self._pre_aggregation_fields)
-        for i in range(len(self._pos_aggregation_functions)):            
-            # changing from count to sum in numeroc fields
-            if self._pos_aggregation_fields[i] in column_dict:
-                if column_dict[self._pos_aggregation_fields[i]] in ['REAL', 'INTEGER'] and self._pos_aggregation_functions[i] == 'count':                    
-                    self._pos_aggregation_functions[i] = 'sum'
+        for i in range(len(self._pos_aggregation_functions)):                        
             # building sql part for aggregate field and function        
             self.__select_clause += self._pos_aggregation_functions[i] + \
                                     '(' + self._pos_aggregation_fields[i] + ') as ' + \
@@ -530,13 +564,12 @@ class Glamorise(metaclass=abc.ABCMeta):
             # building sql part for candidate aggregate field and function
             # it is done as a subquery, but if one day SQLite is substituted it could be done with nested functions
             # e.g. SELECT avg(sum(oil_production) as avg_sum_oil_production FROM NLIDB_result_set GROUP BY year
-            if self._pos_aggregation_fields[i] in self._pre_time_scale_aggregation_fields:
-                j = self._pre_time_scale_aggregation_fields.index(self._pos_aggregation_fields[i])
-                self.__from_clause = ' FROM (SELECT ' + nested_group_by_field + self._pre_time_scale_aggregation_functions[j] + '(' + \
+            if self._pos_aggregation_fields[i] in self._pre_sub_query_aggregation_fields:
+                j = self._pre_sub_query_aggregation_fields.index(self._pos_aggregation_fields[i])
+                self.__from_clause = ' FROM (SELECT ' + ', '.join(nested_group_by_field + [self._pre_sub_query_aggregation_functions[j] + '(' + \
                                      self._pos_aggregation_fields[i] + ') as ' + \
-                                     self._pos_aggregation_fields[i] + ' FROM NLIDB_result_set'
-                self.__from_clause += ' GROUP BY ' + nested_group_by_field + \
-                                      ', '.join(self._pre_time_scale_group_by_fields) + ') '
+                                     self._pos_aggregation_fields[i]]) + ' FROM NLIDB_result_set'
+                self.__from_clause += ' GROUP BY ' + ', '.join(nested_group_by_field + self._pre_sub_query_group_by_fields) + ') '
 
             # if there is no candidate fields and function, it is a common FROM without subquery
             else:
@@ -560,7 +593,11 @@ class Glamorise(metaclass=abc.ABCMeta):
         #if self.__select_clause == '':
         #    self.__select_clause = 'SELECT * FROM NLIDB_result_set'
 
-        # build the final query
+        # remove external group by in the case of a query with subquery and a max/min count    
+        if self.__pre_remove_external_group_by:
+            self.__group_by_clause = ''
+
+        # build the final query        
         self.__pos_glamorise_sql = (self.__select_clause + self.__from_clause + self.__group_by_clause + ' ' + \
                      self.__having_clause + ' ' + self.__order_by_clause).replace("  ", " ").strip()
 

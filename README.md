@@ -165,17 +165,12 @@ If you want to change the patterns accepted by GLAMORISE and NaLIR, this could b
 
 #### GLAMORISE Mock ANP
 
-./config/environment/glamorise_mock_anp.json
+./config/environment/glamorise_mock.json
 
 
-#### GLAMORISE with NaLIR (ANP database)
+#### GLAMORISE with NaLIR
 
-./config/environment/glamorise_nalir_anp.json
-
-
-#### GLAMORISE with NaLIR (MAS database)
-
-./config/environment/glamorise_nalir_mas.json
+./config/environment/glamorise_nalir.json
 
 
 #### NaLIR Configuration File
