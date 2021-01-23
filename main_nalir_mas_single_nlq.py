@@ -19,7 +19,7 @@ with open('./config/environment/glamorise_nalir.json') as json_file:
 jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
 
-nlq ='return me the authors who have more than 10 papers containing keyword "Relational Database"'
+nlq ='return me the total citations of publications in the VLDB conference in each year.'
 
 mc.print_results(glamorise, nlq)
 

@@ -116,6 +116,7 @@ datasets/anp_complete.db
 datasets/ngsdb.sql
 datasets/glamorise*.db
 datasets/GLAMORISE*.db
+datasets/GLAMORISE*.db-journal
 
 
 web_interface/static/images/*Zone.Identifier

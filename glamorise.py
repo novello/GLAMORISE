@@ -7,6 +7,7 @@
 
 import spacy
 from spacy import displacy
+from spacy.lemmatizer import Lemmatizer, NOUN
 import abc
 import re
 import json
@@ -422,10 +423,7 @@ class Glamorise(metaclass=abc.ABCMeta):
             query = self.__replace_text(patterns_json['pre_before_replace_text'], query)            
         self._pre_prepared_query = query
         
-        self.__doc = self.__nlp(query)
-        # if patterns_json.get('noun_lemmatization') and patterns_json['noun_lemmatization']:
-        #     query = " ".join(token.text if token.pos_ == 'NOUN' else token.lemma_ for token in self.__doc)
-        #     self.__doc = self.__nlp(query)
+        self.__doc = self.__nlp(query)        
 
         self.__matches = self.__matcher(self.__doc)                         
 
@@ -437,8 +435,30 @@ class Glamorise(metaclass=abc.ABCMeta):
             temp[elem['text']].extend(elem['ents'])    
         self.__matched_sents = [{"ents":y, "text":x} for x, y in temp.items()]  
 
+        self.__lemmatize_all_fields()
+
         self.__prepare_query_to_NLIDB()
         self._timer_pre.stop()
+
+    def __lemmatize_all_fields(self):
+        if patterns_json.get('noun_lemmatization') and patterns_json['noun_lemmatization']:                        
+            self.__lemmatize_fields(self._pre_aggregation_fields)
+            self.__lemmatize_fields(self._pre_group_by_fields)
+            self.__lemmatize_fields(self._pre_sub_query_aggregation_fields)
+            self.__lemmatize_fields(self._pre_sub_query_group_by_fields)
+            self.__lemmatize_fields(self._pre_having_fields)
+
+
+    def __lemmatize_fields(self, fields):        
+        lemmatizer = self.__nlp.vocab.morphology.lemmatizer            
+        for i in range(len(fields)):
+            splited_field = fields[i].split()
+            field = ''
+            for field_token in splited_field:
+                field_token = lemmatizer(field_token, NOUN)[0]    
+                field += field_token + ' '
+            field = field.strip()    
+            fields[i] = field
 
     def __adjust_aggregation_functions_and_fields(self):
         for i in range(len(self._pre_aggregation_fields)):
