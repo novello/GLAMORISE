@@ -20,7 +20,7 @@ with open('./config/environment/glamorise_nalir.json') as json_file:
 # create GLAMORISE object (the child class is instantiated)
 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
 
-nlq = 'Give the state with the most sum of oil production'
+nlq = 'give me field with the most number of provinces'
 
 mc.print_results(glamorise, nlq)
 
