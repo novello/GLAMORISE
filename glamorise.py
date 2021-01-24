@@ -490,8 +490,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                                                   if column[0].lower() not in [x.lower() for x in self._pre_group_by_fields +
                                                   self._pre_aggregation_fields + self._pre_sub_query_aggregation_fields +
                                                   self._pre_sub_query_group_by_fields]]
-        self.__replace_count_by_sum_in_numeric_fields(columns, self._pos_aggregation_functions, self._pos_aggregation_fields)
-        self.__replace_count_by_sum_in_numeric_fields(columns, self._pre_sub_query_aggregation_functions, self._pre_sub_query_aggregation_fields)
+        self.adjust_aggregation_functions_and_fields(columns)
         self.__prepare_aggregate_SQL()
         if columns and result_set:
             self.__create_table_and_insert_data(columns, result_set)
@@ -502,6 +501,12 @@ class Glamorise(metaclass=abc.ABCMeta):
             self.__pd = self.__SimpleSQLite.pandas_dataframe(self.__pos_glamorise_sql)
         self._timer_exibition.stop()
         self._timer_total.stop()
+
+    def adjust_aggregation_functions_and_fields(self, columns):
+        self._pos_aggregation_functions = deepcopy(self._pre_aggregation_functions)
+        self._pos_aggregation_fields = deepcopy(self._pre_aggregation_fields)
+        self.__replace_count_by_sum_in_numeric_fields(columns, self._pos_aggregation_functions, self._pos_aggregation_fields)
+        self.__replace_count_by_sum_in_numeric_fields(columns, self._pre_sub_query_aggregation_functions, self._pre_sub_query_aggregation_fields)
 
     def __replace_count_by_sum_in_numeric_fields(self, columns, aggregation_functions, aggregation_fields):
         for i in range(len(aggregation_functions)):            
@@ -573,9 +578,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                     self.__order_by_clause += post_processing_group_by_field + ', '
 
         # building the syntax of the aggregate functions, aggregate fields e.g. min(production),
-        # and candidate aggregate field and function if they exist            
-        self._pos_aggregation_functions = deepcopy(self._pre_aggregation_functions)
-        self._pos_aggregation_fields = deepcopy(self._pre_aggregation_fields)
+        # and candidate aggregate field and function if they exist                    
         for i in range(len(self._pos_aggregation_functions)):                        
             # building sql part for aggregate field and function        
             self.__select_clause += self._pos_aggregation_functions[i] + \

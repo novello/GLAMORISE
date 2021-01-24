@@ -23,6 +23,7 @@ class NlidbNalir(NlidbBase):
     
 
     def __init__(self, config_db, token_path):
+        super(NlidbNalir, self).__init__()
         # open the database        
         self.__config_db = config_db
         self.__tokens = token_path
@@ -82,38 +83,26 @@ class NlidbNalir(NlidbBase):
                     'VAR_STRING' : 'TEXT',
                     'STRING' : 'TEXT',
                     'GEOMETRY' : 'TEXT'}
-        return field_type[type]
+        return field_type[type]  
+    
 
-   
-    def field_synonym(self, synonym, replace_dot = True):
-        # responsible for the translation of the field to the appropriated column
-        try:            
-            field = self.query_synonym(synonym)
+    def _query_all_synonyms(self):
+        sql = "SELECT synonym FROM NLIDB_FIELD_SYNONYMS"
+        rows, cursor_description = self.__rdbms.conduct_sql(sql)
+        synonym_list = [i[0] for i in rows]
+        return synonym_list
 
-        #continuar daqui
-        if not field:
-            sql = "SELECT synonym FROM NLIDB_FIELD_SYNONYMS"
+    def _query_specific_synonym(self, synonym):
+        try:
+            synonym = synonym.lower().replace(' ', '_').replace('.', '_')
+            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" +  synonym + \
+                    "' OR lower(synonym) = '" + self._alternative_compound_name(synonym, '_') + "'"
             rows, cursor_description = self.__rdbms.conduct_sql(sql)
-            synonym_list = [i[0] for i in rows]
-            synonym = self._find_by_similarity(field, synonym_list)
-            field = self.query_synonym(synonym)
-
-
-            if replace_dot:
-                field = field.replace('.', '_')
+            field = list(rows)[0][0].replace(' ', '_')
             return field
         except Exception as e:
             print('Exception: ', e)
-            return synonym
-
-    def query_synonym(self, synonym):
-        synonym = synonym.lower().replace(' ', '_').replace('.', '_')
-        sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" +  synonym + \
-                  "' OR lower(synonym) = '" + self._alternative_compound_name(synonym, '_') + "'"
-        rows, cursor_description = self.__rdbms.conduct_sql(sql)
-        field = list(rows)[0][0].replace(' ', '_')
-        return field
-            
+            return ''
 
     def translate_all_field_synonyms_in_nlq(self, nlidb_nlq, nlidb_interface_fields):    
         try:            
