@@ -17,7 +17,7 @@
             "POS": "NOUN",
             "LOWER": {
                 "NOT_IN": [
-                    "number"
+                    "number", "sum"
                 ]
             }
         },
@@ -42,7 +42,7 @@
             "POS": "NOUN",
             "LOWER": {
                 "NOT_IN": [
-                    "number"
+                    "number", "sum"
                 ]
             }
         }
@@ -156,7 +156,8 @@
         },
         "other sum": {
             "reserved_words": [
-                "total"
+                "total",
+                "sum"
             ],
             "pre_aggregation_functions": "sum",
             "pre_cut_text": true
@@ -239,13 +240,13 @@
                 "monthly",
                 "yearly"
             ],
-            "pre_sub_query_replace_text": {
+            "pre_subquery_replace_text": {
                 "daily": "day",
                 "monthly": "month",
                 "yearly": "year"
             },
             "use_replace_text_as_group_by": true,
-            "pre_sub_query_aggregation_functions": "sum",
+            "pre_subquery_aggregation_functions": "sum",
             "pre_cut_text": false
         }
     }

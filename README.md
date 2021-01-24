@@ -63,13 +63,20 @@ First create the database inside mysql:
 And then run the following database dump:
 
 ``` bash
-    $ mysql -D anp -u <user> -p < ./config/setup/nalir_anp_mysql.sql
+    $ mysql -D anp -u <user> -p < ./config/setup/dump_nalir_anp_mysql.sql
 ```
 
-After that run the following script, this is respponsible for creating the configuration needed by NaLIR in order to work correctly with the ANP database:
+After this run the following script, this is respponsible for creating the configuration needed by NaLIR in order to work correctly with the ANP database:
 
 ``` bash
     mysql -D anp -u <user> -p < ./zfiles/setup_anp_nalir.sql
+```
+
+After this run the following script below, it is responsible for creating the configuration needed by GLAMORISE in order to work correctly with the ANP database:
+
+
+``` bash
+    $ mysql -D anp -u <user> -p < ./config/setup/setup_anp_glamorise.sql
 ```
 
 ### MAS MySQL database
@@ -85,7 +92,7 @@ First create the database inside mysql:
 
 And then follow all the installation steps in the README of the nalir-glamorise project.
 
-After this run the following script below, it is respponsible for creating the configuration needed by GLAMORISE in order to work correctly with the MAS database:
+After this run the following script below, it is responsible for creating the configuration needed by GLAMORISE in order to work correctly with the MAS database:
 
 
 ``` bash

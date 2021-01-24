@@ -17,7 +17,7 @@
             "POS": "NOUN",
             "LOWER": {
                 "NOT_IN": [
-                    "number"
+                    "number", "sum"
                 ]
             }
         },
@@ -42,7 +42,7 @@
             "POS": "NOUN",
             "LOWER": {
                 "NOT_IN": [
-                    "number"
+                    "number", "sum"
                 ]
             }
         }
@@ -158,7 +158,8 @@
         },
         "other sum": {
             "reserved_words": [
-                "total"
+                "total",
+                "sum"
             ],
             "pre_aggregation_functions": "sum",
             "pre_cut_text": true
@@ -197,7 +198,19 @@
                 "newest number of",
                 "first number of",
                 "min number of",
-                "minimum number of"
+                "minimum number of",
+                "least sum of",
+                "smallest sum of",
+                "tiniest sum of",
+                "shortest sum of",
+                "cheapest sum of",
+                "nearest sum of",
+                "lowest sum of",
+                "worst sum of",
+                "newest sum of",
+                "first sum of",
+                "min sum of",
+                "minimum sum of"
             ],
             "pre_aggregation_functions": "min",
             "pre_cut_text": true
@@ -229,7 +242,21 @@
                 "oldest number of",
                 "last number of",
                 "max number of",
-                "maximum number of"
+                "maximum number of",                
+                "most sum of",
+                "biggest sum of",
+                "largest sum of",
+                "longest sum of",
+                "furthest sum of",
+                "highest sum of",
+                "tallest sum of",
+                "greatest sum of",
+                "best sum of",
+                "oldest sum of",
+                "last sum of",
+                "max sum of",
+                "maximum sum of"
+
             ],
             "pre_aggregation_functions": "max",
             "pre_cut_text": true
@@ -240,13 +267,13 @@
                 "monthly",
                 "yearly"
             ],
-            "pre_sub_query_replace_text": {
+            "pre_subquery_replace_text": {
                 "daily": "day",
                 "monthly": "month",
                 "yearly": "year"
             },
             "use_replace_text_as_group_by": true,
-            "pre_sub_query_aggregation_functions": "sum",
+            "pre_subquery_aggregation_functions": "sum",
             "pre_cut_text": false
         },
         "sub query min/max count": {
@@ -279,7 +306,40 @@
             ],
             "use_replace_text_as_group_by": false,
             "remove_external_group_by": true,
-            "pre_sub_query_aggregation_functions": "count",
+            "pre_subquery_aggregation_functions": "count",
+            "pre_cut_text": true
+        },
+        "sub query min/max sum": {
+            "reserved_words": [
+                "least sum of",
+                "smallest sum of",
+                "tiniest sum of",
+                "shortest sum of",
+                "cheapest sum of",
+                "nearest sum of",
+                "lowest sum of",
+                "worst sum of",
+                "newest sum of",
+                "first sum of",
+                "min sum of",
+                "minimum sum of",
+                "most sum of",
+                "biggest sum of",
+                "largest sum of",
+                "longest sum of",
+                "furthest sum of",
+                "highest sum of",
+                "tallest sum of",
+                "greatest sum of",
+                "best sum of",
+                "oldest sum of",
+                "last sum of",
+                "max sum of",
+                "maximum sum of"
+            ],
+            "use_replace_text_as_group_by": false,
+            "remove_external_group_by": true,
+            "pre_subquery_aggregation_functions": "sum",
             "pre_cut_text": true
         }
     }

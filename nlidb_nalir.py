@@ -119,9 +119,17 @@ class NlidbNalir(NlidbBase):
             #print('Exception: ', e        
 
     def __include_fields(self, additional_fields):
-        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')                
+        # get all fields in the query created by the NLIDB
+        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',') 
+        # verify if these fields should be translated to more than one field. Eg: month -> year, month
+        for i in range(len(fields)):
+            field_sym = self._query_specific_synonym(fields[i])
+            fields[i] = field_sym if field_sym else fields[i]
+        # include the fields identified by GLAMORISE    
         fields = fields + additional_fields
+        # remove duplicates
         fields = list(dict.fromkeys(fields))
+        #rebuild sql
         self.__sql = result.group(1) + result.group(2) + ', '.join(fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'

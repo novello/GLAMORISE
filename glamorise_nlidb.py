@@ -110,15 +110,15 @@ class GlamoriseNlidb(Glamorise):
         self._all_fields = list(dict.fromkeys(self._nlidb_interface_fields + 
                                self._translate_fields(self._pre_aggregation_fields, replace_dot = False) +
                                self._translate_fields(self._pre_group_by_fields, replace_dot = False) + 
-                               self._translate_fields(self._pre_sub_query_aggregation_fields, replace_dot = False) +
-                               self._translate_fields(self._pre_sub_query_group_by_fields, replace_dot = False) + 
+                               self._translate_fields(self._pre_subquery_aggregation_fields, replace_dot = False) +
+                               self._translate_fields(self._pre_subquery_group_by_fields, replace_dot = False) + 
                                self._translate_fields(self._pre_having_fields, replace_dot = False)))
 
         # translate all fields that GLAMORISE is aware of
         self._pre_aggregation_fields = self._translate_fields(self._pre_aggregation_fields)
         self._pre_group_by_fields = self._translate_fields(self._pre_group_by_fields)
-        self._pre_sub_query_aggregation_fields = self._translate_fields(self._pre_sub_query_aggregation_fields)
-        self._pre_sub_query_group_by_fields = self._translate_fields(self._pre_sub_query_group_by_fields)
+        self._pre_subquery_aggregation_fields = self._translate_fields(self._pre_subquery_aggregation_fields)
+        self._pre_subquery_group_by_fields = self._translate_fields(self._pre_subquery_group_by_fields)
         self._pre_having_fields = self._translate_fields(self._pre_having_fields)
         
         
