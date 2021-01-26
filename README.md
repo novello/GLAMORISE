@@ -62,12 +62,16 @@ And then run the following dump:
     $ mysql -D anp -u <user> -p < ./config/nalir_anp_mysql.sql
 ```
 
+After that run the following script:
+
+``` bash
+    mysql -D mas -u <user> -p < ./zfiles/setup_anp_nalir.sql
+```
 
 ### MAS MySQL database
 
 Used with the NaLIR NLIDB which uses the MAS (Microsoft Academic Search) MySQL database. This database is used in the NaLIR original paper.
 
-First follow all the installation steps in the README of the nalir-glamorise project and then run the command below:
 
 First create the database inside mysql:
 
@@ -75,7 +79,7 @@ First create the database inside mysql:
     create database mas;    
 ```
 
-And then run the following dump:
+After that follow all the installation steps in the README of the nalir-glamorise project and then run the following script:
 
 
 ``` bash
