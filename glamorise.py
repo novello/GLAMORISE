@@ -21,6 +21,8 @@ from copy import deepcopy
 from simple_sqlite import SimpleSQLite
 from codetiming import Timer
 import uuid
+from IPython.display import SVG, display, HTML
+import base64    
 
 
 
@@ -686,21 +688,41 @@ class Glamorise(metaclass=abc.ABCMeta):
         result += "</br>timer_exibition: {:.2f} sec".format(self._timer_exibition.last)
         return result
 
-    #ajustar fine_gained no código antigo
+    
     def customized_displacy_dependency_parse_tree(self):
         # set the displacy parameters
-        return displacy.render(self.__doc, style='dep', jupyter=False,
+        svg = displacy.render(self.__doc, style='dep', jupyter=False,
                         options={'compact' : False, 'distance': 90, 'fine_grained': False,
                                 'add_lemma': True, 'collapse_phrases': False, 'bg' : '#d4edda'})
+        return self.__add_viewbox_svg(svg)
 
-    #novo
+    
     def customized_displacy_entities(self):
-        return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)    
+        return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)            
+
+
+    def __add_viewbox_svg(self, svg):        
+        regex = r'class="displacy" width="([\d\.]*)" height="([\d\.]*)'
+        match_results = re.findall(regex,svg)
+        new_svg = svg.replace("<svg ","<svg viewBox='0 0 "+
+                            match_results[0][0]+" "+
+                            match_results[0][1]+
+                            "' preserveAspectRatio='none' ")
+        return new_svg    
+    
+    
+
+    def __svg_to_fixed_width_html_image(self, svg, width="100%"):        
+        _html_template='<img width="400" src="data:image/svg+xml;base64,{}" >'
+        text = _html_template.format(base64.b64encode(svg.encode('utf-8')[1:-1]))
+        return text
 
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
         self.__SimpleSQLite.execute_sql(sql)
         os.remove('./datasets/glamorise_' + self.__uid + '.db')
+
+        
         
         

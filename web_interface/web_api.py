@@ -89,9 +89,9 @@ def backend():
                 with open('./config/environment/nalir_mas_db.json') as json_file:
                     config_db = json_file.read()                        
                 glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
-            html, dep, ent = mc.print_results(glamorise, nlq)
+            nlq, html, dep, ent = mc.print_results(glamorise, nlq)
             
-            return render_template('results.html',  rawtext=html, tables=[glamorise.pd.to_html(classes='data')], titles=glamorise.pd.columns.values, dep = Markup(dep), ent = Markup(ent))        
+            return render_template('results.html',  nlq=nlq, rawtext=html, tables=[glamorise.pd.to_html(classes='data')], titles=glamorise.pd.columns.values, dep = Markup(dep), ent = Markup(ent))        
         else:
             return ''
     except Exception as e:

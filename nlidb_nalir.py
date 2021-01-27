@@ -115,8 +115,9 @@ class NlidbNalir(NlidbBase):
             nlidb_interface_fields = list(dict.fromkeys(nlidb_interface_fields))
             return nlidb_nlq  
         except Exception as e:
+            print('Exception: ', e)
             return nlidb_nlq
-            #print('Exception: ', e        
+            
 
     def __include_fields(self, additional_fields):
         # get all fields in the query created by the NLIDB

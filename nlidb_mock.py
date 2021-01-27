@@ -46,8 +46,7 @@ class NlidbMock(NlidbBase):
             columns = json.dumps([(column_name, column_type[1])
                                   for column_name in column_names
                                     for column_type in column_types
-                                        if column_type[0] == column_name])
-            print(sql_result)                                                                       
+                                        if column_type[0] == column_name])                                                                                
             return columns, result_set, sql_result
         except:
             print("Query not found: ", nlq)

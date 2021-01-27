@@ -32,16 +32,12 @@ def print_results(glamorise, nlq):
     result = ''
     print("\n\n")
     result += '</br></br>'
-    result += mc_print("**Natural Language Query**: " + nlq)
+    nlq_str = mc_print("**Natural Language Query**: " + nlq)
 
     glamorise.execute(nlq)
     
-    result += '</br>'    
-    # show spaCy parse tree and entities
-    #result += mc_print("**spaCy Parse Tree**")
-    dep = glamorise.customized_displacy_dependency_parse_tree()
-    #result += '</br>'
-    result += mc_print("**Patterns Recognized by GLAMORISE**")
+       
+    dep = glamorise.customized_displacy_dependency_parse_tree()    
     ent = glamorise.customized_displacy_entities()
 
     print("\n\n")
@@ -70,7 +66,7 @@ def print_results(glamorise, nlq):
 
     result += glamorise.print_timers()
 
-    return result, dep, ent
+    return nlq_str, result, dep, ent
     
 
 
