@@ -2,8 +2,7 @@
 <strong>spaCy Dependency Parse Tree and Part-of-Speech (POS)</strong>
 <div class="col-md-12">
     <div class="col-md-12">        
-        <figure class="figure">
-            <style>svg{width:100% !important;height:100% !important;</style>
+        <figure class="figure">            
             {{ dep }}
         </figure>        
     </div>
@@ -19,5 +18,5 @@
 {{ rawtext|markdown }}
 <strong>Results</strong>
 {% for table in tables %}
-            {{ table|safe }}
+        {{ table|safe }}
 {% endfor %}

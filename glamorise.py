@@ -708,14 +708,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                             match_results[0][0]+" "+
                             match_results[0][1]+
                             "' preserveAspectRatio='none' ")
-        return new_svg    
-    
-    
-
-    def __svg_to_fixed_width_html_image(self, svg, width="100%"):        
-        _html_template='<img width="400" src="data:image/svg+xml;base64,{}" >'
-        text = _html_template.format(base64.b64encode(svg.encode('utf-8')[1:-1]))
-        return text
+        return new_svg      
 
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
