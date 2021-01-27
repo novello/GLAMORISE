@@ -687,15 +687,15 @@ class Glamorise(metaclass=abc.ABCMeta):
         return result
 
     #ajustar fine_gained no código antigo
-    def customized_displacy(self):
+    def customized_displacy_dependency_parse_tree(self):
         # set the displacy parameters
-        return displacy.render(self.__doc, style='dep', 
-                        options={'compact' : False, 'distance': 100, 'fine_grained': False,
-                                'add_lemma': True, 'collapse_phrases': False})
+        return displacy.render(self.__doc, style='dep', jupyter=False,
+                        options={'compact' : False, 'distance': 90, 'fine_grained': False,
+                                'add_lemma': True, 'collapse_phrases': False, 'bg' : '#d4edda'})
 
     #novo
     def customized_displacy_entities(self):
-        return displacy.render(self.__matched_sents, style="ent", manual=True)    
+        return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)    
 
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result

@@ -39,10 +39,10 @@ def print_results(glamorise, nlq):
     result += '</br>'    
     # show spaCy parse tree and entities
     #result += mc_print("**spaCy Parse Tree**")
-    #result += glamorise.customized_displacy()
+    dep = glamorise.customized_displacy_dependency_parse_tree()
     #result += '</br>'
     result += mc_print("**Patterns Recognized by GLAMORISE**")
-    result += glamorise.customized_displacy_entities()
+    ent = glamorise.customized_displacy_entities()
 
     print("\n\n")
     result += '</br></br></br>'
@@ -70,7 +70,7 @@ def print_results(glamorise, nlq):
 
     result += glamorise.print_timers()
 
-    return result 
+    return result, dep, ent
     
 
 
