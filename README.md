@@ -177,10 +177,15 @@ You can audit the log looking at the file ./log.txt
 If your business is more about using the terminal than the web environment, you can customize one of these 6 files. Half of them are prepared to run a single NLQ and the other half is prepared to run a sequence of NLQs. The names are self explanatory:
 
 ./main_mock_single_nlq.py
+
 ./main_mock.py
+
 ./main_nalir_anp_single_nlq.py
+
 ./main_nalir_anp.py
+
 ./main_nalir_mas_single_nlq.py
+
 ./main_nalir_mas.py
 
 ## [OPTIONAL] Configuration files
