@@ -9,7 +9,7 @@ This project refers to the implementation of GLAMORISE Natural Language Interfac
 
 A [working demo](http://glamorise.gruposantaisabel.com.br) is avaiable of this project is avaiable.
 
-This implementation of GLAMORISE uses NaLIR as one of its integtared NLIDBs, so you will have to clone the [nalir-glamorise](https://github.com/novello/nalir-glamorise) repository. This project is a customization of the [nalir-ssbd](https://github.com/pr3martins/nalir-sbbd) project which in turn is a Python port of the original [NaLIR project](https://github.com/umich-dbgroup/NaLIR). Please follow all the steps described in the README of the nalir-glamorise project.
+This implementation of GLAMORISE uses NaLIR as its integrated NLIDB, so you will have to clone the [nalir-glamorise](https://github.com/novello/nalir-glamorise) repository. This project is a customization of the [nalir-ssbd](https://github.com/pr3martins/nalir-sbbd) project which in turn is a Python port of the original [NaLIR project](https://github.com/umich-dbgroup/NaLIR). Please follow all the steps described in the README of the nalir-glamorise project.
 
 The paths below are relative to the root path of the GLAMORISE project. You are expected to be positioned on this path.
 
@@ -172,6 +172,16 @@ You can stop the web interface with the shell script ./stop_flask.sh
 
 You can audit the log looking at the file ./log.txt
 
+## Running at the terminal
+
+If your business is more about using the terminal than the web environment, you can customize one of these 6 files. Half of them are prepared to run a single NLQ and the other half is prepared to run a sequence of NLQs. The names are self explanatory:
+
+./main_mock_single_nlq.py
+./main_mock.py
+./main_nalir_anp_single_nlq.py
+./main_nalir_anp.py
+./main_nalir_mas_single_nlq.py
+./main_nalir_mas.py
 
 ## [OPTIONAL] Configuration files
 
