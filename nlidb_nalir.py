@@ -30,29 +30,7 @@ class NlidbNalir(NlidbBase):
         self.__config = ConfigHandler(reset=True,config_json_text=self.__config_db)
         self.__rdbms = RDBMS(self.__config)
 
-    def __change_select(self):
-        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
-        all_fields = []
-        transformed_fields = []        
-        for field in fields:            
-            if field not in all_fields:            
-                all_fields.append(field)
-                transformed_fields.append(field + ' as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
-        self.__sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
-        for i in range(1, len(sql_list)):
-            self.__sql += sql_list[i] + '\n'
-        self.__sql =  self.__sql[0:-1]
-
-    def __get_fields_in_sql(self, sql, regex, sql_list_position, group_num, separator):
-        try:
-            sql_list = sql.split('\n')
-            result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
-            fields_str = result.group(group_num)
-            fields = list(dict.fromkeys([x.strip() for x in fields_str.split(separator)]))
-            return fields, result, sql_list
-        except:
-            return [], '', []
-
+    
     def __translate_mysql_datatype_to_sqlite(self, type):
         field_type = {
                     'DECIMAL' : 'REAL',
@@ -121,7 +99,7 @@ class NlidbNalir(NlidbBase):
 
     def __include_fields(self, additional_fields):
         # get all fields in the query created by the NLIDB
-        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',') 
+        fields, result, sql_list = self._get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',') 
         # verify if these fields should be translated to more than one field. Eg: month -> year, month
         for i in range(len(fields)):
             field_sym = self._query_specific_synonym(fields[i])
@@ -145,35 +123,34 @@ class NlidbNalir(NlidbBase):
             self.__first_attempt_sql = self.__sql
 
 
-            if self.__sql and nlidb_attempt_level > 1:
-                previous_sql = self.__sql
+            if self.__sql and nlidb_attempt_level > 1:                
                 self.__include_fields(fields)
                 self.__second_attempt_sql = self.__sql
-
-                self.__change_select()            
+                result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql + ' LIMIT 5')
+                columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))                            
+                self.__sql = self._change_select(self.__sql, columns)
             
-            #result_set, cursor_description = self.__SimpleSQLite.execute_sql(sql_result, 'Query executed')
             timer_nlidb_execution_first_and_second_attempt.stop()
-            timer_nlidb_json_result_set.start()
-            result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql)
+            
 
             if not result_set and nlidb_attempt_level == 3:            
-                timer_nlidb_json_result_set.stop()
                 timer_nlidb_execution_third_attempt.start()
                 previous_sql = self.__sql                
                 self.__nlq_rebuild(fields)
                 self.__third_attempt_sql = self.__sql
-                self.__change_select()
-                if self.__sql != previous_sql:
-                    result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql)                 
+                result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql + ' LIMIT 5')
+                columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))                            
+                self.__sql = self._change_select(self.__sql, columns)
                 timer_nlidb_execution_third_attempt.stop()
-                timer_nlidb_json_result_set.start()
+
             
-            columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))
-            
+            timer_nlidb_json_result_set.start()
+            result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql)
+            columns = (list(map(lambda x: [x[0], self.__translate_mysql_datatype_to_sqlite(FieldType.get_info(x[1]))], cursor_description)))            
             columns = json.dumps(columns)
             # prepare the result set as JSON
             result_set = json.dumps(result_set)            
+            timer_nlidb_json_result_set.stop()
         except Exception as e:
             print("Error processing NLQ in NaLIR: ", nlq)
             print("Exception: ", e)
@@ -212,12 +189,12 @@ class NlidbNalir(NlidbBase):
             print("Exception: ", e)      
 
     def __join_sql(self, new_sql):
-        select_new_sql_fields, select_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
-        from_new_sql_fields, from_new_sql_result, new_sql_sql_list = self.__get_fields_in_sql(new_sql, '(FROM )(.*)$', 1, 2, ',')        
+        select_new_sql_fields, select_new_sql_result, new_sql_sql_list = self._get_fields_in_sql(new_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
+        from_new_sql_fields, from_new_sql_result, new_sql_sql_list = self._get_fields_in_sql(new_sql, '(FROM )(.*)$', 1, 2, ',')        
 
-        select_fields, select_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
-        from_fields, from_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(FROM )(.*)$', 1, 2, ',')
-        where_fields, where_result, sql_list = self.__get_fields_in_sql(self.__second_attempt_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
+        select_fields, select_result, sql_list = self._get_fields_in_sql(self.__second_attempt_sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
+        from_fields, from_result, sql_list = self._get_fields_in_sql(self.__second_attempt_sql, '(FROM )(.*)$', 1, 2, ',')
+        where_fields, where_result, sql_list = self._get_fields_in_sql(self.__second_attempt_sql, '(WHERE )(.*)$', 2, 2, ' AND ')
         
         select_final_fields = list(dict.fromkeys(select_new_sql_fields + select_fields))
         from_final_fields = list(dict.fromkeys(from_new_sql_fields + from_fields))

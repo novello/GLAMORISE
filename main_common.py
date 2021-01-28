@@ -1,4 +1,5 @@
 from codetiming import Timer
+import glamorise
 
 def is_jupyter_notebook():
     # check the environment
@@ -28,7 +29,7 @@ def mc_display(pd):
 
 
 
-def print_results(glamorise, nlq):        
+def print_results(glamorise, nlq):      
     result = ''
     print("\n\n")
     result += '</br></br>'
@@ -36,7 +37,7 @@ def print_results(glamorise, nlq):
 
     glamorise.execute(nlq)
     
-       
+    
     dep = glamorise.customized_displacy_dependency_parse_tree()    
     ent = glamorise.customized_displacy_entities()
 
@@ -66,8 +67,10 @@ def print_results(glamorise, nlq):
 
     result += glamorise.print_timers()
 
-    return nlq_str, result, dep, ent
-    
+    if glamorise.patterns_json.get('debug') and glamorise.patterns_json['debug']:        
+        return nlq_str, result, dep, ent
+    else:
+        return nlq_str, '', dep, ent
 
 
 def print_total_timers():

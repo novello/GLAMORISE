@@ -285,8 +285,11 @@ class Glamorise(metaclass=abc.ABCMeta):
         return self.__pos_glamorise_sql
 
     @property
-    def pd(self):                                 
-        return deepcopy(self.__pd)
+    def pd(self):                 
+        pd =  deepcopy(self.__pd)
+        if patterns_json.get('total_row') and patterns_json['total_row']:
+            pd.loc['Total']= pd.sum(numeric_only=True, axis=0)         
+        return pd
     
     @property
     def patterns_json(self):                                 
@@ -359,7 +362,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         options = [{'json_var' : 'pre_having_conditions', 'label' : 'HAVING | CONDITION'},
                 {'json_var' : 'pre_aggregation_functions', 'label' : 'AGGREGATION FUNCTION'},
                 {'json_var' : 'pre_group_by', 'label' : 'GROUP BY'},
-                {'json_var' : 'pre_subquery_aggregation_functions', 'label' : 'TIMESCALE'}]
+                {'json_var' : 'pre_subquery_aggregation_functions', 'label' : 'SUBQUERY'}]
         for option in options:
             if patterns_json['patterns'][pattern].get(option['json_var']):            
                 if isinstance(patterns_json['patterns'][pattern][option['json_var']], list):                
@@ -535,9 +538,9 @@ class Glamorise(metaclass=abc.ABCMeta):
     def __replace_count_by_sum_in_numeric_fields(self, columns, aggregation_functions, aggregation_fields):
         for i in range(len(aggregation_functions)):            
             # changing from count to sum in numeric fields
-            column_dict = {x[0] : x[1] for x in columns}    
-            if aggregation_fields[i] in column_dict:
-                if column_dict[aggregation_fields[i]] in ['REAL', 'INTEGER'] and aggregation_functions[i] == 'count':                    
+            columns_dict = {x[0] : x[1] for x in columns}    
+            if aggregation_fields[i] in columns_dict:
+                if columns_dict[aggregation_fields[i]] in ['REAL', 'INTEGER'] and aggregation_functions[i] == 'count':                    
                     aggregation_functions[i] = 'sum'
 
     def __add_subquery_if_max_min_in_text_field(self, columns, aggregation_functions, aggregation_fields):
@@ -637,10 +640,12 @@ class Glamorise(metaclass=abc.ABCMeta):
 
         # building the HAVING clause having field, followed by operator, followed by value
         for i in range(len(self._pre_having_fields)):
-            # we have to change the use of aggregate function in the future
-            self.__having_clause += self._pos_aggregation_functions[i] + \
-                                    '(' + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
-                                    + self._pre_having_values[i] + ' and '
+            if self._pre_having_fields[i] in self.pos_aggregation_fields:
+                # find the correspondent aggregation function. We have to generalize that in the future
+                aggregation_function = self._pos_aggregation_functions[self.pos_aggregation_fields.index(self._pre_having_fields[i])]
+                self.__having_clause += aggregation_function + \
+                                        '(' + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
+                                        + self._pre_having_values[i] + ' and '
 
         # cut the ", " or " and " at the end of each string
         self.__select_clause = self.__select_clause[0:-2]
@@ -690,15 +695,20 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     
     def customized_displacy_dependency_parse_tree(self):
-        # set the displacy parameters
-        svg = displacy.render(self.__doc, style='dep', jupyter=False,
-                        options={'compact' : False, 'distance': 90, 'fine_grained': False,
-                                'add_lemma': True, 'collapse_phrases': False, 'bg' : '#d4edda'})
-        return self.__add_viewbox_svg(svg)
+        if patterns_json.get('show_dependency_parse_tree') and patterns_json['show_dependency_parse_tree']:                
+            svg = displacy.render(self.__doc, style='dep', jupyter=False,
+                            options={'compact' : False, 'distance': 90, 'fine_grained': False,
+                                    'add_lemma': True, 'collapse_phrases': False, 'bg' : '#d4edda'})
+            return self.__add_viewbox_svg(svg)
+        else:
+            return None    
 
     
     def customized_displacy_entities(self):
-        return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)            
+        if patterns_json.get('show_recognized_patterns') and patterns_json['show_recognized_patterns']:        
+            return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)            
+        else:
+            return None    
 
 
     def __add_viewbox_svg(self, svg):        

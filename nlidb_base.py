@@ -1,6 +1,7 @@
 import abc
 import re
 import spacy
+import glamorise
 
 class NlidbBase(metaclass=abc.ABCMeta):    
 
@@ -55,6 +56,45 @@ class NlidbBase(metaclass=abc.ABCMeta):
         except Exception as e:
             print('Exception: ', e)
             return synonym
+
+    def _get_fields_in_sql(self, sql, regex, sql_list_position, group_num, separator):
+        try:
+            sql_list = sql.split('\n')
+            result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
+            fields_str = result.group(group_num)
+            fields = list(dict.fromkeys([x.strip() for x in fields_str.split(separator)]))
+            return fields, result, sql_list
+        except:
+            return [], '', []     
+
+    def _change_select(self, sql, columns):
+        fields, result, sql_list = self._get_fields_in_sql(sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
+        all_fields = []
+        transformed_fields = []        
+        columns_dict = {x[0] : x[1] for x in columns}
+        nlidb_aggregation_exceptions = []
+        group_by_fields = []
+        if glamorise.patterns_json.get('nlidb_aggregation_exceptions'):
+             nlidb_aggregation_exceptions = [field.lower() for field in glamorise.patterns_json['nlidb_aggregation_exceptions']]
+        for field in fields:            
+            if field not in all_fields:            
+                all_fields.append(field)                    
+                field_without_table = field[field.find('.')+1:]
+                if glamorise.patterns_json.get('nlidb_aggregation') and glamorise.patterns_json['nlidb_aggregation'] \
+                and columns_dict[field_without_table] in ['REAL', 'INTEGER'] \
+                and field.lower() not in nlidb_aggregation_exceptions:
+                    transformed_fields.append('sum(' + field + ') as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
+                else:    
+                    transformed_fields.append(field + ' as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
+                    group_by_fields.append(field)
+        sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
+        for i in range(1, len(sql_list)):
+            sql += sql_list[i] + '\n'
+        if group_by_fields:    
+            sql += 'GROUP BY ' + ', '.join(group_by_fields) + '\n'
+        sql = sql[:-1]
+        return sql           
+
 
     @abc.abstractmethod
     def execute_query(self, nlq):
