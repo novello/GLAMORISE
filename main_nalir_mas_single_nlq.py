@@ -23,7 +23,7 @@ jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB='NaLIR', config_glamorise_param=config_glamorise,
                            config_glamorise_interface_param=config_glamorise_interface, config_db=config_db, tokens=nalir_tokens)
 
-nlq = 'return me the year with the most articles in the VLDB conference.'
+nlq = 'return me the number of publications per year whose author is Marco Antonio Casanova'
 
 mc.print_results(glamorise, nlq)
 
