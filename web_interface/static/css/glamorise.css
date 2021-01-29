@@ -19,6 +19,7 @@
     }
     
     #glamoriseJsonConfig,
+    #glamoriseJsonConfigInterface,
     #nalirXmlConfig {
         font-size: 12px;
         font-family: "Lucida Console", "Courier New", monospace;
@@ -27,6 +28,10 @@
     
     #glamoriseJsonConfig {
         color: yellowgreen;
+    }
+
+    #glamoriseJsonConfigInterface {
+        color: yellow;
     }
     
     #nalirXmlConfig {

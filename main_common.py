@@ -67,7 +67,7 @@ def print_results(glamorise, nlq):
 
     result += glamorise.print_timers()
 
-    if glamorise.patterns_json.get('debug') and glamorise.patterns_json['debug']:        
+    if glamorise.config_glamorise.get('debug') and glamorise.config_glamorise['debug']:        
         return nlq_str, result, dep, ent
     else:
         return nlq_str, '', dep, ent

@@ -1,0 +1,23 @@
+{
+  "nlidb_nlq_translate_fields": false,
+  "nlidb_attempt_level": 1,
+  "nlidb_field_synonym": {
+    "oil_production": "oil_production",
+    "petroleum_production": "oil_production",
+    "production": "oil_production",
+    "oil": "oil_production",
+    "petroleum": "oil_production",
+    "gas": "gas_production",
+    "gas_production": "gas_production",
+    "state": "state",
+    "federated_state": "state",
+    "state_of_brazil": "state",
+    "state_of_federation": "state",
+    "state_of_federal_republic": "state",
+    "field": "field",
+    "operator": "operator",
+    "basin": "basin",
+    "year": "year",
+    "month": "year,month"
+  }
+}

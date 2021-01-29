@@ -8,6 +8,26 @@ class NlidbBase(metaclass=abc.ABCMeta):
     def __init__(self):
         self._nlp = None
 
+    def _query_specific_synonym(self, synonym):        
+        try:
+            synonym = synonym.lower().replace(' ', '_').replace('.', '_')
+            if glamorise.config_glamorise_interface.get('nlidb_field_synonym'):
+                if glamorise.config_glamorise_interface['nlidb_field_synonym'].get(synonym):
+                    field = glamorise.config_glamorise_interface['nlidb_field_synonym'][synonym]
+                elif glamorise.config_glamorise_interface['nlidb_field_synonym'].get(self._alternative_compound_name(synonym, '_')):
+                    field = glamorise.config_glamorise_interface['nlidb_field_synonym'][self._alternative_compound_name(synonym, '_')]
+            return field
+        except:
+            return ''
+
+    def _query_all_synonyms(self):
+        try:
+            if glamorise.config_glamorise_interface.get('nlidb_field_synonym'):
+                    synonym_list = list(glamorise.config_glamorise_interface['nlidb_field_synonym'])        
+            return synonym_list    
+        except:
+            return []    
+
     def _alternative_compound_name(self, str, sep):
         words = re.split(' |_', str)
         if 'of' in words:
@@ -54,7 +74,7 @@ class NlidbBase(metaclass=abc.ABCMeta):
                 field = field.replace('.', '_')
             return field
         except Exception as e:
-            print('Exception: ', e)
+            print('Exception: No field found, returning synonym. ({})'.format(e))
             return synonym
 
     def _get_fields_in_sql(self, sql, regex, sql_list_position, group_num, separator):
@@ -74,13 +94,13 @@ class NlidbBase(metaclass=abc.ABCMeta):
         columns_dict = {x[0] : x[1] for x in columns}
         nlidb_aggregation_exceptions = []
         group_by_fields = []
-        if glamorise.patterns_json.get('nlidb_aggregation_exceptions'):
-             nlidb_aggregation_exceptions = [field.lower() for field in glamorise.patterns_json['nlidb_aggregation_exceptions']]
+        if glamorise.config_glamorise_interface.get('nlidb_aggregation_exceptions'):
+             nlidb_aggregation_exceptions = [field.lower() for field in glamorise.config_glamorise_interface['nlidb_aggregation_exceptions']]
         for field in fields:            
             if field not in all_fields:            
                 all_fields.append(field)                    
                 field_without_table = field[field.find('.')+1:]
-                if glamorise.patterns_json.get('nlidb_aggregation') and glamorise.patterns_json['nlidb_aggregation'] \
+                if glamorise.config_glamorise_interface.get('nlidb_aggregation') and glamorise.config_glamorise_interface['nlidb_aggregation'] \
                 and columns_dict[field_without_table] in ['REAL', 'INTEGER'] \
                 and field.lower() not in nlidb_aggregation_exceptions:
                     transformed_fields.append('sum(' + field + ') as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))

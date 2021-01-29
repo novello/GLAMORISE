@@ -9,6 +9,7 @@ sys.path.append(path.abspath(json_path['nalir_relative_path']))
 from mysql.connector import FieldType
 import re
 import nltk
+import glamorise
 #nltk.download('averaged_perceptron_tagger')
 #nltk.download('wordnet')
 #nltk.download('punkt')
@@ -62,39 +63,21 @@ class NlidbNalir(NlidbBase):
                     'STRING' : 'TEXT',
                     'GEOMETRY' : 'TEXT'}
         return field_type[type]  
-    
-
-    def _query_all_synonyms(self):
-        sql = "SELECT synonym FROM NLIDB_FIELD_SYNONYMS"
-        rows, cursor_description = self.__rdbms.conduct_sql(sql)
-        synonym_list = [i[0] for i in rows]
-        return synonym_list
-
-    def _query_specific_synonym(self, synonym):
-        try:
-            synonym = synonym.lower().replace(' ', '_').replace('.', '_')
-            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" +  synonym + \
-                    "' OR lower(synonym) = '" + self._alternative_compound_name(synonym, '_') + "'"
-            rows, cursor_description = self.__rdbms.conduct_sql(sql)
-            field = list(rows)[0][0].replace(' ', '_')
-            return field
-        except Exception as e:
-            print('Exception: ', e)
-            return ''
+        
 
     def translate_all_field_synonyms_in_nlq(self, nlidb_nlq, nlidb_interface_fields):    
-        try:            
-            sql = "SELECT synonym, field FROM NLIDB_FIELD_SYNONYMS"
-            results, cursor_description = self.__rdbms.conduct_sql(sql)            
-            for line in results:
-                if line[0] in nlidb_nlq:
-                    nlidb_nlq = nlidb_nlq.replace(line[0], line[1].replace(' ', '_').replace('.', '_'))
-                    nlidb_interface_fields.append(line[1])            
+        try:           
+            if glamorise.config_glamorise_interface.get('nlidb_field_synonym'):
+                    results = glamorise.config_glamorise_interface['nlidb_field_synonym']
+            for key,value in results.items():
+                if key in nlidb_nlq:
+                    nlidb_nlq = nlidb_nlq.replace(key, value.replace(' ', '_').replace('.', '_'))
+                    nlidb_interface_fields.append(value)            
             nlidb_interface_fields = list(dict.fromkeys(nlidb_interface_fields))
-            return nlidb_nlq  
+            return nlidb_nlq, nlidb_interface_fields  
         except Exception as e:
             print('Exception: ', e)
-            return nlidb_nlq
+            return nlidb_nlq, nlidb_interface_fields  
             
 
     def __include_fields(self, additional_fields):

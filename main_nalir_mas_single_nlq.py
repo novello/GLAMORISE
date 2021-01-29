@@ -12,17 +12,20 @@ with open('./config/environment/nalir_tokens.xml') as xml_file:
 
 with open('./config/environment/nalir_mas_db.json') as json_file:
     config_db = json_file.read()
-        
+
 with open('./config/environment/glamorise_nalir.json') as json_file:
-    patterns_json_txt = json_file.read()
+    config_glamorise = json_file.read()
+
+with open('./config/environment/glamorise_interface_nalir_mas.json') as json_file:
+    config_glamorise_interface = json_file.read()
 
 jupyter = mc.is_jupyter_notebook()
-glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
+glamorise = GlamoriseNlidb(NLIDB='NaLIR', config_glamorise_param=config_glamorise,
+                           config_glamorise_interface_param=config_glamorise_interface, config_db=config_db, tokens=nalir_tokens)
 
-nlq ='return me the year with the most publications in the VLDB conference.'
+nlq = 'return me the year with the most articles in the VLDB conference.'
 
 mc.print_results(glamorise, nlq)
 
 mc.print_total_timers()
-del glamorise    
-
+del glamorise

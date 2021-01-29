@@ -1,11 +1,9 @@
 {
     "show_dependency_parse_tree": true,
-    "show_recognized_patterns": true,
+    "show_recognized_config_glamorise": true,
     "total_row" : true,
     "debug": true,    
-    "noun_lemmatization": true,
-    "nlidb_nlq_translate_fields": false,
-    "nlidb_attempt_level": 1,
+    "noun_lemmatization": true,    
     "units_of_measurement": [
         "cubic meters"
     ],
@@ -53,7 +51,7 @@
             }
         }
     ],
-    "patterns": {
+    "config_glamorise": {
         "than options": {
             "reserved_words": [
                 "more than",

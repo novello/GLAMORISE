@@ -7,7 +7,10 @@ import main_common as mc
 import csv
 
 with open('./config/environment/glamorise_mock.json') as json_file:
-    patterns_json_txt = json_file.read()
+    config_glamorise = json_file.read()
+
+with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+    config_glamorise_interface = json_file.read()    
 
 with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:
     # read the file with the NLQ questions
@@ -16,7 +19,7 @@ with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:
     next(csv_reader)
     line_count = 0
     # create GLAMORISE object (the child class is instantiated)
-    glamorise = GlamoriseNlidb(patterns = patterns_json_txt)
+    glamorise = GlamoriseNlidb(config_glamorise_param = config_glamorise, config_glamorise_interface_param = config_glamorise_interface)
     for row in csv_reader:
         # the NLQ is the first column of the CSV
         nlq = row[0]        

@@ -1,0 +1,31 @@
+{
+    "nlidb_nlq_translate_fields": false,
+    "nlidb_attempt_level": 3,
+    "nlidb_field_synonym": {
+        "author": "author.name",
+        "author_name": "author.name",
+        "researcher": "author.name",
+        "researcher_name": "author.name",
+        "conference": "conference.name",
+        "conference_name": "conference.name",
+        "citation": "publication.citation_num",
+        "publication_citation": "publication.citation_num",
+        "paper": "publication.title",
+        "paper_title": "publication.title",
+        "publication": "publication.title",
+        "publication_title": "publication.title",
+        "journal": "journal.name",
+        "journal_name": "journal.name",
+        "keyword": "keyword.keyword",
+        "year": "publication.year",
+        "publication_year": "publication.year",
+        "organization": "organization.name",
+        "organization_name": "organization.name",
+        "reference": "publication.reference_num",
+        "publication_reference": "publication.reference_num"
+    },
+    "nlidb_aggregation": false,
+    "nlidb_aggregation_exceptions": [
+        "publication.year"
+    ]
+}

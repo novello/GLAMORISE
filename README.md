@@ -72,12 +72,6 @@ After this run the following script, this is respponsible for creating the confi
     mysql -D anp -u <user> -p < ./zfiles/setup_anp_nalir.sql
 ```
 
-After this run the following script below, it is responsible for creating the configuration needed by GLAMORISE in order to work correctly with the ANP database:
-
-
-``` bash
-    $ mysql -D anp -u <user> -p < ./config/setup/setup_anp_glamorise.sql
-```
 
 ### MAS MySQL database
 
@@ -91,13 +85,6 @@ First create the database inside mysql:
 ```
 
 And then follow all the installation steps in the README of the nalir-glamorise project.
-
-After this run the following script below, it is responsible for creating the configuration needed by GLAMORISE in order to work correctly with the MAS database:
-
-
-``` bash
-    $ mysql -D mas -u <user> -p < ./config/setup/setup_mas_glamorise.sql
-```
 
 
 ## Configuration files
@@ -192,7 +179,7 @@ If your business is more about using the terminal than the web environment, you 
 
 ### GLAMORISE and NaLIR customization of pattern files
 
-If you want to change the patterns accepted by GLAMORISE and NaLIR, this could be achieved by modifying the following files below:
+If you want to change the config_glamorise accepted by GLAMORISE and NaLIR, this could be achieved by modifying the following files below:
 
 
 #### GLAMORISE Mock ANP
