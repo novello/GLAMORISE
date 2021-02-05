@@ -113,11 +113,10 @@ docker-compose.yml
 
 #datasets
 datasets/anp_complete.db
+datasets/*-journal
 datasets/ngsdb.sql
 datasets/glamorise*.db
 datasets/GLAMORISE*.db
-datasets/GLAMORISE*.db-journal
-datasets/anp_complete.db-journal
 
 
 
