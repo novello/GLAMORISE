@@ -9,11 +9,18 @@ import csv
 from glamorise_nlidb import GlamoriseNlidb
 from codetiming import Timer
 from xml.etree.ElementTree import fromstring
+import warnings
 
 
+def ignore_warnings(test_func):
+    def do_test(self, *args, **kwargs):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            test_func(self, *args, **kwargs)
+    return do_test
 
 class TestGlamorise(TestCase):
-    def __delete_db_files(self):
+    def __delete_db_files(self):        
         fileList = glob.glob('./datasets/glamorise_*.db')
         # Iterate over the list of filepaths & remove each file.
         for filePath in fileList:
@@ -22,7 +29,8 @@ class TestGlamorise(TestCase):
             except:
                 print("Error while deleting file : ", filePath)
 
-    def test_glamorise_mock(self):
+    @ignore_warnings
+    def test_glamorise_mock(self):        
         with open('./config/environment/glamorise_mock.json') as json_file:
             config_glamorise = json_file.read()
 
@@ -73,7 +81,8 @@ class TestGlamorise(TestCase):
             print('{} NLQ questions tested'.format(
                 sum(1 for line in csv_reader)))
 
-    def test_glamorise_nalir_anp(self):
+    @ignore_warnings
+    def test_glamorise_nalir_anp(self):        
         with open('./config/environment/nalir_tokens.xml') as xml_file:
             nalir_tokens = xml_file.read()
             nalir_tokens = fromstring(nalir_tokens)
