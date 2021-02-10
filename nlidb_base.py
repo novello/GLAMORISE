@@ -110,7 +110,7 @@ class NlidbBase(metaclass=abc.ABCMeta):
         sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
         for i in range(1, len(sql_list)):
             sql += sql_list[i] + '\n'
-        if group_by_fields:    
+        if glamorise.config_glamorise_interface.get('nlidb_aggregation') and glamorise.config_glamorise_interface['nlidb_aggregation'] and group_by_fields:    
             sql += 'GROUP BY ' + ', '.join(group_by_fields) + '\n'
         sql = sql[:-1]
         return sql           
