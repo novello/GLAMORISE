@@ -11,7 +11,7 @@ from spacy.lemmatizer import Lemmatizer, NOUN
 import abc
 import re
 import json
-import pandas as pd
+import pandas
 from spacy.matcher import Matcher
 from spacy.tokens import Token
 from collections import defaultdict
@@ -170,7 +170,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_group_by_fields = []
         
         # create the pandas dataframe just if it called before being fed
-        self.__pd = pd.DataFrame()       
+        self.__pd = pandas.DataFrame()       
 
     @property
     def pre_before_query(self):
@@ -293,6 +293,8 @@ class Glamorise(metaclass=abc.ABCMeta):
         pd =  deepcopy(self.__pd)
         if config_glamorise.get('total_row') and config_glamorise['total_row'] and pd is not None and not pd.empty:
             pd.loc['Total']= pd.sum(numeric_only=True, axis=0)         
+        if pd is None:
+            pd = pandas.DataFrame()       
         return pd
     
     @property
