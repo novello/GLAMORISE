@@ -520,7 +520,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                                                   self._pre_aggregation_fields + self._pre_subquery_aggregation_fields +
                                                   self._pre_subquery_group_by_fields]]
         self._pos_adjust_aggregation_functions_and_fields(columns)
-        self.__prepare_aggregate_SQL()
+        self.__prepare_aggregate_SQL(columns)
         if columns and result_set:
             self.__create_table_and_insert_data(columns, result_set)
         # prepare a pandas dataframe with the result
@@ -586,7 +586,7 @@ class Glamorise(metaclass=abc.ABCMeta):
     def _translate_fields(self):
         pass
 
-    def __prepare_aggregate_SQL(self):
+    def __prepare_aggregate_SQL(self, columns):
         #initialize clauses
         if self._pre_aggregation_fields:
             self.__select_clause = 'SELECT '
@@ -646,15 +646,25 @@ class Glamorise(metaclass=abc.ABCMeta):
             else:
                 self.__from_clause = ' FROM NLIDB_result_set '
 
-
+        # prepare columns_dict to be used by having fields to check the type
+        columns_dict = {x[0] : x[1] for x in columns} 
         # building the HAVING clause having field, followed by operator, followed by value
         for i in range(len(self._pre_having_fields)):
             if self._pre_having_fields[i] in self.pos_aggregation_fields:
                 # find the correspondent aggregation function. We have to generalize that in the future
-                aggregation_function = self._pos_aggregation_functions[self.pos_aggregation_fields.index(self._pre_having_fields[i])]
-                self.__having_clause += aggregation_function + \
+                aggregation_function = self._pos_aggregation_functions[self.pos_aggregation_fields.index(self._pre_having_fields[i])]                
+            else:               
+                if self._pre_having_fields[i] in columns_dict:
+                    if columns_dict[self._pre_having_fields[i]] in ['REAL', 'INTEGER']:
+                        aggregation_function = 'sum'
+                    else:
+                        aggregation_function = 'count'
+
+            self.__having_clause += aggregation_function + \
                                         '(' + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
                                         + self._pre_having_values[i] + ' and '
+
+
 
         # cut the ", " or " and " at the end of each string
         self.__select_clause = self.__select_clause[0:-2]
