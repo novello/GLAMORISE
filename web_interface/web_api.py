@@ -2,6 +2,7 @@ import flask
 from flask import request, jsonify, render_template, url_for
 from flaskext.markdown import Markdown
 from flaskext.markdown import Markup
+from flask import escape
 
 from os import path
 import sys
@@ -72,13 +73,13 @@ def backend():
         type = 'glamorise_mock_anp'
         nlq = []
         if request.method == 'POST':
-            nlq = request.form.get('nlq')                
+            nlq = request.form.get('nlq').replace('<', '').replace('>', '')
             type = request.form.get('type')
             config_glamorise = request.form.get('glamoriseJsonConfig')
             config_glamorise_interface = request.form.get('glamoriseJsonConfigInterface')
             nalir_tokens =  request.form.get('nalirXmlConfig')              
         elif request.method == 'GET':
-            nlq = request.args.get('nlq')        
+            nlq = request.args.get('nlq').replace('<', '').replace('>', '')
             type = request.args.get('type')
             config_glamorise = request.args.get('glamoriseJsonConfig')
             config_glamorise_interface = request.args.get('glamoriseJsonConfigInterface')

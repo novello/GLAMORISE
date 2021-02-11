@@ -137,7 +137,8 @@ class NlidbNalir(NlidbBase):
         except Exception as e:
             print("Error processing NLQ in NaLIR: ", nlq)
             print("Exception: ", e)
-        finally:                                             
+        finally:             
+            self.__sql = self.__sql.replace('\n', ' ')
             return columns, result_set, self.__sql, self.__first_attempt_sql, self.__second_attempt_sql, self.__third_attempt_sql
 
     def __run_query(self, nlq):        
