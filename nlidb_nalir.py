@@ -2,7 +2,7 @@ from simple_sqlite import SimpleSQLite
 import json
 from os import path
 import sys
-with open('./config/path.json') as json_file:
+with open('./config/environment/path.json') as json_file:
     json_path = json_file.read()
 json_path = json.loads(json_path)
 sys.path.append(path.abspath(json_path['nalir_relative_path']))
@@ -13,16 +13,17 @@ import nltk
 #nltk.download('wordnet')
 #nltk.download('punkt')
 
-
+from nlidb_base import NlidbBase
 from nalir import *
 
 
 # Simple class to act as a NLIDB
-class NalirNlidb:
+class NlidbNalir(NlidbBase):
 
     
 
     def __init__(self, config_db, token_path):
+        super(NlidbNalir, self).__init__()
         # open the database        
         self.__config_db = config_db
         self.__tokens = token_path
@@ -82,21 +83,26 @@ class NalirNlidb:
                     'VAR_STRING' : 'TEXT',
                     'STRING' : 'TEXT',
                     'GEOMETRY' : 'TEXT'}
-        return field_type[type]
+        return field_type[type]  
+    
 
-   
-    def field_synonym(self, synonym, replace_dot = True):
-        # responsible for the translation of the field to the appropriated column
-        try:            
-            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" + synonym.lower().replace(' ', '_').replace('.', '_') + "'"
-            field, cursor_description = self.__rdbms.conduct_sql(sql)
-            field = list(field)[0][0].replace(' ', '_')
-            if replace_dot:
-                field = field.replace('.', '_')
+    def _query_all_synonyms(self):
+        sql = "SELECT synonym FROM NLIDB_FIELD_SYNONYMS"
+        rows, cursor_description = self.__rdbms.conduct_sql(sql)
+        synonym_list = [i[0] for i in rows]
+        return synonym_list
+
+    def _query_specific_synonym(self, synonym):
+        try:
+            synonym = synonym.lower().replace(' ', '_').replace('.', '_')
+            sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE lower(synonym) = '" +  synonym + \
+                    "' OR lower(synonym) = '" + self._alternative_compound_name(synonym, '_') + "'"
+            rows, cursor_description = self.__rdbms.conduct_sql(sql)
+            field = list(rows)[0][0].replace(' ', '_')
             return field
         except Exception as e:
-            return synonym
-            #print('Exception: ', e)
+            print('Exception: ', e)
+            return ''
 
     def translate_all_field_synonyms_in_nlq(self, nlidb_nlq, nlidb_interface_fields):    
         try:            
@@ -113,9 +119,17 @@ class NalirNlidb:
             #print('Exception: ', e        
 
     def __include_fields(self, additional_fields):
-        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')                
+        # get all fields in the query created by the NLIDB
+        fields, result, sql_list = self.__get_fields_in_sql(self.__sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',') 
+        # verify if these fields should be translated to more than one field. Eg: month -> year, month
+        for i in range(len(fields)):
+            field_sym = self._query_specific_synonym(fields[i])
+            fields[i] = field_sym if field_sym else fields[i]
+        # include the fields identified by GLAMORISE    
         fields = fields + additional_fields
+        # remove duplicates
         fields = list(dict.fromkeys(fields))
+        #rebuild sql
         self.__sql = result.group(1) + result.group(2) + ', '.join(fields) + '\n'
         for i in range(1, len(sql_list)):
             self.__sql += sql_list[i] + '\n'

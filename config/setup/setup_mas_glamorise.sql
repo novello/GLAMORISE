@@ -34,16 +34,27 @@ CREATE TABLE `NLIDB_FIELD_SYNONYMS` (
 
 LOCK TABLES `NLIDB_FIELD_SYNONYMS` WRITE;
 /*!40000 ALTER TABLE `NLIDB_FIELD_SYNONYMS` DISABLE KEYS */;
-INSERT INTO `NLIDB_FIELD_SYNONYMS` VALUES ('author','author.name'),
-('conference','conference.name'),
-('citation','publication.citation_num'),
-('paper','publication.title'),
-('journal','journal.name'),
-('publication','publication.title'),
-('keyword','keyword.keyword'),
-('year','publication.year'),
-('organization','organization.name'),
-('researcher','author.name'),
-('reference','publication.reference_num');
+INSERT INTO `NLIDB_FIELD_SYNONYMS` VALUES 
+('author', 'author.name'),
+('author_name', 'author.name'),
+('researcher', 'author.name'),
+('researcher_name', 'author.name'),
+('conference', 'conference.name'),
+('conference_name', 'conference.name'),
+('citation', 'publication.citation_num'),
+('publication_citation', 'publication.citation_num'),
+('paper', 'publication.title'),
+('paper_title', 'publication.title'),
+('publication', 'publication.title'),
+('publication_title', 'publication.title'),
+('journal', 'journal.name'),
+('journal_name', 'journal.name'),
+('keyword', 'keyword.keyword'),
+('year', 'publication.year'),
+('publication_year', 'publication.year'),
+('organization', 'organization.name'),
+('organization_name', 'organization.name'),
+('reference', 'publication.reference_num'),
+('publication_reference', 'publication.reference_num');
 /*!40000 ALTER TABLE `NLIDB_FIELD_SYNONYMS` ENABLE KEYS */;
 UNLOCK TABLES;

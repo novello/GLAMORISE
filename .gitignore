@@ -114,14 +114,13 @@ docker-compose.yml
 #datasets
 datasets/anp_complete.db
 datasets/ngsdb.sql
-datasets/glamorise.db
-datasets/GLAMORISE.db
+datasets/glamorise*.db
+datasets/GLAMORISE*.db
+datasets/GLAMORISE*.db-journal
 
 
 web_interface/static/images/*Zone.Identifier
 
-config/nalir_anp_local_db.json
-config/nalir_mas_local_db.json
-
-config/nalir_anp_local_db_local.json
-config/nalir_mas_local_db_local.json
+log.txt
+config/environment/nalir_anp_db.json
+config/environment/nalir_mas_db.json
