@@ -48,6 +48,12 @@ def glamorise_nalir_anp():
 
     return render_template('form.html', type='glamorise_nalir_anp', patterns_json_txt=patterns_json_txt, nalir_tokens=nalir_tokens)
 
+@app.route('/glamorise_danke_anp')
+def glamorise_danke_anp():
+    with open('./config/environment/glamorise_danke.json') as json_file:
+        patterns_json_txt = json_file.read()
+
+    return render_template('form.html', type='glamorise_danke_anp', patterns_json_txt=patterns_json_txt)
 
 @app.route('/glamorise_nalir_mas')
 def glamorise_nalir_mas():
@@ -79,7 +85,9 @@ def backend():
                 nalir_tokens = fromstring(nalir_tokens)    
         if nlq:       
             if type == 'glamorise_mock_anp':                        
-                glamorise = GlamoriseNlidb(patterns = patterns_json_txt)
+                glamorise = GlamoriseNlidb(patterns = patterns_json_txt) 
+            elif type == 'glamorise_danke_anp':            
+               glamorise = GlamoriseNlidb(NLIDB = 'Danke',patterns = patterns_json_txt)          
             elif type == 'glamorise_nalir_anp':            
                 with open('./config/environment/nalir_anp_db.json') as json_file:
                     config_db = json_file.read()                        

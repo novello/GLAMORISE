@@ -2,6 +2,8 @@ from simple_sqlite import SimpleSQLite
 import json
 from nlidb_base import NlidbBase
 
+import logging
+
 # Simple class to act as a NLIDB
 class NlidbMock(NlidbBase):
 
@@ -47,7 +49,7 @@ class NlidbMock(NlidbBase):
                                   for column_name in column_names
                                     for column_type in column_types
                                         if column_type[0] == column_name])
-            print(sql_result)                                                                       
+            print(sql_result)                                                                   
             return columns, result_set, sql_result
         except:
             print("Query not found: ", nlq)

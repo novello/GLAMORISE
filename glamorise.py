@@ -553,10 +553,10 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__preprocessor(query)
         columns, result_set = self._nlidb_interface()
         # JSON columns names and types received by the NLIDB converted to list        
-        if columns:
+        if columns and isinstance(columns, str):
             columns = json.loads(columns)
         # JSON result set  received by the NLIDB converted to list        
-        if result_set:
+        if result_set and isinstance(result_set, str):
             result_set = json.loads(result_set)
         if self._timer_nlidb_json_result_set._start_time:    
             self._timer_nlidb_json_result_set.stop()
