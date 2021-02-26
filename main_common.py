@@ -44,7 +44,7 @@ def print_results(glamorise, nlq):
     result += mc_print("**GLAMORISE Internal Properties**")
     print("\n")
     result += '</br>'
-    result += mc_print("**Preprocessor Properties**")
+    result += mc_print("**Pre Processor Properties**")
     result += glamorise.dump('pre_')
 
     print("\n")
@@ -54,7 +54,7 @@ def print_results(glamorise, nlq):
 
     print("\n")
     result += '</br>'
-    result += mc_print("**Post-processor Properties**")
+    result += mc_print("**Post Processor Properties**")
     result += glamorise.dump('pos_')
 
     print("\n")
