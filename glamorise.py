@@ -689,11 +689,10 @@ class Glamorise(metaclass=abc.ABCMeta):
         for attr in dir(self):            
             if attr.startswith(sub_str) and getattr(self, attr):
                 if attr.endswith('_sql'):
-                    print("\n%s = %r\n" % (attr, getattr(self, attr)))
-                    result += "</br></br>%s = %r</br>" % (attr, getattr(self, attr))
+                    print("\n%s = %r\n" % (attr, getattr(self, attr)))                    
                 else:
                     print("%s = %r" % (attr, getattr(self, attr)))
-                    result += "</br>%s = %r" % (attr, getattr(self, attr))
+                result += "</br>%s = %r" % (attr, getattr(self, attr))
         return result            
     
     def print_timers(self, json = False):        

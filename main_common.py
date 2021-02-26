@@ -42,25 +42,25 @@ def print_results(glamorise, nlq):
     ent = glamorise.customized_displacy_entities()
 
     print("\n\n")
-    result += '</br></br></br>'
+    result += '</br></br>'
     result += mc_print("**GLAMORISE Internal Properties**")
     print("\n")
-    result += '</br></br>'
+    result += '</br>'
     result += mc_print("**GLAMORISE Preprocessor Properties**")
     result += glamorise.dump('pre_')
 
     print("\n")
-    result += '</br></br>'
+    result += '</br>'
     result += mc_print("**GLAMORISE NLIDB Interface Properties**")
     result += glamorise.dump('nlidb_interface_')
 
     print("\n")
-    result += '</br></br>'
+    result += '</br>'
     result += mc_print("**GLAMORISE Post-processor Properties**")
     result += glamorise.dump('pos_')
 
     print("\n")
-    result += '</br></br>'
+    result += '</br>'
     result += mc_print("**GLAMORISE Result**")
     # display the result as a pandas dataframe
     mc_display(glamorise.pd)    
