@@ -31,8 +31,7 @@ def mc_display(pd):
 
 def print_results(glamorise, nlq):      
     result = ''
-    print("\n\n")
-    result += '</br></br>'
+    print("\n\n")    
     nlq_str = mc_print("**Natural Language Query**: " + nlq)
 
     glamorise.execute(nlq)
@@ -41,8 +40,7 @@ def print_results(glamorise, nlq):
     dep = glamorise.customized_displacy_dependency_parse_tree()    
     ent = glamorise.customized_displacy_entities()
 
-    print("\n\n")
-    result += '</br></br>'
+    print("\n\n")    
     result += mc_print("**GLAMORISE Internal Properties**")
     print("\n")
     result += '</br>'
