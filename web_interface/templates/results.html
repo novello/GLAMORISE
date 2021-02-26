@@ -1,26 +1,22 @@
 {{ nlq|markdown }}
 {% if dep != 'None' %}
 <strong>spaCy Dependency Parse Tree and Part-of-Speech (POS)</strong>
-<div class="col-md-12">
-    <div class="col-md-12">        
-        <figure class="figure">            
-            {{ dep }}
-        </figure>        
-    </div>
+<div class="col-md-12">    
+    <figure class="figure">
+        {{ dep }}
+    </figure>
 </div>
 {% endif %}
 {% if ent != 'None' %}
 <strong>Recognized by GLAMORISE</strong>
 <div class="col-md-12">
-    <div class="col-md-12">        
-        <figure class="figure">
-            {{ ent }}
-        </figure>    
-    </div>
+    <figure class="figure">
+        {{ ent }}
+    </figure>
 </div>
 {% endif %}
 {{ rawtext|markdown }}
 <strong>Results</strong>
 {% for table in tables %}
-        {{ table|safe }}
+{{ table|safe }}
 {% endfor %}
