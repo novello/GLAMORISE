@@ -44,26 +44,29 @@ def print_results(glamorise, nlq):
     result += mc_print("**GLAMORISE Internal Properties**")
     print("\n")
     result += '</br>'
-    result += mc_print("**GLAMORISE Preprocessor Properties**")
+    result += mc_print("**Preprocessor Properties**")
     result += glamorise.dump('pre_')
 
     print("\n")
     result += '</br>'
-    result += mc_print("**GLAMORISE NLIDB Interface Properties**")
+    result += mc_print("**NLIDB Interface Properties**")
     result += glamorise.dump('nlidb_interface_')
 
     print("\n")
     result += '</br>'
-    result += mc_print("**GLAMORISE Post-processor Properties**")
+    result += mc_print("**Post-processor Properties**")
     result += glamorise.dump('pos_')
 
     print("\n")
     result += '</br>'
-    result += mc_print("**GLAMORISE Result**")
+    result += mc_print("**Timers**")    
+    result += glamorise.print_timers()
+
+    print("\n")
+    result += '</br>'
+    result += mc_print("**Results**")    
     # display the result as a pandas dataframe
     mc_display(glamorise.pd)    
-
-    result += glamorise.print_timers()
 
     if glamorise.config_glamorise.get('debug') and glamorise.config_glamorise['debug']:        
         return nlq_str, result, dep, ent
