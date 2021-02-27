@@ -1,9 +1,10 @@
 {
     "show_dependency_parse_tree": true,
-    "show_recognized_config_glamorise": true,
+    "show_recognized_patterns": true,
     "total_row" : true,
     "debug": true,    
-    "noun_lemmatization": true,    
+    "noun_lemmatization": true,
+    "count_with_distinct" : false,    
     "units_of_measurement": [
         "cubic meters"
     ],

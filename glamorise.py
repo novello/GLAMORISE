@@ -586,6 +586,13 @@ class Glamorise(metaclass=abc.ABCMeta):
     def _translate_fields(self):
         pass
 
+    def __distinct(self, aggregation_function):
+        # if distinct parameter is set and the function is count, use DISTINCT  
+        if config_glamorise.get('count_with_distinct') and config_glamorise['count_with_distinct'] and aggregation_function == 'count':                 
+            return 'DISTINCT '
+        else:
+            return ''
+        
     def __prepare_aggregate_SQL(self, columns):
         #initialize clauses
         if self._pre_aggregation_fields:
@@ -625,10 +632,11 @@ class Glamorise(metaclass=abc.ABCMeta):
 
         # building the syntax of the aggregate functions, aggregate fields e.g. min(production),
         # and candidate aggregate field and function if they exist                    
-        for i in range(len(self._pos_aggregation_functions)):                        
+        for i in range(len(self._pos_aggregation_functions)):       
+            distinct = self.__distinct(self._pos_aggregation_functions[i]) 
             # building sql part for aggregate field and function        
             self.__select_clause += self._pos_aggregation_functions[i] + \
-                                    '(' + self._pos_aggregation_fields[i] + ') as ' + \
+                                    '(' + distinct + self._pos_aggregation_fields[i] + ') as ' + \
                                     self._pos_aggregation_functions[i] + '_' + \
                                     self._pos_aggregation_fields[i] + ', '
 
@@ -637,8 +645,9 @@ class Glamorise(metaclass=abc.ABCMeta):
             # e.g. SELECT avg(sum(oil_production) as avg_sum_oil_production FROM NLIDB_result_set GROUP BY year
             if self._pos_aggregation_fields[i] in self._pos_subquery_aggregation_fields:
                 j = self._pos_subquery_aggregation_fields.index(self._pos_aggregation_fields[i])
+                distinct = self.__distinct(self._pos_subquery_aggregation_functions[j]) 
                 self.__from_clause = ' FROM (SELECT ' + ', '.join(nested_group_by_field + [self._pos_subquery_aggregation_functions[j] + '(' + \
-                                     self._pos_aggregation_fields[i] + ') as ' + \
+                                     distinct + self._pos_aggregation_fields[i] + ') as ' + \
                                      self._pos_aggregation_fields[i]]) + ' FROM NLIDB_result_set'
                 self.__from_clause += ' GROUP BY ' + ', '.join(nested_group_by_field + self._pre_subquery_group_by_fields) + ') '
 
@@ -659,9 +668,9 @@ class Glamorise(metaclass=abc.ABCMeta):
                         aggregation_function = 'sum'
                     else:
                         aggregation_function = 'count'
-
+            distinct = self.__distinct(aggregation_function) 
             self.__having_clause += aggregation_function + \
-                                        '(' + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
+                                        '(' + distinct + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
                                         + self._pre_having_values[i] + ' and '
 
 
@@ -723,7 +732,7 @@ class Glamorise(metaclass=abc.ABCMeta):
 
     
     def customized_displacy_entities(self):
-        if config_glamorise.get('show_recognized_config_glamorise') and config_glamorise['show_recognized_config_glamorise']:        
+        if config_glamorise.get('show_recognized_patterns') and config_glamorise['show_recognized_patterns']:        
             return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)            
         else:
             return None    
