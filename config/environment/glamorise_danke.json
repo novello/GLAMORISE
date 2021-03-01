@@ -1,8 +1,13 @@
 {
+    "show_dependency_parse_tree": true,
+    "show_recognized_patterns": true,
+    "total_row" : true,
+    "debug": true,    
+    "noun_lemmatization": true,
+    "count_with_distinct" : true,    
     "units_of_measurement": [
         "cubic meters"
     ],
-    "noun_lemmatization": true,
     "compound_pattern_dep": [
         {
             "POS": "NOUN",
@@ -17,7 +22,7 @@
             "POS": "NOUN",
             "LOWER": {
                 "NOT_IN": [
-                    "number", "sum"
+                    "number"
                 ]
             }
         },
@@ -42,12 +47,12 @@
             "POS": "NOUN",
             "LOWER": {
                 "NOT_IN": [
-                    "number", "sum"
+                    "number"
                 ]
             }
         }
     ],
-    "patterns": {
+    "config_glamorise": {
         "than options": {
             "reserved_words": [
                 "more than",
@@ -157,7 +162,8 @@
         "other sum": {
             "reserved_words": [
                 "total",
-                "sum"
+                "sum",
+                "summed"
             ],
             "pre_aggregation_functions": "sum",
             "pre_cut_text": true
@@ -204,7 +210,6 @@
         "superlative max": {
             "reserved_words": [
                 "most",
-                "most number of",
                 "biggest",
                 "largest",
                 "longest",
@@ -248,6 +253,72 @@
             "use_replace_text_as_group_by": true,
             "pre_subquery_aggregation_functions": "sum",
             "pre_cut_text": false
+        },
+        "sub query min/max count": {
+            "reserved_words": [
+                "least number of",
+                "smallest number of",
+                "tiniest number of",
+                "shortest number of",
+                "cheapest number of",
+                "nearest number of",
+                "lowest number of",
+                "worst number of",
+                "newest number of",
+                "first number of",
+                "min number of",
+                "minimum number of",
+                "most number of",
+                "biggest number of",
+                "largest number of",
+                "longest number of",
+                "furthest number of",
+                "highest number of",
+                "tallest number of",
+                "greatest number of",
+                "best number of",
+                "oldest number of",
+                "last number of",
+                "max number of",
+                "maximum number of"
+            ],
+            "use_replace_text_as_group_by": false,
+            "remove_external_group_by": true,
+            "pre_subquery_aggregation_functions": "count",
+            "pre_cut_text": true
+        },
+        "sub query min/max sum": {
+            "reserved_words": [
+                "least summed",
+                "smallest summed",
+                "tiniest summed",
+                "shortest summed",
+                "cheapest summed",
+                "nearest summed",
+                "lowest summed",
+                "worst summed",
+                "newest summed",
+                "first summed",
+                "min summed",
+                "minimum summed",
+                "most summed",
+                "biggest summed",
+                "largest summed",
+                "longest summed",
+                "furthest summed",
+                "highest summed",
+                "tallest summed",
+                "greatest summed",
+                "best summed",
+                "oldest summed",
+                "last summed",
+                "max summed",
+                "maximum summed"
+            ],
+            "use_replace_text_as_group_by": false,
+            "remove_external_group_by": true,
+            "pre_subquery_aggregation_functions": "sum",
+            "pre_cut_text": true
         }
     }
 }

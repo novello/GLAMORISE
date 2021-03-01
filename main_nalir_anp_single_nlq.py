@@ -12,18 +12,21 @@ with open('./config/environment/nalir_tokens.xml') as xml_file:
 
 with open('./config/environment/nalir_anp_db.json') as json_file:
     config_db = json_file.read()
-        
+
 with open('./config/environment/glamorise_nalir.json') as json_file:
-    patterns_json_txt = json_file.read()
+    config_glamorise = json_file.read()
 
-  
+with open('./config/environment/glamorise_interface_nalir_anp.json') as json_file:
+    config_glamorise_interface = json_file.read()
+
+
 # create GLAMORISE object (the child class is instantiated)
-glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
+glamorise = GlamoriseNlidb(NLIDB='NaLIR', config_glamorise_param=config_glamorise,
+                           config_glamorise_interface_param=config_glamorise_interface, config_db=config_db, tokens=nalir_tokens)
 
-nlq = 'give me field with the most number of provinces'
+nlq = 'Return me the maximum summed oil production per field in the state of "Rio de Janeiro"'
 
 mc.print_results(glamorise, nlq)
 
 mc.print_total_timers()
-del glamorise    
-
+del glamorise

@@ -10,21 +10,7 @@ class NlidbMock(NlidbBase):
     def __init__(self):
         # open the database
         self.__SimpleSQLite = SimpleSQLite('./datasets/mock_nlidb_anp.db')
- 
-
-    def _query_specific_synonym(self, synonym):
-        synonym = synonym.lower().replace(' ', '_').replace('.', '_')
-        sql = "SELECT field FROM NLIDB_FIELD_SYNONYMS WHERE synonym = '" + synonym + \
-                "' OR synonym = '" + self._alternative_compound_name(synonym, '_') + "'"
-        rows, cursor_description = self.__SimpleSQLite.execute_sql(sql, 'Field translated')
-        field = list(rows)[0][0].replace(' ', '_')
-        return field
-
-    def _query_all_synonyms(self):
-        sql = "SELECT synonym FROM NLIDB_FIELD_SYNONYMS"
-        rows, cursor_description = self.__SimpleSQLite.execute_sql(sql, 'Field translated')
-        synonym_list = [i[0] for i in rows]
-        return synonym_list    
+    
 
     def execute_query(self, nlq, timer_nlidb_execution_first_and_second_attempt,  timer_nlidb_json_result_set):
         timer_nlidb_execution_first_and_second_attempt.start()
@@ -48,8 +34,7 @@ class NlidbMock(NlidbBase):
             columns = json.dumps([(column_name, column_type[1])
                                   for column_name in column_names
                                     for column_type in column_types
-                                        if column_type[0] == column_name])
-            print(sql_result)                                                                   
+                                        if column_type[0] == column_name])                                                                                
             return columns, result_set, sql_result
         except:
             print("Query not found: ", nlq)

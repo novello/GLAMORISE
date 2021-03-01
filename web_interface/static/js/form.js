@@ -18,6 +18,7 @@ $(document).ready(function() {
 		window.scrollTo(0,document.body.scrollHeight);
 		$('#glamoriseTextarea').attr('disabled', 'disabled');		
 		$('#glamoriseJsonConfig').attr('disabled', 'disabled');
+		$('#glamoriseJsonConfigInterface').attr('disabled', 'disabled');
 		$('#nalirXmlConfig').attr('disabled', 'disabled');
 		$('#submitButton').attr('disabled', 'disabled');		
 		$.ajax({
@@ -25,6 +26,7 @@ $(document).ready(function() {
 				nlq : $('#glamoriseTextarea').val(),
 				type : $('#hiddenType').val(),
 				glamoriseJsonConfig : $('#glamoriseJsonConfig').val(),
+				glamoriseJsonConfigInterface : $('#glamoriseJsonConfigInterface').val(),
 				nalirXmlConfig : $('#nalirXmlConfig').val()
 			},
 			type : 'POST',
@@ -34,6 +36,7 @@ $(document).ready(function() {
 			$('#loadingDiv').hide();
 			$('#glamoriseTextarea').removeAttr('disabled');
 			$('#glamoriseJsonConfig').removeAttr('disabled');
+			$('#glamoriseJsonConfigInterface').removeAttr('disabled');
 			$('#nalirXmlConfig').removeAttr('disabled');
 			$('#submitButton').removeAttr('disabled');
 			if (data) {

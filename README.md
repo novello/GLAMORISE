@@ -7,11 +7,11 @@ This project refers to the implementation of GLAMORISE Natural Language Interfac
 
 * [A Novel Solution for the Aggregation Problem in Natural Language Interface to Databases (NLIDB)](./web_interface/static/paper/207509_1-A-Novel-Solution-for-the-Aggregation-Problem-in-Natural-Language-Interface-to-Databases-NLIDB.pdf). Novello, A., F.; and Casanova, M., A. Proc. XXXV Brazilian Symposium on Databases - SBBD. 2020. Awarded as the 2nd Best Short Paper.
 
-A [working demo](http://glamorise.gruposantaisabel.com.br) is avaiable of this project is avaiable.
+A [working demo](http://glamorise.gruposantaisabel.com.br) of this project is available.
 
-This implementation of GLAMORISE uses NaLIR as one of its integtared NLIDBs, so you will have to clone the [nalir-glamorise](https://github.com/novello/nalir-glamorise) repository. This project is a customization of the [nalir-ssbd](https://github.com/pr3martins/nalir-sbbd) project which in turn is a Python port of the original [NaLIR project](https://github.com/umich-dbgroup/NaLIR). Please follow all the steps described in the README of the nalir-glamorise project.
+This implementation of GLAMORISE uses NaLIR as its integrated NLIDB, so you will have to clone the [nalir-glamorise](https://github.com/novello/nalir-glamorise) repository. This project is a customization of the [nalir-ssbd](https://github.com/pr3martins/nalir-sbbd) project which in turn is a Python port of the original [NaLIR project](https://github.com/umich-dbgroup/NaLIR). Please follow all the steps described in the README of the nalir-glamorise project.
 
-The paths below are relative to the root path of the GLAMORISE project. You are expected to be positioned on this path.
+The paths below are relative to the root path of the GLAMORISE project. You are expected to be in this position on the path.
 
 
 ## Setting up the environment
@@ -41,7 +41,7 @@ Update the environment file in a text editor:
   $ sudo nano /etc/environment
 ```
 
- And configure in the file the JAVA_HOME variable value:
+ And configure the JAVA_HOME variable value in the file:
 
  ``` bash
   JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/java" 
@@ -52,7 +52,7 @@ Update the environment file in a text editor:
 
 ### ANP MySQL database
 
-Used with the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) MySQL database.
+Used by the NaLIR NLIDB which uses an ANP (Agência Nacional de Petróleo - Brazilian Petroleum Agency) MySQL database.
 
 First create the database inside mysql:
 
@@ -66,22 +66,16 @@ And then run the following database dump:
     $ mysql -D anp -u <user> -p < ./config/setup/dump_nalir_anp_mysql.sql
 ```
 
-After this run the following script, this is respponsible for creating the configuration needed by NaLIR in order to work correctly with the ANP database:
+After this, run the following script, which is responsible for creating the configuration needed by NaLIR in order to work correctly with the ANP database:
 
 ``` bash
     mysql -D anp -u <user> -p < ./zfiles/setup_anp_nalir.sql
 ```
 
-After this run the following script below, it is responsible for creating the configuration needed by GLAMORISE in order to work correctly with the ANP database:
-
-
-``` bash
-    $ mysql -D anp -u <user> -p < ./config/setup/setup_anp_glamorise.sql
-```
 
 ### MAS MySQL database
 
-Used with the NaLIR NLIDB which uses the MAS (Microsoft Academic Search) MySQL database. This database is used in the NaLIR original paper.
+Used by the NaLIR NLIDB which uses the MAS (Microsoft Academic Search) MySQL database. This database is used in the NaLIR original paper.
 
 
 First create the database inside mysql:
@@ -91,13 +85,6 @@ First create the database inside mysql:
 ```
 
 And then follow all the installation steps in the README of the nalir-glamorise project.
-
-After this run the following script below, it is responsible for creating the configuration needed by GLAMORISE in order to work correctly with the MAS database:
-
-
-``` bash
-    $ mysql -D mas -u <user> -p < ./config/setup/setup_mas_glamorise.sql
-```
 
 
 ## Configuration files
@@ -118,7 +105,7 @@ You will have to adjust the relative path of the project nalir-glamorise (nalir_
 
 ### NaLIR database and special folders configurations
 
-You will have to create the JSON files below with the correct database connection information and the path under the nalir-glamorise project to the folders zfiles and new_jars. Each one you can use the respective template file to customize:
+You will have to create the JSON files below with the correct database connection information and the path under the nalir-glamorise project to the folders zfiles and new_jars. You can use the respective template file to customize each one:
 
 
 #### ANP database
@@ -170,14 +157,29 @@ You can start the web interface with the shell script ./start_flask.sh
 
 You can stop the web interface with the shell script ./stop_flask.sh
 
-You can audit the log looking at the file ./log.txt
+You can audit the log by looking at the file ./log.txt
 
+## Running at the terminal
+
+If your business is more about using the terminal than the web environment, you can customize one of these 6 files. Half of them are prepared to run a single NLQ and the other half is prepared to run a sequence of NLQs. The names are self explanatory:
+
+./main_mock_single_nlq.py
+
+./main_mock.py
+
+./main_nalir_anp_single_nlq.py
+
+./main_nalir_anp.py
+
+./main_nalir_mas_single_nlq.py
+
+./main_nalir_mas.py
 
 ## [OPTIONAL] Configuration files
 
 ### GLAMORISE and NaLIR customization of pattern files
 
-If you want to change the patterns accepted by GLAMORISE and NaLIR, this could be achieved by modifying the following files below:
+If you want to change the config_glamorise accepted by GLAMORISE and NaLIR, this could be achieved by modifying the files below:
 
 
 #### GLAMORISE Mock ANP

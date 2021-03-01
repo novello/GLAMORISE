@@ -1,11 +1,32 @@
 import abc
 import re
 import spacy
+import glamorise
 
 class NlidbBase(metaclass=abc.ABCMeta):    
 
     def __init__(self):
         self._nlp = None
+
+    def _query_specific_synonym(self, synonym):        
+        try:
+            synonym = synonym.lower().replace(' ', '_').replace('.', '_')
+            if glamorise.config_glamorise_interface.get('nlidb_field_synonym'):
+                if glamorise.config_glamorise_interface['nlidb_field_synonym'].get(synonym):
+                    field = glamorise.config_glamorise_interface['nlidb_field_synonym'][synonym]
+                elif glamorise.config_glamorise_interface['nlidb_field_synonym'].get(self._alternative_compound_name(synonym, '_')):
+                    field = glamorise.config_glamorise_interface['nlidb_field_synonym'][self._alternative_compound_name(synonym, '_')]
+            return field
+        except:
+            return ''
+
+    def _query_all_synonyms(self):
+        try:
+            if glamorise.config_glamorise_interface.get('nlidb_field_synonym'):
+                    synonym_list = list(glamorise.config_glamorise_interface['nlidb_field_synonym'])        
+            return synonym_list    
+        except:
+            return []    
 
     def _alternative_compound_name(self, str, sep):
         words = re.split(' |_', str)
@@ -53,8 +74,47 @@ class NlidbBase(metaclass=abc.ABCMeta):
                 field = field.replace('.', '_')
             return field
         except Exception as e:
-            print('Exception: ', e)
+            print('Exception: No field found, returning synonym. ({})'.format(e))
             return synonym
+
+    def _get_fields_in_sql(self, sql, regex, sql_list_position, group_num, separator):
+        try:
+            sql_list = sql.split('\n')
+            result = re.search(regex, sql_list[sql_list_position], re.IGNORECASE|re.MULTILINE)        
+            fields_str = result.group(group_num)
+            fields = list(dict.fromkeys([x.strip() for x in fields_str.split(separator)]))
+            return fields, result, sql_list
+        except:
+            return [], '', []     
+
+    def _change_select(self, sql, columns):
+        fields, result, sql_list = self._get_fields_in_sql(sql, '(SELECT )(DISTINCT )?(.*)$', 0, 3, ',')
+        all_fields = []
+        transformed_fields = []        
+        columns_dict = {x[0] : x[1] for x in columns}
+        nlidb_aggregation_exceptions = []
+        group_by_fields = []
+        if glamorise.config_glamorise_interface.get('nlidb_aggregation_exceptions'):
+             nlidb_aggregation_exceptions = [field.lower() for field in glamorise.config_glamorise_interface['nlidb_aggregation_exceptions']]
+        for field in fields:            
+            if field not in all_fields:            
+                all_fields.append(field)                    
+                field_without_table = field[field.find('.')+1:]
+                if glamorise.config_glamorise_interface.get('nlidb_aggregation') and glamorise.config_glamorise_interface['nlidb_aggregation'] \
+                and columns_dict[field_without_table] in ['REAL', 'INTEGER'] \
+                and field.lower() not in nlidb_aggregation_exceptions:
+                    transformed_fields.append('sum(' + field + ') as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
+                else:    
+                    transformed_fields.append(field + ' as ' + field.replace('.', '_').replace('(', '_').replace(')', ''))
+                    group_by_fields.append(field)
+        sql = result.group(1) + result.group(2) + ', '.join(transformed_fields) + '\n'
+        for i in range(1, len(sql_list)):
+            sql += sql_list[i] + '\n'
+        if glamorise.config_glamorise_interface.get('nlidb_aggregation') and glamorise.config_glamorise_interface['nlidb_aggregation'] and group_by_fields:    
+            sql += 'GROUP BY ' + ', '.join(group_by_fields) + '\n'
+        sql = sql[:-1]
+        return sql           
+
 
     @abc.abstractmethod
     def execute_query(self, nlq):

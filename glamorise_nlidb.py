@@ -11,8 +11,8 @@ from copy import deepcopy
 # the implementation has to be changed to contemplate new NLIDBs
 class GlamoriseNlidb(Glamorise):
 
-    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', patterns = '', config_db = '', tokens = ''):
-        super(GlamoriseNlidb, self).__init__(lang, patterns)
+    def __init__(self, lang = "en_core_web_sm", NLIDB = 'Mock', config_glamorise_param = '', config_glamorise_interface_param = '', config_db = '', tokens = ''):
+        super(GlamoriseNlidb, self).__init__(lang, config_glamorise_param = config_glamorise_param, config_glamorise_interface_param = config_glamorise_interface_param)
         # customize as needed customize as needed according to integration with other NLIDBs. 
         # Don't forget to create the specific class for NLIDB following the model of NalirNlid
 
@@ -50,12 +50,7 @@ class GlamoriseNlidb(Glamorise):
         return self._nlidb_interface_third_attempt_sql
 
     def _nlidb_interface(self):
-
-        # send the NLQ question and receive the JSON with the columns and result set
-        nlidb_attempt_level = 1
-        if self._patterns_json.get('nlidb_attempt_level'): 
-            nlidb_attempt_level = self._patterns_json['nlidb_attempt_level']
-
+       
         #danke first execute query then _translate_all_fields
         if isinstance(self.__nlidb, NlidDanke):
             columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
@@ -67,8 +62,13 @@ class GlamoriseNlidb(Glamorise):
         # the field translation is done by the child class that is aware of the NLIDB column names
         self._translate_all_fields()
 
-        if self._patterns_json.get('nlidb_nlq_translate_fields') and self._patterns_json['nlidb_nlq_translate_fields']:
-            self._nlidb_nlq_translate_fields()                
+        if self._config_glamorise_interface.get('nlidb_nlq_translate_fields') and self._config_glamorise_interface['nlidb_nlq_translate_fields']:
+            self._nlidb_nlq_translate_fields()
+
+        # send the NLQ question and receive the JSON with the columns and result set
+        nlidb_attempt_level = 1
+        if self._config_glamorise_interface.get('nlidb_attempt_level'): 
+            nlidb_attempt_level = self._config_glamorise_interface['nlidb_attempt_level']        
     
 
         # customize as needed customize as needed according to integration with other NLIDBs. 
@@ -85,7 +85,7 @@ class GlamoriseNlidb(Glamorise):
                                                                               self._timer_nlidb_execution_third_attempt,
                                                                               self._timer_nlidb_json_result_set,
                                                                               nlidb_attempt_level,
-                                                                              self._all_fields)         
+                                                                              self._all_fields)                 
              
         # 
         # add more NLIDBs here
@@ -98,7 +98,7 @@ class GlamoriseNlidb(Glamorise):
 
     def _nlidb_nlq_translate_fields(self):
         self._pre_prepared_query_before_field_translation = self._pre_prepared_query
-        self._pre_prepared_query = self.__nlidb.translate_all_field_synonyms_in_nlq(self._pre_prepared_query, self._nlidb_interface_fields)
+        self._pre_prepared_query, self._nlidb_interface_fields = self.__nlidb.translate_all_field_synonyms_in_nlq(self._pre_prepared_query, self._nlidb_interface_fields)
 
 
 

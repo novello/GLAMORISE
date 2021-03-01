@@ -1,0 +1,17 @@
+return me the author in the "University of Michigan" in Databases area whose papers have more than 5000 total citations.
+return me the author in the "University of Michigan" whose papers have the most total citations.
+return me the author who has the most number of papers containing keyword "Relational Database".
+return me the conference that has the most number of papers containing keyword "Relational Database".
+return me the keyword, which have been contained by the most number of papers in PVLDB.
+return me the number of authors who have cited the papers by "H. V. Jagadish".
+return me the number of authors who have more than 10 papers containing keyword "Relational Database".
+return me the number of citations of "Making database systems usable" in each year.
+return me the number of conferences, which have more than 60 papers containing keyword "Relational Database".
+return me the number of keywords, which have been contained by more than 10 papers of "H. V. Jagadish".
+return me the number of keywords.
+return me the number of papers after 2000 in "University of Michigan".
+return me the number of papers published in PVLDB in each year.
+return me the number of the authors who have more than 10 papers containing keyword "Relational Database".
+return me the papers written by "H. V. Jagadish" and "Divesh Srivastava" with more than 200 citations.
+return me the papers written by "H. V. Jagadish" and "Divesh Srivastava" with the most number of citations.
+return me the total citations of all the papers in PVLDB.

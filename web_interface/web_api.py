@@ -1,6 +1,8 @@
 import flask
 from flask import request, jsonify, render_template, url_for
 from flaskext.markdown import Markdown
+from flaskext.markdown import Markup
+from flask import escape
 
 from os import path
 import sys
@@ -34,35 +36,43 @@ def logo_history():
 @app.route('/glamorise_mock_anp')
 def glamorise_mock_anp():
     with open('./config/environment/glamorise_mock.json') as json_file:
-        patterns_json_txt = json_file.read()
+        config_glamorise = json_file.read()
+    with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+        config_glamorise_interface = json_file.read()                
 
-    return render_template('form.html', type='glamorise_mock_anp', patterns_json_txt=patterns_json_txt)
-
-
-@app.route('/glamorise_nalir_anp')
-def glamorise_nalir_anp():
-    with open('./config/environment/glamorise_nalir.json') as json_file:
-        patterns_json_txt = json_file.read()
-    with open('./config/environment/nalir_tokens.xml') as xml_file:
-        nalir_tokens = xml_file.read()
-
-    return render_template('form.html', type='glamorise_nalir_anp', patterns_json_txt=patterns_json_txt, nalir_tokens=nalir_tokens)
+    return render_template('form.html', type='glamorise_mock_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface)
 
 @app.route('/glamorise_danke_anp')
 def glamorise_danke_anp():
     with open('./config/environment/glamorise_danke.json') as json_file:
-        patterns_json_txt = json_file.read()
+          config_glamorise = json_file.read()
+    with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+        config_glamorise_interface = json_file.read() 
+    
+    return render_template('form.html', type='glamorise_danke_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface)
 
-    return render_template('form.html', type='glamorise_danke_anp', patterns_json_txt=patterns_json_txt)
+@app.route('/glamorise_nalir_anp')
+def glamorise_nalir_anp():
+    with open('./config/environment/glamorise_nalir.json') as json_file:
+        config_glamorise = json_file.read()
+    with open('./config/environment/glamorise_interface_nalir_anp.json') as json_file:
+        config_glamorise_interface = json_file.read()        
+    with open('./config/environment/nalir_tokens.xml') as xml_file:
+        nalir_tokens = xml_file.read()
+
+    return render_template('form.html', type='glamorise_nalir_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface, nalir_tokens=nalir_tokens)
+
 
 @app.route('/glamorise_nalir_mas')
 def glamorise_nalir_mas():
     with open('./config/environment/glamorise_nalir.json') as json_file:
-        patterns_json_txt = json_file.read()
+        config_glamorise = json_file.read()
+    with open('./config/environment/glamorise_interface_nalir_mas.json') as json_file:
+        config_glamorise_interface = json_file.read()                
     with open('./config/environment/nalir_tokens.xml') as xml_file:
         nalir_tokens = xml_file.read()
 
-    return render_template('form.html', type='glamorise_nalir_mas', patterns_json_txt=patterns_json_txt, nalir_tokens=nalir_tokens)
+    return render_template('form.html', type='glamorise_nalir_mas', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface, nalir_tokens=nalir_tokens)
 
 
 @app.route('/backend', methods=['GET', 'POST'])
@@ -71,39 +81,42 @@ def backend():
         type = 'glamorise_mock_anp'
         nlq = []
         if request.method == 'POST':
-            nlq = request.form.get('nlq')                
+            nlq = request.form.get('nlq').replace('<', '').replace('>', '')
             type = request.form.get('type')
-            patterns_json_txt = request.form.get('glamoriseJsonConfig')
+            config_glamorise = request.form.get('glamoriseJsonConfig')
+            config_glamorise_interface = request.form.get('glamoriseJsonConfigInterface')
             nalir_tokens =  request.form.get('nalirXmlConfig')              
         elif request.method == 'GET':
-            nlq = request.args.get('nlq')        
+            nlq = request.args.get('nlq').replace('<', '').replace('>', '')
             type = request.args.get('type')
-            patterns_json_txt = request.args.get('glamoriseJsonConfig')
+            config_glamorise = request.args.get('glamoriseJsonConfig')
+            config_glamorise_interface = request.args.get('glamoriseJsonConfigInterface')
             nalir_tokens =  request.args.get('nalirXmlConfig')           
             
         if nalir_tokens:
                 nalir_tokens = fromstring(nalir_tokens)    
         if nlq:       
             if type == 'glamorise_mock_anp':                        
-                glamorise = GlamoriseNlidb(patterns = patterns_json_txt) 
+                glamorise = GlamoriseNlidb(config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface) 
             elif type == 'glamorise_danke_anp':            
-               glamorise = GlamoriseNlidb(NLIDB = 'Danke',patterns = patterns_json_txt)          
+               glamorise = GlamoriseNlidb(NLIDB = 'Danke',config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface)          
             elif type == 'glamorise_nalir_anp':            
                 with open('./config/environment/nalir_anp_db.json') as json_file:
                     config_db = json_file.read()                        
-                glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
+                glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface, config_db = config_db, tokens = nalir_tokens)
             elif type == 'glamorise_nalir_mas':
                 with open('./config/environment/nalir_mas_db.json') as json_file:
                     config_db = json_file.read()                        
-                glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', patterns = patterns_json_txt, config_db = config_db, tokens = nalir_tokens)
-            html = mc.print_results(glamorise, nlq)
+                glamorise = GlamoriseNlidb(NLIDB = 'NaLIR', config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface, config_db = config_db, tokens = nalir_tokens)
+            nlq, html, dep, ent = mc.print_results(glamorise, nlq)
             
-            return render_template('results.html',  rawtext=html, tables=[glamorise.pd.to_html(classes='data')], titles=glamorise.pd.columns.values)        
+            return render_template('results.html',  nlq=nlq, rawtext=html, tables=[glamorise.pd.to_html(classes='data')], titles=glamorise.pd.columns.values, dep = Markup(dep), ent = Markup(ent))        
         else:
             return ''
     except Exception as e:
         print('Exception: ', e)            
         return ''
+            
             
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

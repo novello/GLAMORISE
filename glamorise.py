@@ -11,7 +11,7 @@ from spacy.lemmatizer import Lemmatizer, NOUN
 import abc
 import re
 import json
-import pandas as pd
+import pandas
 from spacy.matcher import Matcher
 from spacy.tokens import Token
 from collections import defaultdict
@@ -21,6 +21,8 @@ from copy import deepcopy
 from simple_sqlite import SimpleSQLite
 from codetiming import Timer
 import uuid
+from IPython.display import SVG, display, HTML
+import base64    
 
 
 
@@ -52,11 +54,11 @@ class CompoundMerger(Merger):
         # Register a new token extension to flag compound nouns
         Token.set_extension("compound_noun", default=False, force=True)
         compound_pattern_dep = []
-        if patterns_json.get('compound_pattern_dep'):
-            compound_pattern_dep = patterns_json['compound_pattern_dep']
+        if config_glamorise.get('compound_pattern_dep'):
+            compound_pattern_dep = config_glamorise['compound_pattern_dep']
         compound_pattern_of = []
-        if patterns_json.get('compound_pattern_of'):
-            compound_pattern_of = patterns_json['compound_pattern_of']            
+        if config_glamorise.get('compound_pattern_of'):
+            compound_pattern_of = config_glamorise['compound_pattern_of']            
         self.matcher = Matcher(nlp.vocab)
         if compound_pattern_dep and compound_pattern_of:
             self.matcher.add("CompoundMerger", None, compound_pattern_dep, compound_pattern_of)
@@ -73,8 +75,8 @@ class UnitsOfMeasurementMerger(Merger):
         # Register a new token extension to flag units of measurement
         Token.set_extension("units_of_measurement", default=False, force=True)
         self.matcher = Matcher(nlp.vocab)
-        if patterns_json.get('units_of_measurement'):
-            for unit_of_measurement in patterns_json['units_of_measurement']:         
+        if config_glamorise.get('units_of_measurement'):
+            for unit_of_measurement in config_glamorise['units_of_measurement']:         
                 units_of_measurement_pattern = []
                 splits = unit_of_measurement.split()      
                 for split in splits:        
@@ -88,10 +90,14 @@ class UnitsOfMeasurementMerger(Merger):
 #main class
 class Glamorise(metaclass=abc.ABCMeta):    
 
-    def __init__(self, lang="en_core_web_sm", patterns = ""):
-        global patterns_json 
-        patterns_json = json.loads(patterns)    
-        self._patterns_json = patterns_json
+    def __init__(self, lang="en_core_web_sm", config_glamorise_param = "", config_glamorise_interface_param = ''):
+        global config_glamorise
+        config_glamorise = json.loads(config_glamorise_param)    
+        self._config_glamorise = config_glamorise
+
+        global config_glamorise_interface
+        config_glamorise_interface = json.loads(config_glamorise_interface_param)    
+        self._config_glamorise_interface = config_glamorise_interface
 
         # internal properties
         self.__nlp = spacy.load(lang)            
@@ -103,8 +109,8 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__nlp.add_pipe(self.__compound_merger, last=True)  # Add component to the pipeline 
         self.__matcher = Matcher(self.__nlp.vocab, validate=False)
         
-        # build patterns for Matcher
-        self.__build_patterns()
+        # build config_glamorise for Matcher
+        self.__build_config_glamorise()
 
         # GLAMORISE local database. Used to persist the NLIDB result set and to process the query with aggregation
         self.__uid = uuid.uuid4().hex
@@ -164,7 +170,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self.__pos_group_by_fields = []
         
         # create the pandas dataframe just if it called before being fed
-        self.__pd = pd.DataFrame()       
+        self.__pd = pandas.DataFrame()       
 
     @property
     def pre_before_query(self):
@@ -283,12 +289,17 @@ class Glamorise(metaclass=abc.ABCMeta):
         return self.__pos_glamorise_sql
 
     @property
-    def pd(self):                                 
-        return deepcopy(self.__pd)
+    def pd(self):                 
+        pd =  deepcopy(self.__pd)
+        if config_glamorise.get('total_row') and config_glamorise['total_row'] and pd is not None and not pd.empty:
+            pd.loc['Total']= pd.sum(numeric_only=True, axis=0)         
+        if pd is None:
+            pd = pandas.DataFrame()       
+        return pd
     
     @property
-    def patterns_json(self):                                 
-        return deepcopy(self._patterns_json)
+    def config_glamorise(self):                                 
+        return deepcopy(self._config_glamorise)
 
     @property
     def pos_group_by_fields(self):
@@ -311,8 +322,8 @@ class Glamorise(metaclass=abc.ABCMeta):
                     text = str(w2n.word_to_num(token.text))
                 else:
                     text = token.lemma_        
-                if (unit_of_measurement and token.text in patterns_json['units_of_measurement']) or \
-                   (not unit_of_measurement and token.text not in patterns_json['units_of_measurement']):
+                if (unit_of_measurement and token.text in config_glamorise['units_of_measurement']) or \
+                   (not unit_of_measurement and token.text not in config_glamorise['units_of_measurement']):
                     getattr(self, "_" + field).append(text)           
                     break
                 elif field  == 'pre_having_fields':
@@ -322,8 +333,8 @@ class Glamorise(metaclass=abc.ABCMeta):
  
 
 
-    def __build_patterns(self):             
-        for key, value in patterns_json['patterns'].items():  
+    def __build_config_glamorise(self):             
+        for key, value in config_glamorise['config_glamorise'].items():  
             if isinstance(value['reserved_words'], list):
                 for reserved_words in value['reserved_words']:           
                     reserved_words_pattern = []
@@ -335,7 +346,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                     if specific_pattern:
                         final_pattern = reserved_words_pattern + specific_pattern
                     else:
-                        final_pattern = reserved_words_pattern + patterns_json['default_pattern']      
+                        final_pattern = reserved_words_pattern + config_glamorise['default_pattern']      
                     self.__matcher.add(key + ' | ' + reserved_words , self.collect_sents, final_pattern)
 
 
@@ -350,25 +361,25 @@ class Glamorise(metaclass=abc.ABCMeta):
         pattern = match.partition('|')[0].strip()   
         
         reserved_word = match.partition('|')[2].strip()
-        if patterns_json['patterns'][pattern].get('pre_cut_text') and patterns_json['patterns'][pattern]['pre_cut_text']:
+        if config_glamorise['config_glamorise'][pattern].get('pre_cut_text') and config_glamorise['config_glamorise'][pattern]['pre_cut_text']:
             self.__pre_cut_text.append(reserved_word) 
-        index = patterns_json['patterns'][pattern]['reserved_words'].index(reserved_word)
+        index = config_glamorise['config_glamorise'][pattern]['reserved_words'].index(reserved_word)
 
         options = [{'json_var' : 'pre_having_conditions', 'label' : 'HAVING | CONDITION'},
                 {'json_var' : 'pre_aggregation_functions', 'label' : 'AGGREGATION FUNCTION'},
                 {'json_var' : 'pre_group_by', 'label' : 'GROUP BY'},
-                {'json_var' : 'pre_subquery_aggregation_functions', 'label' : 'TIMESCALE'}]
+                {'json_var' : 'pre_subquery_aggregation_functions', 'label' : 'SUBQUERY'}]
         for option in options:
-            if patterns_json['patterns'][pattern].get(option['json_var']):            
-                if isinstance(patterns_json['patterns'][pattern][option['json_var']], list):                
-                    label = option['label'] + " " +  patterns_json['patterns'][pattern][option['json_var']][index]               
-                    getattr(self, "_" + option['json_var']).append(patterns_json['patterns'][pattern][option['json_var']][index])         
-                elif isinstance(patterns_json['patterns'][pattern][option['json_var']], str):
-                    label = option['label'] + " " +  patterns_json['patterns'][pattern][option['json_var']]           
-                    getattr(self, "_" + option['json_var']).append(patterns_json['patterns'][pattern][option['json_var']])          
-                elif isinstance(patterns_json['patterns'][pattern][option['json_var']], bool):
+            if config_glamorise['config_glamorise'][pattern].get(option['json_var']):            
+                if isinstance(config_glamorise['config_glamorise'][pattern][option['json_var']], list):                
+                    label = option['label'] + " " +  config_glamorise['config_glamorise'][pattern][option['json_var']][index]               
+                    getattr(self, "_" + option['json_var']).append(config_glamorise['config_glamorise'][pattern][option['json_var']][index])         
+                elif isinstance(config_glamorise['config_glamorise'][pattern][option['json_var']], str):
+                    label = option['label'] + " " +  config_glamorise['config_glamorise'][pattern][option['json_var']]           
+                    getattr(self, "_" + option['json_var']).append(config_glamorise['config_glamorise'][pattern][option['json_var']])          
+                elif isinstance(config_glamorise['config_glamorise'][pattern][option['json_var']], bool):
                     label = "GROUP BY"
-                    self.__pre_group_by = patterns_json['patterns'][pattern]['pre_group_by']
+                    self.__pre_group_by = config_glamorise['config_glamorise'][pattern]['pre_group_by']
         
         match_ents = [{
             "start": span.start_char - sent.start_char,
@@ -377,40 +388,40 @@ class Glamorise(metaclass=abc.ABCMeta):
         }]    
         
         self.__matched_sents.append({"text": sent.text, "ents": match_ents})
-        if patterns_json['patterns'][pattern].get('pre_aggregation_functions'):
+        if config_glamorise['config_glamorise'][pattern].get('pre_aggregation_functions'):
             self.__build_field(span, 'pre_aggregation_fields', 'NOUN')
-        elif patterns_json['patterns'][pattern].get('pre_group_by'):
+        elif config_glamorise['config_glamorise'][pattern].get('pre_group_by'):
             self.__build_field(span, 'pre_group_by_fields', 'NOUN')      
-        elif patterns_json['patterns'][pattern].get('pre_having_conditions'):
+        elif config_glamorise['config_glamorise'][pattern].get('pre_having_conditions'):
             self.__build_field(span, 'pre_having_fields', 'NOUN')
             self.__build_field(span, 'pre_having_units', 'NOUN', True)    
             self.__build_field(span, 'pre_having_values', 'NUM')        
        
-        elif patterns_json['patterns'][pattern].get('pre_subquery_aggregation_functions'):
+        elif config_glamorise['config_glamorise'][pattern].get('pre_subquery_aggregation_functions'):
             self.__build_field(span, 'pre_subquery_aggregation_fields', 'NOUN')
             self.__build_field(span, 'pre_having_units', 'NOUN', True)    
-            replace_text_token = (patterns_json['patterns'][pattern]['reserved_words'][index])
-            if patterns_json['patterns'][pattern].get('use_replace_text_as_group_by') and patterns_json['patterns'][pattern]['use_replace_text_as_group_by']:
+            replace_text_token = (config_glamorise['config_glamorise'][pattern]['reserved_words'][index])
+            if config_glamorise['config_glamorise'][pattern].get('use_replace_text_as_group_by') and config_glamorise['config_glamorise'][pattern]['use_replace_text_as_group_by']:
                 self.__build_field(span, 'pre_subquery_group_by_fields', 
-                            time_scale_group_by_field = patterns_json['patterns'][pattern]['pre_subquery_replace_text'][replace_text_token],
+                            time_scale_group_by_field = config_glamorise['config_glamorise'][pattern]['pre_subquery_replace_text'][replace_text_token],
                             replace_text = replace_text_token)     
 
         # set variable to remove external group by in the case of a query with subquery and a max/min count    
-        if patterns_json['patterns'][pattern].get('remove_external_group_by') and patterns_json['patterns'][pattern]['remove_external_group_by']:
+        if config_glamorise['config_glamorise'][pattern].get('remove_external_group_by') and config_glamorise['config_glamorise'][pattern]['remove_external_group_by']:
             self.__pre_remove_external_group_by = True                    
 
     def __prepare_query_to_NLIDB(self):
         # set the query that is going to be passed to the NLIDB initially as the received query
-        if patterns_json.get('pre_after_cut_text') or patterns_json.get('pre_after_replace_text'):
+        if config_glamorise.get('pre_after_cut_text') or config_glamorise.get('pre_after_replace_text'):
             self.__pre_before_query = self._pre_prepared_query
         # then cut the texts to be cut
         self._pre_prepared_query = self.__cut_text(self.__pre_cut_text, self._pre_prepared_query)        
         # then replace the texts that must be replaced
         self._pre_prepared_query = self.__replace_text(self.__pre_replaced_text, self._pre_prepared_query)  
-        if patterns_json.get('pre_after_cut_text'): 
-            self._pre_prepared_query = self.__cut_text(patterns_json['pre_after_cut_text'], self._pre_prepared_query)
-        if patterns_json.get('pre_after_replace_text'): 
-            self._pre_prepared_query = self.__replace_text(patterns_json['pre_after_replace_text'], self._pre_prepared_query)                    
+        if config_glamorise.get('pre_after_cut_text'): 
+            self._pre_prepared_query = self.__cut_text(config_glamorise['pre_after_cut_text'], self._pre_prepared_query)
+        if config_glamorise.get('pre_after_replace_text'): 
+            self._pre_prepared_query = self.__replace_text(config_glamorise['pre_after_replace_text'], self._pre_prepared_query)                    
         
     def __replace_text(self, replaced_text_list, query):
         result = query
@@ -432,10 +443,10 @@ class Glamorise(metaclass=abc.ABCMeta):
     def __preprocessor(self, query):
         self._timer_pre.start()
         self.__original_query = query
-        if patterns_json.get('pre_before_cut_text'): 
-            query = self.__cut_text(patterns_json['pre_before_cut_text'], query)
-        if patterns_json.get('pre_before_replace_text'): 
-            query = self.__replace_text(patterns_json['pre_before_replace_text'], query)            
+        if config_glamorise.get('pre_before_cut_text'): 
+            query = self.__cut_text(config_glamorise['pre_before_cut_text'], query)
+        if config_glamorise.get('pre_before_replace_text'): 
+            query = self.__replace_text(config_glamorise['pre_before_replace_text'], query)            
         self._pre_prepared_query = query
         
         self.__doc = self.__nlp(query)        
@@ -456,7 +467,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         self._timer_pre.stop()
 
     def __lemmatize_all_fields(self):
-        if patterns_json.get('noun_lemmatization') and patterns_json['noun_lemmatization']:                        
+        if config_glamorise.get('noun_lemmatization') and config_glamorise['noun_lemmatization']:                        
             self.__lemmatize_fields(self._pre_aggregation_fields)
             self.__lemmatize_fields(self._pre_group_by_fields)
             self.__lemmatize_fields(self._pre_subquery_aggregation_fields)
@@ -476,12 +487,15 @@ class Glamorise(metaclass=abc.ABCMeta):
             fields[i] = field
 
     def __pre_adjust_aggregation_functions_and_fields(self):
-        for i in range(len(self._pre_aggregation_fields)):
+        i = 0
+        while i < len(self._pre_aggregation_fields):
             for j in range(len(self._pre_subquery_aggregation_fields)):                
                 if self._pre_aggregation_fields[i] == self._pre_subquery_aggregation_fields[j] and \
                    self._pre_aggregation_functions[i] == self._pre_subquery_aggregation_functions[j]:
                     del self._pre_aggregation_fields[i]
                     del self._pre_aggregation_functions[i]
+                    break                
+            i += 1    
 
         
 
@@ -506,7 +520,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                                                   self._pre_aggregation_fields + self._pre_subquery_aggregation_fields +
                                                   self._pre_subquery_group_by_fields]]
         self._pos_adjust_aggregation_functions_and_fields(columns)
-        self.__prepare_aggregate_SQL()
+        self.__prepare_aggregate_SQL(columns)
         if columns and result_set:
             self.__create_table_and_insert_data(columns, result_set)
         # prepare a pandas dataframe with the result
@@ -533,9 +547,9 @@ class Glamorise(metaclass=abc.ABCMeta):
     def __replace_count_by_sum_in_numeric_fields(self, columns, aggregation_functions, aggregation_fields):
         for i in range(len(aggregation_functions)):            
             # changing from count to sum in numeric fields
-            column_dict = {x[0] : x[1] for x in columns}    
-            if aggregation_fields[i] in column_dict:
-                if column_dict[aggregation_fields[i]] in ['REAL', 'INTEGER'] and aggregation_functions[i] == 'count':                    
+            columns_dict = {x[0] : x[1] for x in columns}    
+            if aggregation_fields[i] in columns_dict:
+                if columns_dict[aggregation_fields[i]] in ['REAL', 'INTEGER'] and aggregation_functions[i] == 'count':                    
                     aggregation_functions[i] = 'sum'
 
     def __add_subquery_if_max_min_in_text_field(self, columns, aggregation_functions, aggregation_fields):
@@ -572,7 +586,14 @@ class Glamorise(metaclass=abc.ABCMeta):
     def _translate_fields(self):
         pass
 
-    def __prepare_aggregate_SQL(self):
+    def __distinct(self, aggregation_function):
+        # if distinct parameter is set and the function is count, use DISTINCT  
+        if config_glamorise.get('count_with_distinct') and config_glamorise['count_with_distinct'] and aggregation_function == 'count':                 
+            return 'DISTINCT '
+        else:
+            return ''
+        
+    def __prepare_aggregate_SQL(self, columns):
         #initialize clauses
         if self._pre_aggregation_fields:
             self.__select_clause = 'SELECT '
@@ -611,10 +632,11 @@ class Glamorise(metaclass=abc.ABCMeta):
 
         # building the syntax of the aggregate functions, aggregate fields e.g. min(production),
         # and candidate aggregate field and function if they exist                    
-        for i in range(len(self._pos_aggregation_functions)):                        
+        for i in range(len(self._pos_aggregation_functions)):       
+            distinct = self.__distinct(self._pos_aggregation_functions[i]) 
             # building sql part for aggregate field and function        
             self.__select_clause += self._pos_aggregation_functions[i] + \
-                                    '(' + self._pos_aggregation_fields[i] + ') as ' + \
+                                    '(' + distinct + self._pos_aggregation_fields[i] + ') as ' + \
                                     self._pos_aggregation_functions[i] + '_' + \
                                     self._pos_aggregation_fields[i] + ', '
 
@@ -623,8 +645,9 @@ class Glamorise(metaclass=abc.ABCMeta):
             # e.g. SELECT avg(sum(oil_production) as avg_sum_oil_production FROM NLIDB_result_set GROUP BY year
             if self._pos_aggregation_fields[i] in self._pos_subquery_aggregation_fields:
                 j = self._pos_subquery_aggregation_fields.index(self._pos_aggregation_fields[i])
+                distinct = self.__distinct(self._pos_subquery_aggregation_functions[j]) 
                 self.__from_clause = ' FROM (SELECT ' + ', '.join(nested_group_by_field + [self._pos_subquery_aggregation_functions[j] + '(' + \
-                                     self._pos_aggregation_fields[i] + ') as ' + \
+                                     distinct + self._pos_aggregation_fields[i] + ') as ' + \
                                      self._pos_aggregation_fields[i]]) + ' FROM NLIDB_result_set'
                 self.__from_clause += ' GROUP BY ' + ', '.join(nested_group_by_field + self._pre_subquery_group_by_fields) + ') '
 
@@ -632,13 +655,25 @@ class Glamorise(metaclass=abc.ABCMeta):
             else:
                 self.__from_clause = ' FROM NLIDB_result_set '
 
-
+        # prepare columns_dict to be used by having fields to check the type
+        columns_dict = {x[0] : x[1] for x in columns} 
         # building the HAVING clause having field, followed by operator, followed by value
         for i in range(len(self._pre_having_fields)):
-            # we have to change the use of aggregate function in the future
-            self.__having_clause += self._pos_aggregation_functions[i] + \
-                                    '(' + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
-                                    + self._pre_having_values[i] + ' and '
+            if self._pre_having_fields[i] in self.pos_aggregation_fields:
+                # find the correspondent aggregation function. We have to generalize that in the future
+                aggregation_function = self._pos_aggregation_functions[self.pos_aggregation_fields.index(self._pre_having_fields[i])]                
+            else:               
+                if self._pre_having_fields[i] in columns_dict:
+                    if columns_dict[self._pre_having_fields[i]] in ['REAL', 'INTEGER']:
+                        aggregation_function = 'sum'
+                    else:
+                        aggregation_function = 'count'
+            distinct = self.__distinct(aggregation_function) 
+            self.__having_clause += aggregation_function + \
+                                        '(' + distinct + self._pre_having_fields[i] + ') ' + self._pre_having_conditions[i] + ' ' \
+                                        + self._pre_having_values[i] + ' and '
+
+
 
         # cut the ", " or " and " at the end of each string
         self.__select_clause = self.__select_clause[0:-2]
@@ -663,11 +698,10 @@ class Glamorise(metaclass=abc.ABCMeta):
         for attr in dir(self):            
             if attr.startswith(sub_str) and getattr(self, attr):
                 if attr.endswith('_sql'):
-                    print("\n%s = %r\n" % (attr, getattr(self, attr)))
-                    result += "</br></br>%s = %r</br>" % (attr, getattr(self, attr))
+                    print("\n%s = %r\n" % (attr, getattr(self, attr)))                    
                 else:
                     print("%s = %r" % (attr, getattr(self, attr)))
-                    result += "</br>%s = %r" % (attr, getattr(self, attr))
+                result += "</br>%s = %r" % (attr, getattr(self, attr))
         return result            
     
     def print_timers(self, json = False):        
@@ -686,21 +720,39 @@ class Glamorise(metaclass=abc.ABCMeta):
         result += "</br>timer_exibition: {:.2f} sec".format(self._timer_exibition.last)
         return result
 
-    #ajustar fine_gained no código antigo
-    def customized_displacy(self):
-        # set the displacy parameters
-        return displacy.render(self.__doc, style='dep', 
-                        options={'compact' : False, 'distance': 100, 'fine_grained': False,
-                                'add_lemma': True, 'collapse_phrases': False})
+    
+    def customized_displacy_dependency_parse_tree(self):
+        if config_glamorise.get('show_dependency_parse_tree') and config_glamorise['show_dependency_parse_tree']:                
+            svg = displacy.render(self.__doc, style='dep', jupyter=False,
+                            options={'compact' : False, 'distance': 90, 'fine_grained': False,
+                                    'add_lemma': True, 'collapse_phrases': False, 'bg' : '#d4edda'})
+            return self.__add_viewbox_svg(svg)
+        else:
+            return None    
 
-    #novo
+    
     def customized_displacy_entities(self):
-        return displacy.render(self.__matched_sents, style="ent", manual=True)    
+        if config_glamorise.get('show_recognized_patterns') and config_glamorise['show_recognized_patterns']:        
+            return displacy.render(self.__matched_sents, style="ent", jupyter=False, manual=True)            
+        else:
+            return None    
+
+
+    def __add_viewbox_svg(self, svg):        
+        regex = r'class="displacy" width="([\d\.]*)" height="([\d\.]*)'
+        match_results = re.findall(regex,svg)
+        new_svg = svg.replace("<svg ","<svg viewBox='0 0 "+
+                            match_results[0][0]+" "+
+                            match_results[0][1]+
+                            "' preserveAspectRatio='none' ")
+        return new_svg      
 
     def __del__(self):
         # when the object is destroyed drop the table that was used to generate the GLAMORISE result
         sql = 'DROP TABLE IF EXISTS NLIDB_RESULT_SET;'
         self.__SimpleSQLite.execute_sql(sql)
         os.remove('./datasets/glamorise_' + self.__uid + '.db')
+
+        
         
         

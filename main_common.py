@@ -1,4 +1,5 @@
 from codetiming import Timer
+import glamorise
 
 def is_jupyter_notebook():
     # check the environment
@@ -28,50 +29,49 @@ def mc_display(pd):
 
 
 
-def print_results(glamorise, nlq):        
+def print_results(glamorise, nlq):      
     result = ''
-    print("\n\n")
-    result += '</br></br>'
-    result += mc_print("**Natural Language Query**: " + nlq)
+    print("\n\n")    
+    nlq_str = mc_print("**Natural Language Query**: " + nlq)
 
     glamorise.execute(nlq)
     
-    result += '</br>'    
-    # show spaCy parse tree and entities
-    #result += mc_print("**spaCy Parse Tree**")
-    #result += glamorise.customized_displacy()
-    #result += '</br>'
-    result += mc_print("**Patterns Recognized by GLAMORISE**")
-    result += glamorise.customized_displacy_entities()
+    
+    dep = glamorise.customized_displacy_dependency_parse_tree()    
+    ent = glamorise.customized_displacy_entities()
 
-    print("\n\n")
-    result += '</br></br></br>'
+    print("\n\n")    
     result += mc_print("**GLAMORISE Internal Properties**")
     print("\n")
-    result += '</br></br>'
-    result += mc_print("**GLAMORISE Preprocessor Properties**")
+    result += '</br>'
+    result += mc_print("**Preprocessor Properties**")
     result += glamorise.dump('pre_')
 
     print("\n")
-    result += '</br></br>'
-    result += mc_print("**GLAMORISE NLIDB Interface Properties**")
+    result += '</br>'
+    result += mc_print("**NLIDB Interface Properties**")
     result += glamorise.dump('nlidb_interface_')
 
     print("\n")
-    result += '</br></br>'
-    result += mc_print("**GLAMORISE Post-processor Properties**")
+    result += '</br>'
+    result += mc_print("**Postprocessor Properties**")
     result += glamorise.dump('pos_')
 
     print("\n")
-    result += '</br></br>'
-    result += mc_print("**GLAMORISE Result**")
+    result += '</br>'
+    result += mc_print("**Timers**")    
+    result += glamorise.print_timers()
+
+    print("\n")
+    result += '</br>'
+    result += mc_print("**Results**")    
     # display the result as a pandas dataframe
     mc_display(glamorise.pd)    
 
-    result += glamorise.print_timers()
-
-    return result 
-    
+    if glamorise.config_glamorise.get('debug') and glamorise.config_glamorise['debug']:        
+        return nlq_str, result, dep, ent
+    else:
+        return nlq_str, '', dep, ent
 
 
 def print_total_timers():

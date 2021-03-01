@@ -12,6 +12,7 @@
         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
           <a class="nav-item nav-link active fa fa-home" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
           <a class="nav-item nav-link fa fa-cog" id="nav-profile-tab" data-toggle="tab" href="#nav-settings-glamorise" role="tab" aria-controls="nav-profile" aria-selected="false">GLAMORISE Settings</a>
+          <a class="nav-item nav-link fa fa-cog" id="nav-profile-tab" data-toggle="tab" href="#nav-settings-glamorise-interface" role="tab" aria-controls="nav-profile" aria-selected="false">GLAMORISE NLIDB Interface Settings</a>
           {% if type == 'glamorise_nalir_anp' or type == 'glamorise_nalir_mas' %}
             <a class="nav-item nav-link fa fa-cog" id="nav-profile-tab" data-toggle="tab" href="#nav-settings-nalir" role="tab" aria-controls="nav-profile" aria-selected="false">NaLIR Settings</a>
           {% endif %}
@@ -51,10 +52,23 @@
                       JSON</br>Config</br>File.                       
                     </span>          
                   </div>
-                  <textarea class="form-control form-control-lg" id="glamoriseJsonConfig" name="glamoriseJsonConfig" rows="30">{{patterns_json_txt}}</textarea>        
+                  <textarea class="form-control form-control-lg" id="glamoriseJsonConfig" name="glamoriseJsonConfig" rows="30">{{config_glamorise}}</textarea>        
                 </div>                   
               </div>              
           </div>   
+          <div class="tab-pane fade" id="nav-settings-glamorise-interface">
+            <h2>GLAMORISE NLIDB Interface Settings</h2>  
+            <div class="row form-group">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">
+                    JSON</br>Config</br>File.                       
+                  </span>          
+                </div>
+                <textarea class="form-control form-control-lg" id="glamoriseJsonConfigInterface" name="glamoriseJsonConfigInterface" rows="30">{{config_glamorise_interface}}</textarea>        
+              </div>                   
+            </div>              
+        </div>   
           {% if type == 'glamorise_nalir_anp' or type == 'glamorise_nalir_mas' %}
             <div class="tab-pane fade" id="nav-settings-nalir">
               <h2>NaLIR Settings</h2>  

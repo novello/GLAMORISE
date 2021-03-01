@@ -1,5 +1,21 @@
+{{ nlq|markdown }}
+{% if dep != 'None' %}
+<strong>spaCy Dependency Parse Tree and Part-of-Speech (POS)</strong>
+<div class="col-md-12">    
+    <figure class="figure">
+        {{ dep }}
+    </figure>
+</div>
+{% endif %}
+{% if ent != 'None' %}
+<strong>Patterns Recognized by GLAMORISE</strong>
+<div class="col-md-12">
+    <figure class="figure">
+        {{ ent }}
+    </figure>
+</div>
+{% endif %}
 {{ rawtext|markdown }}
 {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
+{{ table|safe }}
 {% endfor %}
