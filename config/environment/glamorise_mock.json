@@ -4,7 +4,7 @@
     "total_row" : true,
     "debug": true,    
     "noun_lemmatization": true,
-    "count_with_distinct" : false,    
+    "count_with_distinct" : true,    
     "units_of_measurement": [
         "cubic meters"
     ],
