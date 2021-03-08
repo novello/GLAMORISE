@@ -42,6 +42,14 @@ def glamorise_mock_anp():
 
     return render_template('form.html', type='glamorise_mock_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface)
 
+@app.route('/glamorise_danke_anp')
+def glamorise_danke_anp():
+    with open('./config/environment/glamorise_danke.json') as json_file:
+          config_glamorise = json_file.read()
+    with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+        config_glamorise_interface = json_file.read() 
+    
+    return render_template('form.html', type='glamorise_danke_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface)
 
 @app.route('/glamorise_nalir_anp')
 def glamorise_nalir_anp():
@@ -89,7 +97,9 @@ def backend():
                 nalir_tokens = fromstring(nalir_tokens)    
         if nlq:       
             if type == 'glamorise_mock_anp':                        
-                glamorise = GlamoriseNlidb(config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface)
+                glamorise = GlamoriseNlidb(config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface) 
+            elif type == 'glamorise_danke_anp':            
+               glamorise = GlamoriseNlidb(NLIDB = 'Danke',config_glamorise_param = config_glamorise, config_glamorise_interface_param=config_glamorise_interface)          
             elif type == 'glamorise_nalir_anp':            
                 with open('./config/environment/nalir_anp_db.json') as json_file:
                     config_db = json_file.read()                        

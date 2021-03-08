@@ -2,6 +2,8 @@ from simple_sqlite import SimpleSQLite
 import json
 from nlidb_base import NlidbBase
 
+import logging
+
 # Simple class to act as a NLIDB
 class NlidbMock(NlidbBase):
 

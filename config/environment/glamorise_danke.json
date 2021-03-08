@@ -1,0 +1,324 @@
+{
+    "show_dependency_parse_tree": true,
+    "show_recognized_patterns": true,
+    "total_row" : true,
+    "debug": true,    
+    "noun_lemmatization": true,
+    "count_with_distinct" : true,    
+    "units_of_measurement": [
+        "cubic meters"
+    ],
+    "compound_pattern_dep": [
+        {
+            "POS": "NOUN",
+            "DEP": "compound"
+        },
+        {
+            "POS": "NOUN"
+        }
+    ],
+    "compound_pattern_of": [
+        {
+            "POS": "NOUN",
+            "LOWER": {
+                "NOT_IN": [
+                    "number"
+                ]
+            }
+        },
+        {
+            "LOWER": "of",
+            "POS": "ADP"
+        },
+        {
+            "POS": "NOUN"
+        }
+    ],
+    "default_pattern": [
+        {
+            "POS": "ADV",
+            "OP": "*"
+        },
+        {
+            "POS": "ADJ",
+            "OP": "*"
+        },
+        {
+            "POS": "NOUN",
+            "LOWER": {
+                "NOT_IN": [
+                    "number"
+                ]
+            }
+        }
+    ],
+    "config_glamorise": {
+        "than options": {
+            "reserved_words": [
+                "more than",
+                "greater than",
+                "less than",
+                "equal to",
+                "greater than or equal to",
+                "less than or equal to"
+            ],
+            "pre_having_conditions": [
+                ">",
+                ">",
+                "<",
+                "=",
+                ">=",
+                "<="
+            ],
+            "specific_pattern": [
+                {
+                    "LIKE_NUM": true
+                },
+                {
+                    "POS": "ADV",
+                    "OP": "*"
+                },
+                {
+                    "POS": "ADJ",
+                    "OP": "*"
+                },
+                {
+                    "POS": "NOUN",
+                    "OP": "*"
+                },
+                {
+                    "POS": "NOUN"
+                }
+            ],
+            "pre_cut_text": false
+        },
+        "group by": {
+            "reserved_words": [
+                "by",
+                "per",
+                "each"
+            ],
+            "pre_group_by": true,
+            "pre_cut_text": true
+        },
+        "group by and": {
+            "reserved_words": [
+                "by",
+                "per",
+                "for each",
+                "of each"
+            ],
+            "pre_group_by": true,
+            "specific_pattern": [
+                {
+                    "POS": "ADV",
+                    "OP": "*"
+                },
+                {
+                    "POS": "ADJ",
+                    "OP": "*"
+                },
+                {
+                    "POS": "NOUN",
+                    "LOWER": {
+                        "NOT_IN": [
+                            "number"
+                        ]
+                    }
+                },
+                {
+                    "LOWER": "and"
+                },
+                {
+                    "POS": "NOUN",
+                    "LOWER": {
+                        "NOT_IN": [
+                            "number"
+                        ]
+                    }
+                }
+            ],
+            "pre_cut_text": false
+        },
+        "how options": {
+            "reserved_words": [
+                "how many",
+                "how much"
+            ],
+            "pre_aggregation_functions": [
+                "count",
+                "sum"
+            ],
+            "pre_cut_text": true
+        },
+        "other count": {
+            "reserved_words": [
+                "number of",
+                "number of the"
+            ],
+            "pre_aggregation_functions": "count",
+            "pre_cut_text": true
+        },
+        "other sum": {
+            "reserved_words": [
+                "total",
+                "sum",
+                "summed"
+            ],
+            "pre_aggregation_functions": "sum",
+            "pre_cut_text": true
+        },
+        "average options": {
+            "reserved_words": [
+                "average",
+                "avg",
+                "mean"
+            ],
+            "pre_aggregation_functions": "avg",
+            "pre_cut_text": true
+        },
+        "superlative min": {
+            "reserved_words": [
+                "least",
+                "smallest",
+                "tiniest",
+                "shortest",
+                "cheapest",
+                "nearest",
+                "lowest",
+                "worst",
+                "newest",
+                "first",
+                "min",
+                "minimum",
+                "least number of",
+                "smallest number of",
+                "tiniest number of",
+                "shortest number of",
+                "cheapest number of",
+                "nearest number of",
+                "lowest number of",
+                "worst number of",
+                "newest number of",
+                "first number of",
+                "min number of",
+                "minimum number of"
+            ],
+            "pre_aggregation_functions": "min",
+            "pre_cut_text": true
+        },
+        "superlative max": {
+            "reserved_words": [
+                "most",
+                "biggest",
+                "largest",
+                "longest",
+                "furthest",
+                "highest",
+                "tallest",
+                "greatest",
+                "best",
+                "oldest",
+                "last",
+                "max",
+                "maximum",
+                "most number of",
+                "biggest number of",
+                "largest number of",
+                "longest number of",
+                "furthest number of",
+                "highest number of",
+                "tallest number of",
+                "greatest number of",
+                "best number of",
+                "oldest number of",
+                "last number of",
+                "max number of",
+                "maximum number of"
+            ],
+            "pre_aggregation_functions": "max",
+            "pre_cut_text": true
+        },
+        "time scale options": {
+            "reserved_words": [
+                "daily",
+                "monthly",
+                "yearly"
+            ],
+            "pre_subquery_replace_text": {
+                "daily": "day",
+                "monthly": "month",
+                "yearly": "year"
+            },
+            "use_replace_text_as_group_by": true,
+            "pre_subquery_aggregation_functions": "sum",
+            "pre_cut_text": false
+        },
+        "sub query min/max count": {
+            "reserved_words": [
+                "least number of",
+                "smallest number of",
+                "tiniest number of",
+                "shortest number of",
+                "cheapest number of",
+                "nearest number of",
+                "lowest number of",
+                "worst number of",
+                "newest number of",
+                "first number of",
+                "min number of",
+                "minimum number of",
+                "most number of",
+                "biggest number of",
+                "largest number of",
+                "longest number of",
+                "furthest number of",
+                "highest number of",
+                "tallest number of",
+                "greatest number of",
+                "best number of",
+                "oldest number of",
+                "last number of",
+                "max number of",
+                "maximum number of"
+            ],
+            "use_replace_text_as_group_by": false,
+            "remove_external_group_by": true,
+            "pre_subquery_aggregation_functions": "count",
+            "pre_cut_text": true
+        },
+        "sub query min/max sum": {
+            "reserved_words": [
+                "least summed",
+                "smallest summed",
+                "tiniest summed",
+                "shortest summed",
+                "cheapest summed",
+                "nearest summed",
+                "lowest summed",
+                "worst summed",
+                "newest summed",
+                "first summed",
+                "min summed",
+                "minimum summed",
+                "most summed",
+                "biggest summed",
+                "largest summed",
+                "longest summed",
+                "furthest summed",
+                "highest summed",
+                "tallest summed",
+                "greatest summed",
+                "best summed",
+                "oldest summed",
+                "last summed",
+                "max summed",
+                "maximum summed"
+            ],
+            "use_replace_text_as_group_by": false,
+            "remove_external_group_by": true,
+            "pre_subquery_aggregation_functions": "sum",
+            "pre_cut_text": true
+        }
+    }
+}
