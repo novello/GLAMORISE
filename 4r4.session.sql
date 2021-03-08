@@ -1,1 +1,0 @@
-SELECT p_8, avg(p_6) as avg_p_6 FROM (SELECT p_8, sum(p_6) as p_6 FROM NLIDB_result_set GROUP BY p_8, p_1)  group by p_8 ORDER BY p_8
