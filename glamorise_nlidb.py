@@ -49,43 +49,37 @@ class GlamoriseNlidb(Glamorise):
     def nlidb_interface_third_attempt_sql(self):
         return self._nlidb_interface_third_attempt_sql
 
-    def _nlidb_interface(self):
-       
+    def _nlidb_interface(self):       
         #danke first execute query then _translate_all_fields
         if isinstance(self.__nlidb, NlidDanke):
-            columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
-                                                                              self._timer_nlidb_execution_first_and_second_attempt,                                                                                                                                                            
+            columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query,
+                                                                              self._timer_nlidb_execution_first_and_second_attempt,
                                                                               self._timer_nlidb_json_result_set)
             self._translate_all_fields()
-            return  columns, result_set
-        
+            return  columns, result_set        
         # the field translation is done by the child class that is aware of the NLIDB column names
         self._translate_all_fields()
-
         if self._config_glamorise_interface.get('nlidb_nlq_translate_fields') and self._config_glamorise_interface['nlidb_nlq_translate_fields']:
             self._nlidb_nlq_translate_fields()
-
         # send the NLQ question and receive the JSON with the columns and result set
         nlidb_attempt_level = 1
         if self._config_glamorise_interface.get('nlidb_attempt_level'): 
-            nlidb_attempt_level = self._config_glamorise_interface['nlidb_attempt_level']        
-    
-
+            nlidb_attempt_level = self._config_glamorise_interface['nlidb_attempt_level']            
         # customize as needed customize as needed according to integration with other NLIDBs. 
         # Don't forget to create the specific class for NLIDB following the model of NlidbNalir
 
         if isinstance(self.__nlidb, NlidbMock):
             columns, result_set, self._nlidb_interface_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
-                                                                              self._timer_nlidb_execution_first_and_second_attempt,                                                                                                                                                            
-                                                                              self._timer_nlidb_json_result_set)             
+                                                                              self._timer_nlidb_execution_first_and_second_attempt,
+                                                                              self._timer_nlidb_json_result_set)
         elif isinstance(self.__nlidb, NlidbNalir):
             columns, result_set, self._nlidb_interface_sql, self._nlidb_interface_first_attempt_sql, \
-            self._nlidb_interface_second_attempt_sql, self._nlidb_interface_third_attempt_sql = self.__nlidb.execute_query(self.pre_prepared_query, 
-                                                                              self._timer_nlidb_execution_first_and_second_attempt,                                                                              
+            self._nlidb_interface_second_attempt_sql, self._nlidb_interface_third_attempt_sql = self.__nlidb.execute_query(self.pre_prepared_query,
+                                                                              self._timer_nlidb_execution_first_and_second_attempt,
                                                                               self._timer_nlidb_execution_third_attempt,
                                                                               self._timer_nlidb_json_result_set,
                                                                               nlidb_attempt_level,
-                                                                              self._all_fields)                 
+                                                                              self._all_fields)
              
         # 
         # add more NLIDBs here
