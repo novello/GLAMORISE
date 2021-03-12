@@ -16,7 +16,7 @@ with open('./config/environment/glamorise_interface_mock_danke_anp.json') as jso
 glamorise = GlamoriseNlidb(NLIDB='Danke', config_glamorise_param=config_glamorise,
                            config_glamorise_interface_param=config_glamorise_interface)
 
-nlq = 'How many fields are there in Parana?'
+nlq = 'What was the mean gas production per month per field?'
 
 mc.print_results(glamorise, nlq)
 

@@ -427,7 +427,7 @@ class Glamorise(metaclass=abc.ABCMeta):
         result = query
         # then replace the texts that must be replaced
         for replaced_text in replaced_text_list:
-            regex = r"(^|(.*?[\s.,;!?]+))(" + replaced_text.lower() + r")(([\s., ;!?]*.*)|$)"
+            regex = r"(^|(.*?[\\\s.,;!?]+))(" + replaced_text.lower() + r")(([\\\s., ;!?]+.*)|$)"
             str = r"\1" + replaced_text_list[replaced_text] + r"\5"
             result = re.sub(regex, str, result, flags=re.I)
         return result

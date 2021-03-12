@@ -6,6 +6,7 @@
     "noun_lemmatization": false,
     "count_with_distinct" : true,    
     "pre_before_replace_text" : {"monthly" : "yearly monthly"},
+    "pre_after_replace_text" : {"month" : "year month"},
     "units_of_measurement": [
         "cubic meters"
     ],
