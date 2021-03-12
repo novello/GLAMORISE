@@ -25,7 +25,7 @@ with open('./config/environment/glamorise_interface_nalir_anp.json') as json_fil
 # create GLAMORISE object (the child class is instantiated)
 glamorise = GlamoriseNlidb(NLIDB='NaLIR', config_glamorise_param=config_glamorise,
                            config_glamorise_interface_param=config_glamorise_interface, config_db=config_db, tokens=nalir_tokens)
-with open('./nlqs/nalir_anp.nlqs.txt', encoding="utf-8") as file:
+with open('./nlqs/anp.nlqs.txt', encoding="utf-8") as file:
     # read the file with the NLQ questions
     lines = file.readlines()
     line_count = 0
