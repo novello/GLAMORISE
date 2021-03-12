@@ -13,7 +13,7 @@ with open('./config/environment/glamorise_interface_mock_danke_anp.json') as jso
 
 glamorise = GlamoriseNlidb(config_glamorise_param = config_glamorise, config_glamorise_interface_param = config_glamorise_interface)
     
-nlq = 'What was the average yearly production of oil in the state of Alagoas?'
+nlq = 'How many fields are there in Paraná?'
 mc.print_results(glamorise, nlq)
 
 mc.print_total_timers()
