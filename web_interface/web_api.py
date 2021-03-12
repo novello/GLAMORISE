@@ -37,7 +37,7 @@ def logo_history():
 def glamorise_mock_anp():
     with open('./config/environment/glamorise_mock.json') as json_file:
         config_glamorise = json_file.read()
-    with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+    with open('./config/environment/glamorise_interface_mock_danke_anp.json') as json_file:
         config_glamorise_interface = json_file.read()                
 
     return render_template('form.html', type='glamorise_mock_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface)
@@ -46,7 +46,7 @@ def glamorise_mock_anp():
 def glamorise_danke_anp():
     with open('./config/environment/glamorise_danke.json') as json_file:
           config_glamorise = json_file.read()
-    with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+    with open('./config/environment/glamorise_interface_mock_danke_anp.json') as json_file:
         config_glamorise_interface = json_file.read() 
     
     return render_template('form.html', type='glamorise_danke_anp', config_glamorise=config_glamorise, config_glamorise_interface=config_glamorise_interface)

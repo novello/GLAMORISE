@@ -3,8 +3,9 @@
     "show_recognized_patterns": true,
     "total_row" : true,
     "debug": true,    
-    "noun_lemmatization": true,
+    "noun_lemmatization": false,
     "count_with_distinct" : true,    
+    "pre_before_replace_text" : {"monthly" : "yearly monthly"},
     "units_of_measurement": [
         "cubic meters"
     ],

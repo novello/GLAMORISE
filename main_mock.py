@@ -9,7 +9,7 @@ import csv
 with open('./config/environment/glamorise_mock.json') as json_file:
     config_glamorise = json_file.read()
 
-with open('./config/environment/glamorise_interface_mock_anp.json') as json_file:
+with open('./config/environment/glamorise_interface_mock_danke_anp.json') as json_file:
     config_glamorise_interface = json_file.read()    
 
 with open('./nlqs/mock_nlidb_anp.nlqs.csv', encoding="utf-8") as csv_file:

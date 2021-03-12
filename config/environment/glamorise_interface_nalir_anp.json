@@ -19,7 +19,7 @@
         "basin": "ANP.BASIN",
         "year": "ANP.YEAR",
         "month": "ANP.YEAR,ANP.MONTH",
-        "ANP_MONTH": "ANP.YEAR:ANP.MONTH"
+        "anp_month": "ANP.YEAR,ANP.MONTH"
     },
     "nlidb_aggregation": false,
     "nlidb_aggregation_exceptions": [

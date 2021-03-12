@@ -24,7 +24,7 @@ with open('./config/environment/glamorise_interface_nalir_anp.json') as json_fil
 glamorise = GlamoriseNlidb(NLIDB='NaLIR', config_glamorise_param=config_glamorise,
                            config_glamorise_interface_param=config_glamorise_interface, config_db=config_db, tokens=nalir_tokens)
 
-nlq = 'Return me the maximum summed oil production per field in the state of "Rio de Janeiro"'
+nlq = 'How many fields are there in Parana?'
 
 mc.print_results(glamorise, nlq)
 

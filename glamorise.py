@@ -321,7 +321,7 @@ class Glamorise(metaclass=abc.ABCMeta):
                 if pos == 'NUM':
                     text = str(w2n.word_to_num(token.text))
                 else:
-                    text = token.lemma_        
+                    text = token.text        
                 if (unit_of_measurement and token.text in config_glamorise['units_of_measurement']) or \
                    (not unit_of_measurement and token.text not in config_glamorise['units_of_measurement']):
                     getattr(self, "_" + field).append(text)           

@@ -103,6 +103,9 @@ class NlidbNalir(NlidbBase):
         self.__first_attempt_sql = self.__second_attempt_sql = self.__third_attempt_sql = ''
         try:            
             self.__sql = self.__run_query(nlq)
+            # To ensure that sql with subquery block is not used             
+            if ') block_' in self.__sql:
+                    self.__sql = ''
             self.__first_attempt_sql = self.__sql
 
 
@@ -115,10 +118,11 @@ class NlidbNalir(NlidbBase):
             
             timer_nlidb_execution_first_and_second_attempt.stop()
             
-
-            if not result_set and nlidb_attempt_level == 3:            
+            # if result set is empty, build query again            
+            # the flag attempt level 3 must be on
+            if (not result_set or ') block_' in self.__sql) and nlidb_attempt_level == 3:
                 timer_nlidb_execution_third_attempt.start()
-                previous_sql = self.__sql                
+                previous_sql = self.__sql
                 self.__nlq_rebuild(fields)
                 self.__third_attempt_sql = self.__sql
                 result_set, cursor_description = self.__rdbms.conduct_sql(self.__sql + ' LIMIT 5')
