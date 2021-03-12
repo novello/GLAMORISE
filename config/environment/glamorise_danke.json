@@ -1,12 +1,16 @@
 {
     "show_dependency_parse_tree": true,
     "show_recognized_patterns": true,
-    "total_row" : true,
-    "debug": true,    
+    "total_row": true,
+    "debug": true,
     "noun_lemmatization": false,
-    "count_with_distinct" : true,    
-    "pre_before_replace_text" : {"monthly" : "yearly monthly"},
-    "pre_after_replace_text" : {"month" : "year month"},
+    "count_with_distinct": true,
+    "pre_before_replace_text": {
+        "monthly": "yearly monthly"
+    },
+    "pre_after_replace_text": {
+        "month": "year month"
+    },
     "units_of_measurement": [
         "cubic meters"
     ],

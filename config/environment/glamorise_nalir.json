@@ -1,10 +1,15 @@
 {
     "show_dependency_parse_tree": true,
     "show_recognized_patterns": true,
-    "total_row" : true,
-    "debug": true,    
-    "noun_lemmatization": true,  
-    "count_with_distinct" : true, 
+    "total_row": true,
+    "debug": true,
+    "noun_lemmatization": true,
+    "count_with_distinct": true,
+    "pre_after_replace_text": {
+        "gas production": "gas_production",
+        "production_of_gas": "gas_production",
+        "gas": "gas_production"
+    },
     "units_of_measurement": [
         "cubic meters"
     ],
@@ -313,7 +318,7 @@
                 "oldest summed",
                 "last summed",
                 "max summed",
-                "maximum summed",              
+                "maximum summed",
                 "least total",
                 "smallest total",
                 "tiniest total",
