@@ -23,7 +23,7 @@ jupyter = mc.is_jupyter_notebook()
 glamorise = GlamoriseNlidb(NLIDB='NaLIR', config_glamorise_param=config_glamorise,
                            config_glamorise_interface_param=config_glamorise_interface, config_db=config_db, tokens=nalir_tokens)
 
-nlq = 'return me the number of publications per year whose author is Marco Antonio Casanova'
+nlq = 'return me the total citations of papers in PVLDB before 2005.'
 
 mc.print_results(glamorise, nlq)
 

@@ -10,6 +10,7 @@
         "conference_name": "conference.name",
         "citation": "publication.citation_num",
         "publication_citation": "publication.citation_num",
+        "paper_citation": "publication.citation_num",
         "paper": "publication.title",
         "paper_title": "publication.title",
         "publication": "publication.title",

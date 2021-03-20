@@ -29252,7 +29252,7 @@ INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('Which field produces the oil month?', 'S
 INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('Which basin has the year oil production?', 'SELECT basin, year, oil_production FROM ANP ');
 INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('Which federated state has the gas production?', 'SELECT state, gas_production FROM ANP ');
 INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('Which state of the federation has the gas production?', 'SELECT state, gas_production FROM ANP ');
-INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('What was the year production of oil field and state in the year in 2015?', 'SELECT year, oil_production, field, state FROM ANP WHERE year = 2015');
+INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('What was the year production of oil field and state in the year 2015?', 'SELECT year, oil_production, field, state FROM ANP WHERE year = 2015');
 INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('What was the month production of oil field in the state of Rio de Janeiro and year 2015?', 'SELECT year, month, field, oil_production FROM ANP WHERE lower(state) = "rio de janeiro" and year = 2015');
 INSERT INTO NLIDB_SQL_FROM_NLQ  VALUES('Give me the operator with the fields', 'SELECT DISTINCT operator, field FROM ANP');
 CREATE VIEW NLIDB_RESULT_SET as select * from ANP;

@@ -11,7 +11,7 @@ return me the number of keywords, which have been contained by more than 10 pape
 return me the number of keywords.
 return me the number of papers after 2000 in "University of Michigan".
 return me the number of papers published in PVLDB in each year.
-return me the number of the authors who have more than 10 papers containing keyword "Relational Database".
-return me the papers written by "H. V. Jagadish" and "Divesh Srivastava" with more than 200 citations.
 return me the papers written by "H. V. Jagadish" and "Divesh Srivastava" with the most number of citations.
 return me the total citations of all the papers in PVLDB.
+return me the total citations of the papers containing keyword "Natural Language"
+return me the total citations of papers in PVLDB before 2005.

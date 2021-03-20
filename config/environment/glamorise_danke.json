@@ -6,9 +6,11 @@
     "noun_lemmatization": false,
     "count_with_distinct": true,
     "pre_before_replace_text": {
-        "monthly": "yearly monthly"
+        "monthly": "yearly monthly",
+        "per month": "per month per year",
+        "by month": "by month by year"
     },
-    "pre_after_replace_text": {
+    "pre_after_replace_text": {        
         "month": "year month"
     },
     "units_of_measurement": [

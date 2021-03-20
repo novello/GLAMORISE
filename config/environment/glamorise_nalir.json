@@ -8,7 +8,9 @@
     "pre_after_replace_text": {
         "gas production": "gas_production",
         "production_of_gas": "gas_production",
-        "gas": "gas_production"
+        "gas": "gas_production",
+        "paper" : "publication",
+        "papers" : "publications"
     },
     "units_of_measurement": [
         "cubic meters"

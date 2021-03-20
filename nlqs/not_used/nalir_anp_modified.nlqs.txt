@@ -17,5 +17,5 @@ Which field produces the most oil production per month per year? ###
 Which basin has the highest oil production per year? ###
 Which federated state has the lowest production of gas? ###
 Which state of the federation has the lowest production of gas? ###
-What was the average production of oil per field and state in the year in 2015? ###
+What was the average production of oil per field and state in the year 2015? ###
 What was the average production of oil per field per month in the state of Rio de Janeiro and year 2015? 
