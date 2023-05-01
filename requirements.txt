@@ -6,7 +6,7 @@
 # GLAMORISE/glamorise.py: 22
 # GLAMORISE/web_interface/api.py: 2
 # GLAMORISE/web_interface/web_api.py: 2
-Flask == 1.1.2
+Flask == 2.3.2
 
 # GLAMORISE/web_interface/web_api.py: 3
 Flask_Markdown == 0.3
